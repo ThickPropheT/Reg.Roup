@@ -1,9 +1,13 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+name: Pack & Publish NuGet Package
+
+on:
+  push:
+    branches: ['release']
+    
 jobs:
-  Explore-GitHub-Actions:
+  pack-and-publish-package:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Clone
         run: git clone https://github.com/ThickPropheT/Reg.Roup.git
