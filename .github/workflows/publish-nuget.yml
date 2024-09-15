@@ -1,0 +1,15 @@
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        run: git clone https://github.com/ThickPropheT/Reg.Roup.git
+    
+      - name: Pack
+        run: dotnet pack ./Reg.Roup
+        
+      - name: Push
+        run: dotnet nuget push ./Reg.Roup/Reg.Roup/bin/Release/* --source "https://nuget.pkg.github.com/ThickPropheT/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
