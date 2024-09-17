@@ -1,0 +1,22 @@
+name: Pack & Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - '[0-9].[0-9].[0-9]'
+    
+jobs:
+  pack-and-publish-package:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Pull ${{ github.ref_name }}
+        run: |
+          git clone https://github.com/ThickPropheT/Reg.Roup.git
+          git checkout ${{ github.ref_name }}
+    
+      - name: Pack
+        run: dotnet pack ./Reg.Roup
+        
+      - name: Push
+        run: dotnet nuget push ./Reg.Roup/Reg.Roup/bin/Release/* --source "https://nuget.pkg.github.com/ThickPropheT/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
