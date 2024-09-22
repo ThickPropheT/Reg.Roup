@@ -17,11 +17,21 @@ jobs:
     steps:
 
       - name: Split branch name
+        id: split1
         env:
-          BRANCH: ${{ github.ref_name }}
-        id: split
+          BRANCH: ${{ github.head_ref }}
         run: echo "::set-output name=fragment::${BRANCH##*/}"
 
-      - name: Test variable
+      - name: Test split 1
         run: |
-          echo ${{ steps.split.outputs.fragment }}
+          echo ${{ steps.split1.outputs.fragment }}
+
+      - name: Set-Output deprecation replacement
+        id: split2
+        env:
+            BRANCH: ${{ github.head_ref }}
+        run: echo "fragment=${BRANCH##*/}" >> $GITHUB_OUTPUT
+
+      - name: Test split 2
+        run: |
+          echo ${{ steps.split2.outputs.fragment }}
