@@ -3,7 +3,7 @@ name: Pack & Publish NuGet Package
 on:
   push:
     tags:
-      - '[0-9].[0-9].[0-9]'
+      - '[0-9]+.[0-9]+.[0-9]+'
     
 jobs:
   pack-and-publish-package:
