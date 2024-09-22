@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
+
+    <PackageVersion>1.0.3</PackageVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Thick_propheT</Authors>
     <PackageProjectUrl>https://github.com/ThickPropheT/Reg.Roup</PackageProjectUrl>
