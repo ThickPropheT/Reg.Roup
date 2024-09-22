@@ -3,7 +3,7 @@ name: Pack & Publish NuGet Package
 on:
   push:
     tags:
-      - '[0-9].[0-9].[0-9]'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
     
 jobs:
   pack-and-publish-package:
@@ -11,7 +11,7 @@ jobs:
     
     steps:
       - name: Pull ${{ github.ref_name }}
-        run: git clone --branch ${{ github.ref_name }} https://github.com/ThickPropheT/Reg.Roup.git
+        run: git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/ThickPropheT/Reg.Roup.git
     
       - name: Pack
         run: dotnet pack ./Reg.Roup
