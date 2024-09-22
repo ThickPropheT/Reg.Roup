@@ -11,7 +11,7 @@ jobs:
     
     steps:
       - name: Pull ${{ github.ref_name }}
-        run: git clone --branch ${{ github.ref_name }} github. https://github.com/ThickPropheT/Reg.Roup.git
+        run: git clone --branch ${{ github.ref_name }} github https://github.com/ThickPropheT/Reg.Roup.git
     
       - name: Pack
         run: dotnet pack ./Reg.Roup
