@@ -42,7 +42,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Release
-      uses: nicpollo/release-action@v1
+      uses: ncipollo/release-action@v1
       with:
         artifacts: "Reg.Roup.${VERSION}.nupkg"
         tag: ${GITHUB_REF_NAME}
