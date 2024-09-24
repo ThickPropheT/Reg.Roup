@@ -46,7 +46,7 @@ jobs:
       uses: ncipollo/release-action@v1
       env:
         VERSION: ${{ env.VERSION }}
-        GITHUB_REF_NAME: ${{ giithub.ref_name }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
       with:
         artifacts: "Reg.Roup.${VERSION}.nupkg"
         tag: ${GITHUB_REF_NAME}
