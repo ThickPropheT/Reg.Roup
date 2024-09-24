@@ -45,7 +45,7 @@ jobs:
     - name: Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "Reg.Roup.${VERSION}.nupkg"
+        artifacts: "Reg.Roup.*.nupkg"
         tag: ${GITHUB_REF_NAME}
         generateReleaseNotes: true
         artifactErrorsFailBuild: true
