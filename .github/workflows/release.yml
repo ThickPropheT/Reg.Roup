@@ -35,11 +35,10 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
 
-      # TODO see if there's a way to get 'Reg.Roup' and user name to plug in here so that this yml can be the same for any nuget package
-      # ${{ github.repository_owner }}
     - name: Push
-      run: dotnet nuget push Reg.Roup.${VERSION}.nupkg --source https://nuget.pkg.github.com/ThickPropheT/index.json --api-key ${GITHUB_TOKEN}
+      run: dotnet nuget push Reg.Roup.${VERSION}.nupkg --source "https://nuget.pkg.github.com/${REPOSITORY_OWNER}/index.json" --api-key ${GITHUB_TOKEN}
       env:
+        REPOSITORY_OWNER: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Release
