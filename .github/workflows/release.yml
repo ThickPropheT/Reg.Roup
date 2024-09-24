@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    permissions:
+      contents: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -31,7 +34,17 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
 
+      # TODO see if there's a way to get 'Reg.Roup' and user name to plug in here so that this yml can be the same for any nuget package
+      # ${{ github.repository_owner }}
     - name: Push
       run: dotnet nuget push Reg.Roup.${VERSION}.nupkg --source https://nuget.pkg.github.com/ThickPropheT/index.json --api-key ${GITHUB_TOKEN}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Release
+      uses: nicpollo/release-action@v1
+      with:
+        artifacts: "Reg.Roup.${VERSION}.nupkg"
+        tag: ${GITHUB_REF_NAME}
+        generateReleaseNotes: true
+        artifactErrorsFailBuild: true
