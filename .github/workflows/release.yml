@@ -36,15 +36,19 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
 
     - name: Push
-      run: dotnet nuget push Reg.Roup.${VERSION}.nupkg --source "https://nuget.pkg.github.com/${REPOSITORY_OWNER}/index.json" --api-key ${GITHUB_TOKEN}
       env:
         REPOSITORY_OWNER: ${{ github.repository_owner }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      run: dotnet nuget push Reg.Roup.${VERSION}.nupkg --source "https://nuget.pkg.github.com/${REPOSITORY_OWNER}/index.json" --api-key ${GITHUB_TOKEN}
+
     - name: Release
       uses: ncipollo/release-action@v1
+      env:
+        VERSION: ${{ env.VERSION }}
+        GITHUB_REF_NAME: ${{ giithub.ref_name }}
       with:
-        artifacts: "Reg.Roup.${{ env.VERSION }}.nupkg"
-        tag: ${{ github.ref_name }}
+        artifacts: "Reg.Roup.${VERSION}.nupkg"
+        tag: ${GITHUB_REF_NAME}
         generateReleaseNotes: true
         artifactErrorsFailBuild: true
