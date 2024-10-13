@@ -5,3 +5,12 @@ Regex Group Deserializer
 As described [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry#publishing-a-package) in the GitHub docs, run the following command to configure the source for this package, replacing `<YOUR_GITHUB_USERNAME>` and `<YOUR_GITHUB_PAT>` with your username and Personal Access Token repsectively.
 
     dotnet nuget add source --username <YOUR_GITHUB_USERNAME> --password <YOUR_GITHUB_PAT> --store-password-in-clear-text --name thick_prophet "https://nuget.pkg.github.com/ThickPropheT/index.json"
+
+## Creating Releases
+Both releases and prereleases are published using `git tag`s.
+
+#### Prerelease Tag Pattern
+`v#.#.#-pre###`
+
+#### Release Tag Pattern
+`v#.#.#`
