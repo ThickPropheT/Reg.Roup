@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Reg.Roup.Schema
 {
@@ -11,8 +10,8 @@ namespace Reg.Roup.Schema
     {
         private readonly SettableSchemaMember[] _initializers;
 
-        private MemberInitSchema(ConstructorInfo constructor, SchemaMember[] parameters, SettableSchemaMember[] initializers)
-            : base(constructor, parameters)
+        private MemberInitSchema(CreateInstance createInstance, SchemaMember[] parameters, SettableSchemaMember[] initializers)
+            : base(createInstance, parameters)
         {
             _initializers = initializers;
         }
@@ -20,14 +19,15 @@ namespace Reg.Roup.Schema
         public static MemberInitSchema From(MemberInitExpression schema)
         {
             var newExpression = schema.NewExpression;
-            var constructor = newExpression.Constructor;
+
+            var constructor = newExpression.Constructor
+                ?? newExpression.Type.GetConstructor(Type.EmptyTypes);
 
             return new MemberInitSchema(
-                constructor
-                    // TODO hope this works
-                    ?? newExpression.Type.GetConstructor(Type.EmptyTypes)
-                    // TODO
-                    ?? throw new Exception("RUH ROH"),
+                constructor != null
+                    ? constructor.Invoke
+                    // Activator only returns null for nullable & those can't be created w/ member initializers
+                    : _ => Activator.CreateInstance(newExpression.Type)!,
                 constructor != null
                     ? ExtractParameters(constructor, newExpression.Arguments)
                     : [],

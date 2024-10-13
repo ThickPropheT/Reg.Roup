@@ -7,15 +7,17 @@ using System.Reflection;
 
 namespace Reg.Roup.Schema
 {
+    public delegate object CreateInstance(object?[]? args);
+
     public class NewSchema
     {
-        private readonly ConstructorInfo _constructor;
+        private readonly CreateInstance _createInstance;
 
         public SchemaMember[] Parameters { get; }
 
-        protected NewSchema(ConstructorInfo constructor, SchemaMember[] parameters)
+        protected NewSchema(CreateInstance createInstance, SchemaMember[] parameters)
         {
-            _constructor = constructor;
+            _createInstance = createInstance;
             Parameters = parameters;
         }
 
@@ -32,7 +34,7 @@ namespace Reg.Roup.Schema
             var constructor = schema.Constructor;
 
             return new NewSchema(
-                constructor,
+                constructor.Invoke,
                 ExtractParameters(constructor, schema.Arguments)
             );
         }
@@ -63,7 +65,7 @@ namespace Reg.Roup.Schema
                 .Select(c => c.Apply())
                 .ToArray();
 
-            return _constructor.Invoke(args);
+            return _createInstance.Invoke(args);
         }
     }
 }

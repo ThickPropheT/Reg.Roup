@@ -8,11 +8,15 @@ namespace Reg.Roup
 {
     public static class RegexExtensions
     {
-        public static T DeserializeMatch<T>(this Regex regex, string input, Expression<Func<IParse, T>> deserializationSchema)
-            => DeserializeTo<T>(new MatchContext(regex, regex.Match(input)), DeserializationSchema.From(deserializationSchema));
+        // TODO
+        //  consider renaming.
+        //   ? MapGroups
+        public static TSchema DeserializeMatch<TSchema>(this Regex regex, string input, Expression<Func<IParse, TSchema>> deserializationSchema)
+            => DeserializeTo<TSchema>(new MatchContext(regex, regex.Match(input)), DeserializationSchema.From(deserializationSchema));
 
-        public static T Deserialize<T>(this Match match, Expression<Func<IParse, T>> deserializationSchema, Regex? regex = null)
-            => DeserializeTo<T>(new MatchContext(regex, match), DeserializationSchema.From(deserializationSchema));
+        // TODO consider deleting.
+        public static TSchema Deserialize<TSchema>(this Match match, Expression<Func<IParse, TSchema>> deserializationSchema, Regex? regex = null)
+            => DeserializeTo<TSchema>(new MatchContext(regex, match), DeserializationSchema.From(deserializationSchema));
 
         private static T DeserializeTo<T>(MatchContext match, NewSchema schema)
         {

@@ -22,7 +22,8 @@ namespace Reg.Roup
         {
             var groupName = member.Name;
 
-            if (regex != null && regex.GroupNumberFromName(groupName) == -1)
+            if (regex != null
+                && regex.GroupNumberFromName(groupName) == -1)
             {
                 throw new FormatException(
                     $"Regex does not contain a group definition named '{groupName}'."

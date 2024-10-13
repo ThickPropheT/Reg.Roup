@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using Reg.Roup.Utility;
+using System;
 
 namespace Reg.Roup.Conversions
 {
@@ -18,7 +18,11 @@ namespace Reg.Roup.Conversions
             => new(value, convert);
 
         public static GroupValueConversion Implicit(GroupValue value)
-            => new(value, v => TypeDescriptor.GetConverter(value.Member.Type).ConvertTo(v, value.Member.Type));
+            => new(value, v =>
+            {
+                var type = value.Member.Type;
+                return Convert.ChangeType(v, type.TryGetNullableType() ?? type);
+            });
 
         public static GroupValueConversion None(GroupValue value)
             => new(value, v => v);
