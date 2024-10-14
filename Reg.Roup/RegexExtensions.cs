@@ -18,7 +18,7 @@ namespace Reg.Roup
         public static TSchema Deserialize<TSchema>(this Match match, Expression<Func<IParse, TSchema>> deserializationSchema, Regex? regex = null)
             => DeserializeTo<TSchema>(new MatchContext(regex, match), DeserializationSchema.From(deserializationSchema));
 
-        private static T DeserializeTo<T>(MatchContext match, NewSchema schema)
+        private static T DeserializeTo<T>(MatchContext match, ConstructorInitSchema schema)
         {
             match.Validate();
 

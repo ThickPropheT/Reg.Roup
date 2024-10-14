@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Reg.Roup.Schema
 {
-    public class MemberInitSchema : NewSchema
+    public class MemberInitSchema : ConstructorInitSchema
     {
         private readonly SettableSchemaMember[] _initializers;
 
