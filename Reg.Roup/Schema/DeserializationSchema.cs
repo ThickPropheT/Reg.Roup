@@ -6,7 +6,7 @@ namespace Reg.Roup.Schema
 {
     public class DeserializationSchema
     {
-        public static NewSchema From<T>(Expression<Func<IParse, T>> schema)
+        public static ConstructorInitSchema From<T>(Expression<Func<IParse, T>> schema)
         {
             if (schema.Body is MemberInitExpression memberInitExpression)
             {
@@ -14,7 +14,7 @@ namespace Reg.Roup.Schema
             }
             else if (schema.Body is NewExpression newExpression)
             {
-                return NewSchema.From(newExpression);
+                return ConstructorInitSchema.From(newExpression);
             }
             else
             {

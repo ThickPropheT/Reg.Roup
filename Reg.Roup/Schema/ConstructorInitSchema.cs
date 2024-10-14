@@ -9,22 +9,22 @@ namespace Reg.Roup.Schema
 {
     public delegate object CreateInstance(object?[]? args);
 
-    public class NewSchema
+    public class ConstructorInitSchema
     {
         private readonly CreateInstance _createInstance;
 
         public SchemaMember[] Parameters { get; }
 
-        protected NewSchema(CreateInstance createInstance, SchemaMember[] parameters)
+        protected ConstructorInitSchema(CreateInstance createInstance, SchemaMember[] parameters)
         {
             _createInstance = createInstance;
             Parameters = parameters;
         }
 
-        public static NewSchema From(NewExpression schema)
+        public static ConstructorInitSchema From(NewExpression schema)
         {
             if (schema.Constructor == null
-                || !schema.Arguments.Any())
+                || schema.Arguments.Count != 0)
             {
                 throw new NotSupportedException(
                     "Expected either parameterized constructor or object initializer."
@@ -33,7 +33,7 @@ namespace Reg.Roup.Schema
 
             var constructor = schema.Constructor;
 
-            return new NewSchema(
+            return new ConstructorInitSchema(
                 constructor.Invoke,
                 ExtractParameters(constructor, schema.Arguments)
             );
@@ -51,9 +51,9 @@ namespace Reg.Roup.Schema
                         );
                     }
 
-                    // TODO
-                    //  assuming that these are in the correct order (arguments)
-                    //  test named & optional parameters
+                    // this safely assumes that arguments are in the correct order.
+                    // the only way to mismatch the order would be via named & optional parameters,
+                    // which are not supported in expression trees.
                     return new SchemaMember(p.Name, p.ParameterType, arguments[i]);
                 })
                 .ToArray();

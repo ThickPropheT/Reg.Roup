@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Reg.Roup.Schema
 {
-    public class MemberInitSchema : NewSchema
+    public class MemberInitSchema : ConstructorInitSchema
     {
         private readonly SettableSchemaMember[] _initializers;
 
@@ -53,12 +53,11 @@ namespace Reg.Roup.Schema
         {
             var instance = base.CreateInstanceFrom(match);
 
-            foreach (var a in _initializers
-                // TODO why can't select figure out anonymous structs i.e. new(i: 0, s: '')
-                .Select(i => new { member = i, conversion = Conversion.Extract(i).From(match) })
-                .Select(a => new { a.member, value = a.conversion.Apply() }))
+            foreach (var (member, value) in _initializers
+                .Select(i => (member: i, conversion: Conversion.Extract(i).From(match)))
+                .Select(a => (a.member, value: a.conversion.Apply())))
             {
-                a.member.Set(instance, a.value);
+                member.Set(instance, value);
             }
 
             return instance;
