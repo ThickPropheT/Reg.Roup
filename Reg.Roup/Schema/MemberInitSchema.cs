@@ -53,11 +53,11 @@ namespace Reg.Roup.Schema
         {
             var instance = base.CreateInstanceFrom(match);
 
-            foreach (var a in _initializers
+            foreach (var (member, value) in _initializers
                 .Select(i => (member: i, conversion: Conversion.Extract(i).From(match)))
                 .Select(a => (a.member, value: a.conversion.Apply())))
             {
-                a.member.Set(instance, a.value);
+                member.Set(instance, value);
             }
 
             return instance;
