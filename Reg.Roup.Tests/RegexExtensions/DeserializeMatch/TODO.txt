@@ -1,0 +1,5 @@
+TODO test schema member w/ incorrect type
+TODO test optional member w/ incorrect type
+TODO test \w* matching -> "" w/ both optional & required members
+
+See TODO-s in CanOptionallyMapGroupsToAnonymousTypes tests

@@ -12,9 +12,9 @@ namespace Reg.Roup
         {
             if (!match.Success)
             {
-                throw new FormatException(
-                    "Regex could not match input string."
-                );
+                //throw new FormatException(
+                //    "Regex could not match input string."
+                //);
             }
         }
 
@@ -23,6 +23,7 @@ namespace Reg.Roup
             var groupName = member.Name;
 
             if (regex != null
+                && !member.IsOptional
                 && regex.GroupNumberFromName(groupName) == -1)
             {
                 throw new FormatException(
