@@ -1,9 +1,10 @@
-﻿using Reg.Roup.Utility;
+﻿using Reg.Roup.Expression;
+using Reg.Roup.Utility;
 using System;
 
 namespace Reg.Roup.Conversions
 {
-    public class GroupValueConversion
+    public class GroupValueConversion : IExpression<object?>
     {
         private readonly GroupValue _value;
         private readonly Func<string?, object?> _convert;
@@ -27,7 +28,7 @@ namespace Reg.Roup.Conversions
         public static GroupValueConversion None(GroupValue value)
             => new(value, v => v);
 
-        public object? Apply()
-            => _convert(_value.Get());
+        public object? Evaluate()
+            => _convert(_value.Evaluate());
     }
 }

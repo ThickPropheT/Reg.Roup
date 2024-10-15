@@ -49,13 +49,13 @@ namespace Reg.Roup.Schema
             })
             .ToArray();
 
-        public override object CreateInstanceFrom(MatchContext match)
+        public override object Evaluate(MatchContext match)
         {
-            var instance = base.CreateInstanceFrom(match);
+            var instance = base.Evaluate(match);
 
             foreach (var (member, value) in _initializers
                 .Select(i => (member: i, conversion: Conversion.Extract(i).From(match)))
-                .Select(a => (a.member, value: a.conversion.Apply())))
+                .Select(a => (a.member, value: a.conversion.Evaluate())))
             {
                 member.Set(instance, value);
             }

@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Reg.Roup.Schema
 {
+    using Reg.Roup.Expression;
+    using System.Linq.Expressions;
+
     public delegate object CreateInstance(object?[]? args);
 
-    public class ConstructorInitSchema
+    public class ConstructorInitSchema : IExpression<MatchContext, object>
     {
         private readonly CreateInstance _createInstance;
 
@@ -58,11 +60,11 @@ namespace Reg.Roup.Schema
                 })
                 .ToArray();
 
-        public virtual object CreateInstanceFrom(MatchContext match)
+        public virtual object Evaluate(MatchContext match)
         {
             var args = Parameters
                 .Select(m => Conversion.Extract(m).From(match))
-                .Select(c => c.Apply())
+                .Select(c => c.Evaluate())
                 .ToArray();
 
             return _createInstance.Invoke(args);
