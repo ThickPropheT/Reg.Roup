@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Reg.Roup.Schema
 {
+    using System.Linq.Expressions;
+
     public class SettableSchemaMember : SchemaMember
     {
         private readonly Action<object, object?> _setMember;

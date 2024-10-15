@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq.Expressions;
 
 namespace Reg.Roup.Conversions
 {
+    using System.Linq.Expressions;
+
     public class SupportedConversions
     {
         public static readonly Type ParseType = typeof(IParse);

@@ -1,9 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using Reg.Roup.Expression;
 using Reg.Roup.Schema;
 
 namespace Reg.Roup.Conversions
 {
-    public class GroupValue
+    public class GroupValue : IExpression<string?>
     {
         private readonly Group? _group;
 
@@ -21,6 +22,6 @@ namespace Reg.Roup.Conversions
         public static GroupValue FromOptional(SchemaMember member)
             => new(member, null);
 
-        public string? Get() => _group?.Value;
+        public string? Evaluate() => _group?.Value;
     }
 }
