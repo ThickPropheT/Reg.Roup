@@ -1,6 +1,6 @@
 ﻿using Reg.Roup.Conversions;
+using Reg.Roup.Expression;
 using Reg.Roup.Schema;
-using Reg.Roup.Utility;
 using System;
 using System.Text.RegularExpressions;
 
@@ -18,20 +18,17 @@ namespace Reg.Roup
             }
         }
 
-        public GroupValue FindValue(SchemaMember member)
+        public IExpression<string?> CreateReader(SchemaMember member)
         {
-            var groupName = member.Name;
-
             if (regex != null
-                && !member.IsOptional
-                && regex.GroupNumberFromName(groupName) == -1)
+                && !member.IsValid(regex))
             {
                 throw new FormatException(
-                    $"Regex does not contain a group definition named '{groupName}'."
+                    $"Regex does not contain a group definition named '{member.Name}'."
                 );
             }
 
-            return match.Groups.FindValueFor(member);
+            return member.CreateReaderOf(match.Groups);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Reg.Roup.Schema;
+﻿using Reg.Roup.Expression;
+using Reg.Roup.Schema;
 
 namespace Reg.Roup.Conversions
 {
@@ -9,22 +10,22 @@ namespace Reg.Roup.Conversions
 
         public class MatchSelector(SchemaMember member)
         {
-            public GroupValueConversion From(MatchContext match)
+            public IExpression<object?> From(MatchContext match)
             {
                 var converter = member.FindConverter();
-                var value = match.FindValue(member);
+                var reader = match.CreateReader(member);
 
                 if (converter != null)
                 {
-                    return GroupValueConversion.Explicit(value, converter);
+                    return ValueConversion.Explicit(reader, converter);
                 }
                 else if (member.Type != typeof(string))
                 {
-                    return GroupValueConversion.Implicit(value);
+                    return ValueConversion.Implicit(member, reader);
                 }
                 else
                 {
-                    return GroupValueConversion.None(value);
+                    return ValueConversion.None(reader);
                 }
             }
 

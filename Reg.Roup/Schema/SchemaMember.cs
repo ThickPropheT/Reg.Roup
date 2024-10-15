@@ -1,8 +1,11 @@
 ﻿using System;
 using Reg.Roup.Utility;
+using Reg.Roup.Conversions;
+using System.Text.RegularExpressions;
 
 namespace Reg.Roup.Schema
 {
+    using Reg.Roup.Expression;
     using System.Linq.Expressions;
 
     public class SchemaMember
@@ -11,7 +14,7 @@ namespace Reg.Roup.Schema
 
         public string Name { get; }
         public Type Type { get; }
-        public bool IsOptional { get; }
+        protected bool IsOptional { get; }
 
         public SchemaMember(string name, Type type, Expression expression)
         {
@@ -52,6 +55,38 @@ namespace Reg.Roup.Schema
 
                 return parseDelegate.DynamicInvoke(value);
             };
+        }
+
+        public bool IsValid(Regex regex)
+            => IsOptional
+            || regex.GroupNumberFromName(Name) >= 0;
+
+        public IExpression<string?> CreateReaderOf(GroupCollection groups)
+        {
+            var candidate = groups[Name];
+
+            if (candidate?.Success == true)
+            {
+                return new GroupReader(this, candidate);
+            }
+            if (!IsOptional)
+            {
+                throw new FormatException(
+                    $"Regex could not match group '{Name}' for input string, but group is not optional (nullable)."
+                );
+            }
+
+            return new Constant(this, null);
+        }
+
+        public object? Convert(string? value)
+        {
+            if (string.IsNullOrEmpty(value) && IsOptional)
+            {
+                return null;
+            }
+
+            return System.Convert.ChangeType(value, Type.TryGetNullableType() ?? Type);
         }
     }
 }
