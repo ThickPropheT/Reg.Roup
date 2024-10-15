@@ -4,8 +4,8 @@
     {
         public TActual Actual { get; } = actual;
 
-        public void AssertMultiple<TExpected>(TExpected expected, Action<TExpected, TActual> applyAssertions)
-            => Assert.Multiple(() => applyAssertions(expected, Actual));
+        public void Assert<TExpected>(TExpected expected, Action<TExpected, TActual> applyAssertions)
+            => applyAssertions(expected, Actual);
     }
 
     public class RegexDeserializationResult<TExpected, TActual>(TExpected expected, TActual actual)
@@ -13,7 +13,7 @@
     {
         public TExpected Expected { get; } = expected;
 
-        public void AssertMultiple(Action<TExpected, TActual> applyAssertions)
-            => AssertMultiple(Expected, applyAssertions);
+        public void Assert(Action<TExpected, TActual> applyAssertions)
+            => Assert(Expected, applyAssertions);
     }
 }

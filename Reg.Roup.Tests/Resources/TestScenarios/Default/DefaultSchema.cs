@@ -1,4 +1,6 @@
-﻿namespace Reg.Roup.Tests.Resources.TestScenarios.Default
+﻿using static Reg.Roup.Tests.Resources.TestScenarios.Default.DefaultSchema;
+
+namespace Reg.Roup.Tests.Resources.TestScenarios.Default
 {
     public static class DefaultSchema
     {
@@ -63,6 +65,33 @@
                 this.version = version;
             }
         }
+    }
+
+    public static class RegexDeserializationResultExtensions
+    {
+        public static void AssertActualEqualsExpected(this RegexDeserializationResult<Expected, SchemaClass> result)
+            => result.Assert((expected, actual) =>
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(actual.name, Is.EqualTo(expected.Name));
+                    Assert.That(actual.index, Is.EqualTo(expected.Index));
+                    Assert.That(actual.isEnabled, Is.EqualTo(expected.IsEnabled));
+                    Assert.That(actual.version, Is.EqualTo(expected.Version));
+                });
+            });
+
+        public static void AssertActualEqualsExpected(this RegexDeserializationResult<Expected, SchemaStruct> result)
+            => result.Assert((expected, actual) =>
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(actual.name, Is.EqualTo(expected.Name));
+                    Assert.That(actual.index, Is.EqualTo(expected.Index));
+                    Assert.That(actual.isEnabled, Is.EqualTo(expected.IsEnabled));
+                    Assert.That(actual.version, Is.EqualTo(expected.Version));
+                });
+            });
     }
 }
 

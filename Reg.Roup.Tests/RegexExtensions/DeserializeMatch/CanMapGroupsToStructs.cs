@@ -20,13 +20,7 @@ namespace Reg.Roup.Tests.RegexExtensions.DeserializeMatch
         {
             _givenTextMatchedByRegex
                 .WhenMatchDeserializedVia(parse => new SchemaStruct("", 0, false, parse.With(Version.Parse)))
-                .AssertMultiple((expected, actual) =>
-                {
-                    Assert.That(actual.name, Is.EqualTo(expected.Name));
-                    Assert.That(actual.index, Is.EqualTo(expected.Index));
-                    Assert.That(actual.isEnabled, Is.EqualTo(expected.IsEnabled));
-                    Assert.That(actual.version, Is.EqualTo(expected.Version));
-                });
+                .AssertActualEqualsExpected();
         }
 
         [Test]
@@ -34,27 +28,15 @@ namespace Reg.Roup.Tests.RegexExtensions.DeserializeMatch
         {
             _givenTextMatchedByRegex
                 .WhenMatchDeserializedVia(parse => new SchemaStruct { name = "", index = 0, isEnabled = false, version = parse.With(Version.Parse) })
-                .AssertMultiple((expected, actual) =>
-            {
-                Assert.That(actual.name, Is.EqualTo(expected.Name));
-                Assert.That(actual.index, Is.EqualTo(expected.Index));
-                Assert.That(actual.isEnabled, Is.EqualTo(expected.IsEnabled));
-                Assert.That(actual.version, Is.EqualTo(expected.Version));
-            });
-        }
+                .AssertActualEqualsExpected();
+            }
 
         [Test]
         public void UsingMixedBindings()
         {
             _givenTextMatchedByRegex
                 .WhenMatchDeserializedVia(parse => new SchemaStruct(parse.With(Version.Parse)) { name = "", index = 0, isEnabled = false })
-                .AssertMultiple((expected, actual) =>
-            {
-                Assert.That(actual.name, Is.EqualTo(expected.Name));
-                Assert.That(actual.index, Is.EqualTo(expected.Index));
-                Assert.That(actual.isEnabled, Is.EqualTo(expected.IsEnabled));
-                Assert.That(actual.version, Is.EqualTo(expected.Version));
-            });
+                .AssertActualEqualsExpected();
         }
     }
 }
