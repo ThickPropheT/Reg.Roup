@@ -24,7 +24,7 @@ namespace Reg.Roup.Schema
         public static ConstructorInitSchema From(NewExpression schema)
         {
             if (schema.Constructor == null
-                || schema.Arguments.Count != 0)
+                || schema.Arguments.Count == 0)
             {
                 throw new NotSupportedException(
                     "Expected either parameterized constructor or object initializer."
