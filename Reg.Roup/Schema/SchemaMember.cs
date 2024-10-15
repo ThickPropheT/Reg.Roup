@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq.Expressions;
 using Reg.Roup.Utility;
 
 namespace Reg.Roup.Schema
 {
+    using System.Linq.Expressions;
+
     public class SchemaMember
     {
         private readonly Expression _expression;

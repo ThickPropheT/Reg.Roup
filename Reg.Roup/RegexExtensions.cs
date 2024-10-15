@@ -24,7 +24,7 @@ namespace Reg.Roup
 
             try
             {
-                return (T)schema.CreateInstanceFrom(match);
+                return (T)schema.Evaluate(match);
             }
             catch (NotSupportedException ex)
             {
