@@ -67,8 +67,7 @@ namespace Reg.Roup.Expression
                 findTransformer = null;
             }
 
-            return new EvaluationResult(
-                isMatch,
+            return EvaluationResult.PassWith(
                 seekNext,
                 findTransformer
             );

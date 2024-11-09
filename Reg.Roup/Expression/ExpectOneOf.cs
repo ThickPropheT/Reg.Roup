@@ -25,8 +25,7 @@ namespace Reg.Roup.Expression
             }
 
             // TODO this needs to push itself AND the match somehow
-            return new EvaluationResult(
-                true,
+            return EvaluationResult.PassWith(
                 () => new SeekResult(
                     match.SeekNext().Next,
                     pop => {
