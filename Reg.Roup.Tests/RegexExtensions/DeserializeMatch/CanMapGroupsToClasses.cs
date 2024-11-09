@@ -19,7 +19,7 @@ namespace Reg.Roup.Tests.RegexExtensions.DeserializeMatch
         public void UsingConstructorParameters()
         {
             _givenTextMatchedByRegex
-                .WhenMatchDeserializedVia(parse => new SchemaClass("", 0, false, parse.With(Version.Parse)))
+                .WhenMatchDeserializedVia(parse => new SchemaClass("", 0, false, parse.With(s => Version.Parse(s))))
                 .AssertActualEqualsExpected();
         }
 

@@ -1,12 +1,17 @@
-﻿namespace Reg.Roup.Expression
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Reg.Roup.Expression
 {
-    public interface IExpression<TResult>
+    public interface IExpression<T>
     {
-        TResult Evaluate();
     }
 
-    public interface IExpression<TArg, TResult>
+    public interface IExpression<T1, T2>
     {
-        TResult Evaluate(TArg arg);
+
     }
 }
