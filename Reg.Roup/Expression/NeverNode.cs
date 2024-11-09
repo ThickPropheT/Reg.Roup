@@ -1,4 +1,6 @@
-﻿//using System;
+﻿// TODO check VisitorEngine history @ d5e03fff for more of this historical stuff
+
+//using System;
 //using System.Diagnostics.CodeAnalysis;
 
 //namespace Reg.Roup.Expression
