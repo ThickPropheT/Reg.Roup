@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Reg.Roup.Conversions;
-using Reg.Roup.Expression;
 using Reg.Roup.Schema;
 
 namespace Reg.Roup
@@ -12,12 +11,8 @@ namespace Reg.Roup
         // TODO
         //  consider renaming.
         //   ? MapGroups
-        public static TSchema DeserializeMatch<TSchema>(this Regex regex, string input, Expression<Func<IParse, TSchema>> deserializationSchema, VisitorEngine visitor)
-        //=> DeserializeTo<TSchema>(new MatchContext(regex, regex.Match(input)), DeserializationSchema.From(deserializationSchema));
-        {
-            var v = visitor.Visit(deserializationSchema);
-            return default;
-        }
+        public static TSchema DeserializeMatch<TSchema>(this Regex regex, string input, Expression<Func<IParse, TSchema>> deserializationSchema)
+            => DeserializeTo<TSchema>(new MatchContext(regex, regex.Match(input)), DeserializationSchema.From(deserializationSchema));
 
         // TODO consider deleting.
         public static TSchema Deserialize<TSchema>(this Match match, Expression<Func<IParse, TSchema>> deserializationSchema, Regex? regex = null)
