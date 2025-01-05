@@ -7,7 +7,7 @@ namespace Reg.Roup.Tests.Visitor
     [TestFixture]
     public class NodeTypeExpectation
     {
-        private IExpectation subtractionExpectation;
+        private IBaseExpectation subtractionExpectation;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
