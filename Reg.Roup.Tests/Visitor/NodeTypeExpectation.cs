@@ -18,7 +18,7 @@ namespace Reg.Roup.Tests.Visitor
         }
 
         [Test]
-        public void PassThroughValidSchemas()
+        public void PassesThroughValidSchemas()
         {
             var subtractionExpression = Expression.Subtract(Expression.Constant(69), Expression.Constant(27));
 
