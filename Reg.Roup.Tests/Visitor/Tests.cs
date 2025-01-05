@@ -17,7 +17,7 @@ namespace Reg.Roup.Tests.Visitor
     [TestFixture]
     public class Tests
     {
-        [Test]
+        [Test, Ignore("migrating this into a set of real tests")]
         public void Test()
         {
             //new DefaultScenario()
