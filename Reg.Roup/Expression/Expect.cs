@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
+    // TODO figure out this naming & that of _ExpectExt
     public class Expect : IExpectationOptions
     {
         public IExpectation<TNode> NodeType<TNode>()
