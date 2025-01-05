@@ -5,7 +5,7 @@ namespace Reg.Roup.Tests.Visitor
     using System.Linq.Expressions;
 
     [TestFixture]
-    public partial class NodeTypeExpectation
+    public class NodeTypeExpectation
     {
         private readonly IExpectation subtractionExpectation = _ExpectExt.NodeType(ExpressionType.Subtract);
 
