@@ -22,7 +22,7 @@ namespace Reg.Roup.Expression
             //return this;
         }
 
-        public IStatefulExpectation<T> With(IBaseExpectation.Next<T> nested)
+        public IStatefulExpectation<T> WithChildren(IBaseExpectation.Next<T> nested)
         {
             SetNext((n, options) => nested(state((TNode)n), options));
             return this;

@@ -65,7 +65,7 @@ namespace Reg.Roup.Tests.Visitor
                         options.NodeType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
                             .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
-                            .With((state, options) =>
+                            .WithChildren((state, options) =>
                                 options.Each(
                                     state.ParamNames,
                                     m =>
