@@ -12,7 +12,7 @@ namespace Reg.Roup.Expression
 
         IExpectation NodeType(ExpressionType nodeType);
 
-        IExpectationEvaluator OneOf(params IExpectationEvaluator[] options);
-        IExpectationEvaluator Each<T>(IEnumerator<T> enumerator, Func<T, IExpectationEvaluator> body);
+        IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options);
+        IEvaluationFrameBuilder Each<T>(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body);
     }
 }

@@ -13,10 +13,10 @@
         public IExpectation NodeType(ExpressionType nodeType)
             => new Expectation(nodeType, this);
 
-        public IExpectationEvaluator OneOf(params IExpectationEvaluator[] options)
+        public IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options)
             => new ExpectOneOf(options);
 
-        public IExpectationEvaluator Each<T>(IEnumerator<T> enumerator, Func<T, IExpectationEvaluator> body)
+        public IEvaluationFrameBuilder Each<T>(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body)
             => new ExpectEach<T>(enumerator, body);
     }
 }

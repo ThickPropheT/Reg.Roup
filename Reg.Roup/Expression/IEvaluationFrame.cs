@@ -1,0 +1,25 @@
+﻿namespace Reg.Roup.Expression
+{
+    using System;
+    using System.Linq.Expressions;
+
+    public interface IEvaluationFrame
+    {
+        public delegate void Push(IEvaluationFrame self, IEvaluationFrame.IStackController controller);
+
+        IEvaluationFrameBuilder Origin { get; }
+
+        IEvaluationFrame OnPush(Push onPush);
+        IEvaluationFrame OnPop(Action<IEvaluationFrame.IStackController> onPop);
+
+        IEvaluationFrame? SeekNext(Expression? node);
+        void PushTo(IStackController controller);
+        void PopFrom(IStackController controller);
+
+        public interface IStackController
+        {
+            void TryPushFrame(IEvaluationFrame? frame);
+            IEvaluationFrame? PopFrame();
+        }
+    }
+}

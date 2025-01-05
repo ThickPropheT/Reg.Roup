@@ -38,7 +38,7 @@ namespace Reg.Roup.Tests.Visitor
                 name = "",
                 index = 0,
                 isEnabled = false,
-                version = parse.With(Version.Parse)
+                //version = parse.With(Version.Parse)
             }
             )
             .Assert((expected, actual) => { });
@@ -60,7 +60,7 @@ namespace Reg.Roup.Tests.Visitor
 
             var v = _ExpectExt
                 .NodeType(ExpressionType.Lambda)
-                .With((n, options) =>
+                .With((_, options) =>
                     options.OneOf(
                         options.NodeType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
@@ -69,11 +69,11 @@ namespace Reg.Roup.Tests.Visitor
                                 options.Each(
                                     state.ParamNames,
                                     m =>
-                                        options.OneOf(
+                                        //options.OneOf(
                                             options
                                                 .NodeType<ConstantExpression>()
                                                 //.Transform(n => )
-                                        )
+                                        //)
                                 )
                             ),
 

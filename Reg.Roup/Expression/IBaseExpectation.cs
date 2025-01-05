@@ -4,10 +4,10 @@ namespace Reg.Roup.Expression
 {
     using System.Linq.Expressions;
 
-    public interface IBaseExpectation : IExpectationEvaluator
+    public interface IBaseExpectation : IEvaluationFrameBuilder
     {
         public delegate bool Condition<TNode>(TNode node);
-        public delegate IExpectationEvaluator Next<TNode>(TNode node, IExpectationOptions options);
+        public delegate IEvaluationFrameBuilder Next<TNode>(TNode node, IExpectationOptions options);
         public delegate T State<TNode, T>(TNode node);
         public delegate Expression Transformer<TNode>(TNode node);
 

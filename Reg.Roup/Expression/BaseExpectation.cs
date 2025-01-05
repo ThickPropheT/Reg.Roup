@@ -43,22 +43,16 @@ namespace Reg.Roup.Expression
             return expectation;
         }
 
-        public EvaluationResult Evaluate(Expression? node)
+        public IEvaluationFrame BuildFrame(Expression? node)
         {
             var failed = conditions.FirstOrDefault(c => !c.Evaluate(node));
             var isMatch = failed == null;
 
-            Func<SeekResult>? seekNext = null;
             Func<IBaseExpectation.Transformer<Expression?>?>? findTransformer = null;
 
             if (!isMatch)
             {
-                return EvaluationResult.FailWith(new Exception());
-            }
-
-            if (isMatch && seek != null)
-            {
-                seekNext = () => new SeekResult(seek(node!, options));
+                return ErrorFrame.NotFound(this);
             }
 
             // TODO
@@ -67,9 +61,9 @@ namespace Reg.Roup.Expression
                 findTransformer = null;
             }
 
-            return EvaluationResult.PassWith(
-                seekNext,
-                findTransformer
+            return EvaluationFrame.Found(
+                this,
+                n => seek?.Invoke(node!, options)?.BuildFrame(n)
             );
         }
 

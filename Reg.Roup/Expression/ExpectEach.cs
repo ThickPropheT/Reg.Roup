@@ -4,33 +4,64 @@
     using System.Collections.Generic;
     using System.Linq.Expressions;
 
-    public class ExpectEach<T> : IExpectationEvaluator
+    public class ExpectEach<T> : IEvaluationFrameBuilder
     {
         private readonly IEnumerator<T> enumerator;
-        private readonly Func<T, IExpectationEvaluator> body;
+        private readonly Func<T, IEvaluationFrameBuilder> body;
 
-        public ExpectEach(IEnumerator<T> enumerator, Func<T, IExpectationEvaluator> body)
+        public ExpectEach(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body)
         {
             this.enumerator = enumerator;
             this.body = body;
         }
 
-        public EvaluationResult Evaluate(Expression? node)
+        public IEvaluationFrame BuildFrame(Expression? node)
         {
             if (!enumerator.MoveNext())
             {
-                return EvaluationResult.FailWith(new Exception());
+                return ErrorFrame.NotFound(this);
             }
 
             var inner = body(enumerator.Current);
 
-            var result = inner.Evaluate(node);
+            var result = inner.BuildFrame(node);
 
-            //return new EvaluationResult(
-            //    result.IsMatch,
+            return new NonCachingFrame(
+                this,
+                n =>
+                {
+                    if (!enumerator.MoveNext())
+                    {
+                        return ErrorFrame.NotFound(this);
+                    }
 
-            //);
-            return result;
+                    var inner = body(enumerator.Current);
+
+                    var result =  inner.BuildFrame(n);
+                    return result;
+                }
+            )
+                .OnPush((self, controller) =>
+                {
+                    controller.TryPushFrame(self);
+                    controller.TryPushFrame(result);
+                })
+                .OnPop(controller =>
+                {
+                    var popped = controller.PopFrame();
+                    //popped = controller.PopFrame();
+                });
+        }
+
+        private class NonCachingFrame : EvaluationFrame
+        {
+            public NonCachingFrame(IEvaluationFrameBuilder origin, Func<Expression?, IEvaluationFrame?> seekNext)
+                : base(origin, seekNext)
+            {
+            }
+
+            public override IEvaluationFrame? SeekNext(Expression? node)
+                => seekNext(node);
         }
     }
 }

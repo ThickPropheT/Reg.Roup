@@ -6,13 +6,10 @@ namespace Reg.Roup.Expression
     using System.Diagnostics.CodeAnalysis;
     using System.Linq.Expressions;
 
-    public class VisitorEngine
+    public class VisitorEngine : IEvaluationFrame.IStackController
     {
         private readonly DroneVisitor drone;
-
-        // TODO
-        //  consider storing EvaluationScope/EvaluationFrame here to help control pushing/popping
-        private readonly Stack<SeekResult> strategies = new();
+        private readonly Stack<IEvaluationFrame> frames = new();
         private readonly IBaseExpectation root;
 
         public VisitorEngine(IBaseExpectation root)
@@ -23,8 +20,8 @@ namespace Reg.Roup.Expression
 
         public Expression? Visit(Expression? node)
         {
-            strategies.Clear();
-            strategies.Push(new SeekResult(root));
+            frames.Clear();
+            frames.Push(new RootFrame(root));
             return drone.Visit(node);
         }
 
@@ -48,29 +45,50 @@ namespace Reg.Roup.Expression
 
         private IBaseExpectation.Transformer<Expression?>? WillVisit(Expression? node)
         {
-            var result = strategies.Peek().Next!
-                // TODO
-                //  consider giving expectations control over push/pop by passing engine in here
-                .Evaluate(node);
+            var frame = frames.Peek().SeekNext(node);
 
-            var next = result.SeekNext();
-            var transformer = result.FindTransformer();
+            frame?.PushTo(this);
 
-            if (next.Next != null)
-            {
-                strategies.Push(next);
-            }
-            else
-            {
+            return null;
 
-            }
+            //var transformer = result.FindTransformer();
 
-            return transformer;
+            //if (next.Next != null)
+            //{
+            //    frames.Push(next);
+            //}
+            //else
+            //{
+
+            //}
+
+            //return transformer;
         }
 
         public void DidVisit(Expression? node, Expression? result)
         {
-            strategies.Peek().OnPop(() => strategies.Pop().Next!);
+            frames.Peek().PopFrom(this);
+        }
+
+        public void TryPushFrame(IEvaluationFrame? frame)
+        {
+            if (frame == null)
+            {
+                return;
+            }
+
+            Console.WriteLine($"Pushing {frame.Origin.GetType().Name}");
+            frames.Push(frame);
+        }
+
+        public IEvaluationFrame? PopFrame()
+        {
+            var f = frames.TryPop(out var frame)
+                    ? frame
+                    : null;
+
+            Console.WriteLine($"Poped {f?.Origin.GetType().Name ?? "n/a"}");
+            return f;
         }
 
         private class DroneVisitor : ExpressionVisitor
@@ -85,6 +103,14 @@ namespace Reg.Roup.Expression
             [return: NotNullIfNotNull("node")]
             public sealed override Expression? Visit(Expression? node)
                 => onVisit(node, base.Visit);
+        }
+
+        private class RootFrame : EvaluationFrame
+        {
+            public RootFrame(IBaseExpectation rootExpectation)
+                : base(rootExpectation, rootExpectation.BuildFrame)
+            {
+            }
         }
     }
 }

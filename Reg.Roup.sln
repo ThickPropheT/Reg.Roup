@@ -5,7 +5,12 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reg.Roup", "Reg.Roup\Reg.Roup.csproj", "{987CB710-8D17-4D01-9234-E58EAD83FEB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reg.Roup.Tests", "Reg.Roup.Tests\Reg.Roup.Tests.csproj", "{428337FF-F219-4836-B01F-5C86D1274EDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reg.Roup.Tests", "Reg.Roup.Tests\Reg.Roup.Tests.csproj", "{428337FF-F219-4836-B01F-5C86D1274EDE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4FE3C702-617D-4DFE-AA54-5C3C3F440A7E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

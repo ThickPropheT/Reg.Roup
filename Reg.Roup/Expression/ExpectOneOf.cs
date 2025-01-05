@@ -4,39 +4,51 @@ namespace Reg.Roup.Expression
 {
     using System.Linq.Expressions;
 
-    public class ExpectOneOf : IExpectationEvaluator
+    public class ExpectOneOf : IEvaluationFrameBuilder
     {
-        private readonly IExpectationEvaluator[] options;
+        private readonly IEvaluationFrameBuilder[] options;
 
-        public ExpectOneOf(IExpectationEvaluator[] options)
+        public ExpectOneOf(IEvaluationFrameBuilder[] options)
         {
             this.options = options;
         }
 
-        public EvaluationResult Evaluate(Expression? node)
+        public IEvaluationFrame BuildFrame(Expression? node)
         {
             var match = options
-                .Select(o => o.Evaluate(node))
-                .FirstOrDefault(r => r.IsMatch);
+                .Select(o => o.BuildFrame(node))
+                .FirstOrDefault(f => f is not ErrorFrame);
 
             if (match == null)
             {
-                return EvaluationResult.FailWith(new System.Exception());
+                return ErrorFrame.NotFound(this);
             }
 
-            // TODO this needs to push itself AND the match somehow
-            return EvaluationResult.PassWith(
-                () => new SeekResult(
-                    match.SeekNext().Next,
-                    pop => {
-                        pop();
-                        //while (pop() != this)
-                        //{
-
-                        //}
-                    }),
-                match.FindTransformer
-            );
+            return EvaluationFrame
+                .Found(this, e => match
+                    .SeekNext(e)
+                    ?.OnPush((self, controller)=>
+                    {
+                        controller.TryPushFrame(self);
+                        controller.TryPushFrame(match);
+                    })
+                    .OnPop(controller =>
+                    {
+                        var popped = controller.PopFrame();
+                        popped = controller.PopFrame();
+                    })
+                )
+                .OnPush((self, controller) =>
+                {
+                    controller.TryPushFrame(self);
+                    controller.TryPushFrame(match);
+                })
+                .OnPop(controller =>
+                {
+                    var popped = controller.PopFrame();
+                    var isThis = popped.Origin == this;
+                    //popped = controller.PopFrame();
+                });
         }
     }
 }

@@ -4,16 +4,16 @@
 
     public class SeekResult
     {
-        private readonly Action<Func<IExpectationEvaluator>> onPop;
+        private readonly Action<Func<IEvaluationFrameBuilder>> onPop;
 
-        public IExpectationEvaluator? Next { get; }
+        public IEvaluationFrameBuilder? Next { get; }
 
-        public SeekResult(IExpectationEvaluator? next, Action<Func<IExpectationEvaluator>>? onPop = null)
+        public SeekResult(IEvaluationFrameBuilder? next, Action<Func<IEvaluationFrameBuilder>>? onPop = null)
         {
             Next = next;
-            this.onPop = onPop ?? new Action<Func<IExpectationEvaluator>>(pop => pop());
+            this.onPop = onPop ?? new Action<Func<IEvaluationFrameBuilder>>(pop => pop());
         }
 
-        public void OnPop(Func<IExpectationEvaluator> pop) => onPop(pop);
+        public void OnPop(Func<IEvaluationFrameBuilder> pop) => onPop(pop);
     }
 }
