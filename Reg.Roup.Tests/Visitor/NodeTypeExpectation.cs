@@ -7,22 +7,22 @@ namespace Reg.Roup.Tests.Visitor
     [TestFixture]
     public partial class NodeTypeExpectation
     {
+        private readonly IExpectation subtractionExpectation = _ExpectExt.NodeType(ExpressionType.Subtract);
+
         [Test]
         public void ThrowsOnInvalidSchemas()
         {
-            var invalidSchema = Expression.Add(Expression.Constant(0), Expression.Constant(0));
-            var validation = _ExpectExt.NodeType(ExpressionType.Subtract);
+            var additionExpression = Expression.Add(Expression.Constant(0), Expression.Constant(0));
 
-            Assert.That(() => new VisitorEngine(validation).Visit(invalidSchema), Throws.Exception);
+            Assert.That(() => new VisitorEngine(subtractionExpectation).Visit(additionExpression), Throws.Exception);
         }
 
         [Test]
         public void PassThroughValidSchemas()
         {
-            var validSchema = Expression.Subtract(Expression.Constant(69), Expression.Constant(27));
-            var validation = _ExpectExt.NodeType(ExpressionType.Subtract);
+            var subtractionExpression = Expression.Subtract(Expression.Constant(69), Expression.Constant(27));
 
-            var validatedExpression = new VisitorEngine(validation).Visit(validSchema);
+            var validatedExpression = new VisitorEngine(subtractionExpectation).Visit(subtractionExpression);
 
             Assert.That(validatedExpression, Is.Not.Null);
 
