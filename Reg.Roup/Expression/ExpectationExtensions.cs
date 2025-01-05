@@ -25,13 +25,13 @@
             return e;
         }
 
-        public static IBaseExpectation With(this IBaseExpectation e, IBaseExpectation.Next<Expression> seek)
+        public static IBaseExpectation WithLeaves(this IBaseExpectation e, IBaseExpectation.Next<Expression> seek)
         {
             e.SetNext(seek);
             return e;
         }
 
-        public static IExpectation<TNode> With<TNode>(this IBaseExpectation e, IBaseExpectation.Next<TNode> seek)
+        public static IExpectation<TNode> WithLeaves<TNode>(this IBaseExpectation e, IBaseExpectation.Next<TNode> seek)
             where TNode : Expression
         {
             var typal = e.TransferTo(new Expectation<TNode>(e.Options));
@@ -39,7 +39,7 @@
             return typal;
         }
 
-        public static IExpectation<TNode> With<TNode>(this IExpectation<TNode> e, IBaseExpectation.Next<TNode> seek)
+        public static IExpectation<TNode> WithLeaves<TNode>(this IExpectation<TNode> e, IBaseExpectation.Next<TNode> seek)
             where TNode : Expression
         {
             e.SetNext((n, options) => seek((TNode)n, options));

@@ -60,7 +60,7 @@ namespace Reg.Roup.Tests.Visitor
 
             var v = _ExpectExt
                 .NodeType(ExpressionType.Lambda)
-                .With((_, options) =>
+                .WithLeaves((_, options) =>
                     options.OneOf(
                         options.NodeType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
