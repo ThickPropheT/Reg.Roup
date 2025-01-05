@@ -7,7 +7,13 @@ namespace Reg.Roup.Tests.Visitor
     [TestFixture]
     public class NodeTypeExpectation
     {
-        private readonly IExpectation subtractionExpectation = _ExpectExt.NodeType(ExpressionType.Subtract);
+        private IExpectation subtractionExpectation;
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            subtractionExpectation = _ExpectExt.NodeType(ExpressionType.Subtract);
+        }
 
         [Test]
         public void ThrowsOnInvalidSchemas()
