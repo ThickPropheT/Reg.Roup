@@ -60,12 +60,16 @@ namespace Reg.Roup.Tests.Visitor
 
             var v = _ExpectExt
                 .NodeType(ExpressionType.Lambda)
+                // TODO
+                //  should there be a 'WithChild'?
+                //  - probly so - being strict about child count is probably a good idea. ig lambda will only ever have 1, but in cases with variable children, it might help to be specific
                 .WithChildren((_, options) =>
                     options.OneOf(
                         options.NodeType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
                             .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
                             .WithChildren((state, options) =>
+                            // TODO moving 'Each' up a level to be something like 'WithEachChild' might solve some problems
                                 options.Each(
                                     state.ParamNames,
                                     m =>
