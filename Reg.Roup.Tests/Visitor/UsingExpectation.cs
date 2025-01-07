@@ -45,10 +45,7 @@ public class UsingExpectation
     [Test]
     public void PassesThroughValidSchemas()
     {
-        var ctor = typeof(Target).GetConstructor([typeof(string), typeof(string), typeof(string)]);
-        Assume.That(ctor, Is.Not.Null);
-        
-        var expression = Expression.New(ctor, Expression.Constant("s1"), Expression.Constant("s2"), Expression.Constant("s3"));
+        var expression = Expression.New(TargetCtor, Expression.Constant("s1"), Expression.Constant("s2"), Expression.Constant("s3"));
         
         var validatedExpression = new VisitorEngine(_expectation).Visit(expression);
         
