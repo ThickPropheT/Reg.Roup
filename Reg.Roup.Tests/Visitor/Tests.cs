@@ -63,6 +63,7 @@ namespace Reg.Roup.Tests.Visitor
                 // TODO
                 //  should there be a 'WithChild'?
                 //  - probly so - being strict about child count is probably a good idea. ig lambda will only ever have 1, but in cases with variable children, it might help to be specific
+                //  - figure out the logistics of this. WithChildren is just a pass-thru wrapper to SetNext, so it doesn't have any agency over validation logic
                 .WithChildren((_, options) =>
                     options.OneOf(
                         options.NodeType<NewExpression>()
