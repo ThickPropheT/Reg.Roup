@@ -9,16 +9,15 @@
     {
         public static IExpectation<TNode> OfType<TNode>(ExpressionType? nodeType = null)
             where TNode : Expression
-            => new ExpectNode().NodeType<TNode>(nodeType);
+            => ((IExpectNode)new ExpectNode()).OfType<TNode>(nodeType);
 
         public static IExpectation<Expression> OfType(ExpressionType nodeType)
-            => new ExpectNode().NodeType(nodeType);
+            => ((IExpectNode)new ExpectNode()).OfType(nodeType);
         
-        public IExpectation<TNode> NodeType<TNode>(ExpressionType? nodeType = null)
-            where TNode : Expression
+        IExpectation<TNode> IExpectNode.OfType<TNode>(ExpressionType? nodeType)
             => new NodeTypeExpectation<TNode>(nodeType);
 
-        public IExpectation<Expression> NodeType(ExpressionType nodeType)
+        IExpectation<Expression> IExpectNode.OfType(ExpressionType nodeType)
             => new NodeTypeExpectation<Expression>(nodeType);
 
         public IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options)

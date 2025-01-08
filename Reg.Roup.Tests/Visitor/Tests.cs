@@ -67,7 +67,7 @@ namespace Reg.Roup.Tests.Visitor
                 .WithChildren((_, options) =>
                     options.OneOf(
                         // TODO add tests combining multiple/nested expectations like this (e.g. 'OneOf' + 'Each')
-                        options.NodeType<NewExpression>()
+                        options.OfType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
                             .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
                             .WithChildren((state, options) =>
@@ -76,13 +76,13 @@ namespace Reg.Roup.Tests.Visitor
                                     m =>
                                         //options.OneOf(
                                             options
-                                                .NodeType<ConstantExpression>()
+                                                .OfType<ConstantExpression>()
                                                 //.Transform(n => )
                                         //)
                                 )
                             ),
 
-                        options.NodeType<MemberInitExpression>()
+                        options.OfType<MemberInitExpression>()
                     )
                 );
 

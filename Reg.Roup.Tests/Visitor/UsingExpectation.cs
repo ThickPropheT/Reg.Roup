@@ -28,7 +28,7 @@ public class UsingExpectation
             .Using(ctor => new {ctor, paramNames = ctor.GetParameterNames().GetEnumerator()})
             .WithChildren((state, expectNode) =>
                 expectNode
-                    .NodeType<ConstantExpression>()
+                    .OfType<ConstantExpression>()
                     .Where(constant =>
                         state.paramNames.MoveNext()
                         && constant.Value is string s

@@ -14,8 +14,8 @@ public class WithChildrenExpectation
     {
         _expectation = ExpectNode
             .OfType(ExpressionType.Negate)
-            .WithChildren((_, expect) =>
-                expect.NodeType(ExpressionType.Constant)
+            .WithChildren((_, expectNode) =>
+                expectNode.OfType(ExpressionType.Constant)
             );
     }
 

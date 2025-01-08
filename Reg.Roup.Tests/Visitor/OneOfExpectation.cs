@@ -25,8 +25,8 @@ namespace Reg.Roup.Tests.Visitor
         {
             expectation = new ExpectationProxy((_, expectNode) =>
                     expectNode.OneOf(
-                        expectNode.NodeType(ExpressionType.Add),
-                        expectNode.NodeType(ExpressionType.Subtract)
+                        expectNode.OfType(ExpressionType.Add),
+                        expectNode.OfType(ExpressionType.Subtract)
                     )
             );
         }

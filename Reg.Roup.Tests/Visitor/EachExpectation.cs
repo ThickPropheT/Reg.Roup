@@ -29,7 +29,7 @@ public class EachExpectation
                     return expectNode.Each(
                         enumerator,
                         _ => expectNode
-                            .NodeType<ConstantExpression>()
+                            .OfType<ConstantExpression>()
                             .Where(@const => @const.Value is int i && i == values[Array.IndexOf(children, @const)])
                     );
                 }

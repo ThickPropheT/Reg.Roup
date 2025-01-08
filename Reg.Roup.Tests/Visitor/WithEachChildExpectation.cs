@@ -24,7 +24,7 @@ public class WithEachChildExpectation
                 bin => new[] {bin.Left, bin.Right},
                 (bin, child, i, expectNode) => // TODO is there a good way to verify 'child'?
                     expectNode
-                        .NodeType<ConstantExpression>()
+                        .OfType<ConstantExpression>()
                         .Where(@const => @const.Value is int v && v == i)
             );
     }
