@@ -2,7 +2,7 @@
 {
     using System.Linq.Expressions;
 
-    public static class ExpectationExtensions
+    public static partial class ExpectationExtensions
     {
         public static IBaseExpectation Where(this IBaseExpectation e, IBaseExpectation.Condition<Expression> condition)
         {

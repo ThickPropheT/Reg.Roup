@@ -28,6 +28,6 @@ namespace Reg.Roup.Expression
             => throw Exception;
 
         public void PopFrom(IEvaluationFrame.IStackController controller)
-            => controller.PopFrame();
+            => throw Exception;
     }
 }
