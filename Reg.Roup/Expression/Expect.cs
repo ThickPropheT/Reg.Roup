@@ -7,12 +7,12 @@
     // TODO figure out this naming & that of _ExpectExt
     public class Expect : IExpectationOptions
     {
-        public IExpectation<TNode> NodeType<TNode>()
+        public IExpectation<TNode> NodeType<TNode>(ExpressionType? nodeType = null)
             where TNode : Expression
-            => new Expectation<TNode>(this);
+            => new NodeTypeExpectation<TNode>(this, nodeType);
 
-        public IExpectation NodeType(ExpressionType nodeType)
-            => new Expectation(nodeType, this);
+        public IExpectation<Expression> NodeType(ExpressionType nodeType)
+            => new NodeTypeExpectation<Expression>(this, nodeType);
 
         public IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options)
             => new ExpectOneOf(options);

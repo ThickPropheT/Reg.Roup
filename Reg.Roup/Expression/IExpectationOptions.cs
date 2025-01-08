@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace Reg.Roup.Expression
+namespace Reg.Roup.Expression;
+
+using System.Linq.Expressions;
+
+public interface IExpectationOptions
 {
-    using System.Linq.Expressions;
+    IExpectation<TNode> NodeType<TNode>(ExpressionType? nodeType = null)
+        where TNode : Expression;
 
-    public interface IExpectationOptions
-    {
-        IExpectation<TNode> NodeType<TNode>()
-            where TNode : Expression;
+    IExpectation<Expression> NodeType(ExpressionType nodeType);
 
-        IExpectation NodeType(ExpressionType nodeType);
-
-        IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options);
-        IEvaluationFrameBuilder Each<T>(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body);
-    }
+    IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options);
+    IEvaluationFrameBuilder Each<T>(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body);
 }

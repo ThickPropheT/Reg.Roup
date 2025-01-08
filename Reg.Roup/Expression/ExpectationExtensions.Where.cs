@@ -19,7 +19,7 @@ public static partial class ExpectationExtensions
     )
         where TNode : Expression
     {
-        var typal = e.TransferTo(new Expectation<TNode>(e.Options));
+        var typal = e.TransferTo(new NodeTypeExpectation<TNode>(e.Options));
         typal.AddCondition(n => condition((TNode) n));
         return typal;
     }
