@@ -1,15 +1,17 @@
-﻿using System;
-
-namespace Reg.Roup.Expression
+﻿namespace Reg.Roup.Expression
 {
     using System.Linq.Expressions;
 
     public interface IBaseExpectation : IEvaluationFrameBuilder
     {
-        public delegate bool Condition<TNode>(TNode node);
-        public delegate IEvaluationFrameBuilder Next<TNode>(TNode node, IExpectationOptions options);
-        public delegate T State<TNode, T>(TNode node);
-        public delegate Expression Transformer<TNode>(TNode node);
+        // TODO consider renaming to Filter
+        public delegate bool Condition<in TNode>(TNode node);
+        public delegate T Selector<in TNode, out T>(TNode node);
+        public delegate IEvaluationFrameBuilder Next<in TNode>(TNode node, IExpectationOptions options);
+        public delegate IEvaluationFrameBuilder NextChild<in TNode, in TChild>(TNode node, TChild child, int i, IExpectationOptions options);
+        // TODO consider merging w/ Selector
+        public delegate T State<in TNode, out T>(TNode node);
+        public delegate Expression Transformer<in TNode>(TNode node);
 
         IExpectationOptions Options { get; }
 
