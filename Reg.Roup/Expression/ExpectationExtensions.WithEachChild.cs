@@ -5,6 +5,9 @@ namespace Reg.Roup.Expression;
 
 public static partial class ExpectationExtensions
 {
+    // TODO
+    //  consider adding other overloads for less specific node types
+    //  and for other parameter configurations for 'seek'
     public static IExpectation<TNode> WithEachChild<TNode, TChild>(
         this IExpectation<TNode> e,
         IBaseExpectation.Selector<TNode, IEnumerable<TChild>> selectChildren,

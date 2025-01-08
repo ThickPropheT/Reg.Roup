@@ -22,7 +22,7 @@ public class WithEachChildExpectation
             .NodeType<BinaryExpression>()
             .WithEachChild(
                 bin => new[] {bin.Left, bin.Right},
-                (bin, child, i, options) =>
+                (bin, child, i, options) => // TODO is there a good way to verify 'child'?
                     options
                         .NodeType<ConstantExpression>()
                         .Where(@const => @const.Value is int v && v == i)
