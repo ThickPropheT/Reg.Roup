@@ -22,8 +22,8 @@ public class WithEachChildExpectation
             .OfType<BinaryExpression>()
             .WithEachChild(
                 bin => new[] {bin.Left, bin.Right},
-                (bin, child, i, options) => // TODO is there a good way to verify 'child'?
-                    options
+                (bin, child, i, expectNode) => // TODO is there a good way to verify 'child'?
+                    expectNode
                         .NodeType<ConstantExpression>()
                         .Where(@const => @const.Value is int v && v == i)
             );

@@ -23,10 +23,10 @@ namespace Reg.Roup.Tests.Visitor
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            expectation = new ExpectationProxy((_, options) =>
-                    options.OneOf(
-                        options.NodeType(ExpressionType.Add),
-                        options.NodeType(ExpressionType.Subtract)
+            expectation = new ExpectationProxy((_, expectNode) =>
+                    expectNode.OneOf(
+                        expectNode.NodeType(ExpressionType.Add),
+                        expectNode.NodeType(ExpressionType.Subtract)
                     )
             );
         }

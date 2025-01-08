@@ -5,7 +5,7 @@ namespace Reg.Roup.Expression;
 
 using System.Linq.Expressions;
 
-public interface IExpectationOptions
+public interface IExpectNode
 {
     IExpectation<TNode> NodeType<TNode>(ExpressionType? nodeType = null)
         where TNode : Expression;

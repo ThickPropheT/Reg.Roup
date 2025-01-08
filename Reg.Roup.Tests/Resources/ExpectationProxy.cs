@@ -27,6 +27,6 @@ namespace Reg.Roup.Tests.Resources
         }
 
         public IEvaluationFrame BuildFrame(Expression? node)
-            => seek!.Invoke(node!, new Expect()).BuildFrame(node);
+            => seek!.Invoke(node!, new ExpectNode()).BuildFrame(node);
     }
 }

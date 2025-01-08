@@ -19,16 +19,16 @@ public class EachExpectation
     {
         _expectation = ExpectNode
             .OfType<BinaryExpression>()
-            .WithChildren((b, options) =>
+            .WithChildren((b, expectNode) =>
                 {
                     var children = new[] {b.Left, b.Right};
                     var values = new[] {1, 3};
                     // TODO does this obsolete 'Using'?
                     using var enumerator = (children as IEnumerable<Expression>).GetEnumerator();
                     
-                    return options.Each(
+                    return expectNode.Each(
                         enumerator,
-                        _ => options
+                        _ => expectNode
                             .NodeType<ConstantExpression>()
                             .Where(@const => @const.Value is int i && i == values[Array.IndexOf(children, @const)])
                     );

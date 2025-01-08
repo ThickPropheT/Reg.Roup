@@ -26,8 +26,8 @@ public class UsingExpectation
             //  - rework 'Using' to require fluent chain to be nested like 'WithChildren'
             //    to allow for proper disposal and address this warning.
             .Using(ctor => new {ctor, paramNames = ctor.GetParameterNames().GetEnumerator()})
-            .WithChildren((state, options) =>
-                options
+            .WithChildren((state, expectNode) =>
+                expectNode
                     .NodeType<ConstantExpression>()
                     .Where(constant =>
                         state.paramNames.MoveNext()

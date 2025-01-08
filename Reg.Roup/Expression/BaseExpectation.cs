@@ -59,7 +59,7 @@ namespace Reg.Roup.Expression
             return EvaluationFrame.Found(
                 this,
                 // TODO it would be nice to find some way to reuse an instance 'Expect'
-                n => seek?.Invoke(node!, new Expect())?.BuildFrame(n)
+                n => seek?.Invoke(node!, new ExpectNode())?.BuildFrame(n)
             );
         }
 
