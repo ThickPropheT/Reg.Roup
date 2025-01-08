@@ -11,8 +11,8 @@ namespace Reg.Roup.Tests.Visitor
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _expectation = _ExpectExt
-                .NodeType(ExpressionType.Negate)
+            _expectation = ExpectNode
+                .OfType(ExpressionType.Negate)
                 .WithChildren((_, options) =>
                     options.NodeType(ExpressionType.Constant)
                 );

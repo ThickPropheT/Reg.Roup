@@ -17,8 +17,8 @@ public class EachExpectation
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _expectation = _ExpectExt
-            .NodeType<BinaryExpression>()
+        _expectation = ExpectNode
+            .OfType<BinaryExpression>()
             .WithChildren((b, options) =>
                 {
                     var children = new[] {b.Left, b.Right};

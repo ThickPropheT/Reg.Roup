@@ -12,8 +12,8 @@ namespace Reg.Roup.Tests.Visitor
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            expectation = _ExpectExt
-                .NodeType<ConstantExpression>()
+            expectation = ExpectNode
+                .OfType<ConstantExpression>()
                 .Where(n => n.Value is int i && i == 69);
         }
 

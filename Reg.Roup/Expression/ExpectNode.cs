@@ -2,13 +2,13 @@
 {
     using System.Linq.Expressions;
 
-    public class _ExpectExt
+    public static class ExpectNode
     {
-        public static IExpectation<TNode> NodeType<TNode>()
+        public static IExpectation<TNode> OfType<TNode>()
             where TNode : Expression
             => new Expect().NodeType<TNode>();
 
-        public static IExpectation NodeType(ExpressionType nodeType)
+        public static IExpectation OfType(ExpressionType nodeType)
             => new Expect().NodeType(nodeType);
     }
 }

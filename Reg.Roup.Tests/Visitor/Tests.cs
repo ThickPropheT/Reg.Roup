@@ -58,8 +58,8 @@ namespace Reg.Roup.Tests.Visitor
             //                            new ExpectAnyNode(engine)
             //                        ))));
 
-            var v = _ExpectExt
-                .NodeType(ExpressionType.Lambda)
+            var v = ExpectNode
+                .OfType(ExpressionType.Lambda)
                 // TODO
                 //  should there be a 'WithChild'?
                 //  - probly so - being strict about child count is probably a good idea. ig lambda will only ever have 1, but in cases with variable children, it might help to be specific

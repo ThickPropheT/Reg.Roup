@@ -20,7 +20,7 @@ public class UsingExpectation
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _expectation = _ExpectExt.NodeType<NewExpression>()
+        _expectation = ExpectNode.OfType<NewExpression>()
             // TODO
             //  - evaluate whether 'Using' is even necessary enymore? see 'Each' tests
             //  - rework 'Using' to require fluent chain to be nested like 'WithChildren'

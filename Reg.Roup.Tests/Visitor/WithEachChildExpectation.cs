@@ -18,8 +18,8 @@ public class WithEachChildExpectation
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _expectation = _ExpectExt
-            .NodeType<BinaryExpression>()
+        _expectation = ExpectNode
+            .OfType<BinaryExpression>()
             .WithEachChild(
                 bin => new[] {bin.Left, bin.Right},
                 (bin, child, i, options) => // TODO is there a good way to verify 'child'?

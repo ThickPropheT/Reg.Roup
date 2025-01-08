@@ -12,7 +12,7 @@ namespace Reg.Roup.Tests.Visitor
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            subtractionExpectation = _ExpectExt.NodeType(ExpressionType.Subtract);
+            subtractionExpectation = ExpectNode.OfType(ExpressionType.Subtract);
         }
 
         [Test]
