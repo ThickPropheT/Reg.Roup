@@ -9,8 +9,8 @@ namespace Reg.Roup.Expression
     {
         private readonly IBaseExpectation.State<TNode, T> state;
 
-        public StatefulExpectation(IBaseExpectation.State<TNode, T> state, IExpectationOptions options)
-            : base(n => true, options)
+        public StatefulExpectation(IBaseExpectation.State<TNode, T> state)
+            : base(n => true)
         {
             this.state = state;
         }

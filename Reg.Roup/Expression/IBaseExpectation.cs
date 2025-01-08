@@ -13,8 +13,6 @@
         public delegate T State<in TNode, out T>(TNode node);
         public delegate Expression Transformer<in TNode>(TNode node);
 
-        IExpectationOptions Options { get; }
-
         void AddCondition(Condition<Expression> condition);
         void SetNext(Next<Expression> seek);
 

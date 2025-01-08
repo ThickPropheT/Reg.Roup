@@ -8,17 +8,12 @@ namespace Reg.Roup.Expression
 
     public abstract class BaseExpectation : IBaseExpectation
     {
-        protected readonly IExpectationOptions options;
-
         private readonly List<IConditionProxy> conditions;
         private IBaseExpectation.Next<Expression>? seek;
 
-        IExpectationOptions IBaseExpectation.Options => options;
-
-        protected BaseExpectation(IBaseExpectation.Condition<Expression> nodeTypeCondition, IExpectationOptions options)
+        protected BaseExpectation(IBaseExpectation.Condition<Expression> nodeTypeCondition)
         {
             conditions = [new TestNull(nodeTypeCondition)];
-            this.options = options;
         }
 
         public void AddCondition(IBaseExpectation.Condition<Expression> condition)
@@ -63,7 +58,8 @@ namespace Reg.Roup.Expression
 
             return EvaluationFrame.Found(
                 this,
-                n => seek?.Invoke(node!, options)?.BuildFrame(n)
+                // TODO it would be nice to find some way to reuse an instance 'Expect'
+                n => seek?.Invoke(node!, new Expect())?.BuildFrame(n)
             );
         }
 

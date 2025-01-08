@@ -9,10 +9,10 @@
     {
         public IExpectation<TNode> NodeType<TNode>(ExpressionType? nodeType = null)
             where TNode : Expression
-            => new NodeTypeExpectation<TNode>(this, nodeType);
+            => new NodeTypeExpectation<TNode>(nodeType);
 
         public IExpectation<Expression> NodeType(ExpressionType nodeType)
-            => new NodeTypeExpectation<Expression>(this, nodeType);
+            => new NodeTypeExpectation<Expression>(nodeType);
 
         public IEvaluationFrameBuilder OneOf(params IEvaluationFrameBuilder[] options)
             => new ExpectOneOf(options);

@@ -8,8 +8,8 @@
     {
         public ExpressionType? NodeType { get; }
         
-        public NodeTypeExpectation(IExpectationOptions options, ExpressionType? nodeType = null)
-            : base(n => n is TNode && nodeType == null || n.NodeType == nodeType, options)
+        public NodeTypeExpectation(ExpressionType? nodeType = null)
+            : base(n => n is TNode && nodeType == null || n.NodeType == nodeType)
         {
             NodeType = nodeType;
         }
