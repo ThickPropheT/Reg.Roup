@@ -66,11 +66,11 @@ namespace Reg.Roup.Tests.Visitor
                 //  - figure out the logistics of this. WithChildren is just a pass-thru wrapper to SetNext, so it doesn't have any agency over validation logic
                 .WithChildren((_, options) =>
                     options.OneOf(
+                        // TODO add tests combining multiple/nested expectations like this (e.g. 'OneOf' + 'Each')
                         options.NodeType<NewExpression>()
                             .Where(n => n.Constructor != null && n.Arguments.Any())
                             .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
                             .WithChildren((state, options) =>
-                            // TODO moving 'Each' up a level to be something like 'WithEachChild' might solve some problems
                                 options.Each(
                                     state.ParamNames,
                                     m =>

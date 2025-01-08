@@ -22,9 +22,9 @@ public class UsingExpectation
     {
         _expectation = _ExpectExt.NodeType<NewExpression>()
             // TODO
+            //  - evaluate whether 'Using' is even necessary enymore? see 'Each' tests
             //  - rework 'Using' to require fluent chain to be nested like 'WithChildren'
             //    to allow for proper disposal and address this warning.
-            //  - is 'Using' even necessary enymore? see 'Each' tests
             .Using(ctor => new {ctor, paramNames = ctor.GetParameterNames().GetEnumerator()})
             .WithChildren((state, options) =>
                 options
