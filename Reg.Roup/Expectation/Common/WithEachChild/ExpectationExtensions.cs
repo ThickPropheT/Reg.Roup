@@ -19,12 +19,13 @@ public static class ExpectationExtensions
         e.SetNext((n, expectNode) =>
         {
             var node = (TNode) n;
-            var children = selectChildren(node);
-            var indexedChildren = children.Select((c, i) => (c, i));
-            using var enumerator = indexedChildren.GetEnumerator();
+            
+            var indexedChildrenEnumerator = selectChildren(node)
+                .Select((c, i) => (c, i))
+                .GetEnumerator();
 
             return expectNode.Each(
-                enumerator,
+                indexedChildrenEnumerator,
                 a => seek(node, a.c, a.i, expectNode)
             );
         });
