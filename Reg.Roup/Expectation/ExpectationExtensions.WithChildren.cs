@@ -5,8 +5,7 @@ namespace Reg.Roup.Expectation;
 public static partial class ExpectationExtensions
 {
     public static IBaseExpectation WithChildren(
-        this IBaseExpectation e,
-        IBaseExpectation.Next<Expression> seek
+        this IBaseExpectation e, IBaseExpectation.Next<Expression> seek
     )
     {
         e.SetNext(seek);
@@ -14,8 +13,7 @@ public static partial class ExpectationExtensions
     }
 
     public static IExpectation<TNode> WithChildren<TNode>(
-        this IBaseExpectation e,
-        IBaseExpectation.Next<TNode> seek
+        this IBaseExpectation e, IBaseExpectation.Next<TNode> seek
     )
         where TNode : Expression
     {
@@ -25,8 +23,7 @@ public static partial class ExpectationExtensions
     }
 
     public static IExpectation<TNode> WithChildren<TNode>(
-        this IExpectation<TNode> e,
-        IBaseExpectation.Next<TNode> seek
+        this IExpectation<TNode> e, IBaseExpectation.Next<TNode> seek
     )
         where TNode : Expression
     {

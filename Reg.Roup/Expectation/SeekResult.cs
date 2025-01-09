@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace Reg.Roup.Expectation
+namespace Reg.Roup.Expectation;
+
+public class SeekResult
 {
-    public class SeekResult
+    private readonly Action<Func<IEvaluationFrameBuilder>> onPop;
+
+    public IEvaluationFrameBuilder? Next { get; }
+
+    public SeekResult(IEvaluationFrameBuilder? next, Action<Func<IEvaluationFrameBuilder>>? onPop = null)
     {
-        private readonly Action<Func<IEvaluationFrameBuilder>> onPop;
-
-        public IEvaluationFrameBuilder? Next { get; }
-
-        public SeekResult(IEvaluationFrameBuilder? next, Action<Func<IEvaluationFrameBuilder>>? onPop = null)
-        {
-            Next = next;
-            this.onPop = onPop ?? new Action<Func<IEvaluationFrameBuilder>>(pop => pop());
-        }
-
-        public void OnPop(Func<IEvaluationFrameBuilder> pop) => onPop(pop);
+        Next = next;
+        this.onPop = onPop ?? (pop => pop());
     }
+
+    public void OnPop(Func<IEvaluationFrameBuilder> pop) => onPop(pop);
 }

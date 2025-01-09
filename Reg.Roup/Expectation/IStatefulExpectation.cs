@@ -1,8 +1,7 @@
-﻿namespace Reg.Roup.Expectation
+﻿namespace Reg.Roup.Expectation;
+
+public interface IStatefulExpectation<out T> : IBaseExpectation
 {
-    public interface IStatefulExpectation<T> : IBaseExpectation
-    {
-        IStatefulExpectation<T> Where(Condition<T> condition);
-        IStatefulExpectation<T> WithChildren(Next<T> next);
-    }
+    IStatefulExpectation<T> Where(Condition<T> condition);
+    IStatefulExpectation<T> WithChildren(Next<T> next);
 }

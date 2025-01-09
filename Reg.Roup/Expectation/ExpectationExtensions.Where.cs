@@ -5,8 +5,7 @@ namespace Reg.Roup.Expectation;
 public static partial class ExpectationExtensions
 {
     public static IBaseExpectation Where(
-        this IBaseExpectation e,
-        IBaseExpectation.Condition<Expression> condition
+        this IBaseExpectation e, IBaseExpectation.Condition<Expression> condition
     )
     {
         e.AddCondition(condition);
@@ -14,8 +13,7 @@ public static partial class ExpectationExtensions
     }
 
     public static IExpectation<TNode> Where<TNode>(
-        this IBaseExpectation e,
-        IBaseExpectation.Condition<TNode> condition
+        this IBaseExpectation e, IBaseExpectation.Condition<TNode> condition
     )
         where TNode : Expression
     {
@@ -25,8 +23,7 @@ public static partial class ExpectationExtensions
     }
 
     public static IExpectation<TNode> Where<TNode>(
-        this IExpectation<TNode> e,
-        IBaseExpectation.Condition<TNode> condition
+        this IExpectation<TNode> e, IBaseExpectation.Condition<TNode> condition
     )
         where TNode : Expression
     {

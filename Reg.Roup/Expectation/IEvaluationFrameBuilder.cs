@@ -1,9 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation
+namespace Reg.Roup.Expectation;
+
+public interface IEvaluationFrameBuilder
 {
-    public interface IEvaluationFrameBuilder
-    {
-        IEvaluationFrame BuildFrame(Expression? node);
-    }
+    IEvaluationFrame BuildFrame(Expression? node);
 }

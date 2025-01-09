@@ -1,6 +1,6 @@
-﻿namespace Reg.Roup.Expectation
+﻿namespace Reg.Roup.Expectation;
+
+// TODO unused
+public interface IExpectation : IBaseExpectation
 {
-    public interface IExpectation : IBaseExpectation
-    {
-    }
 }

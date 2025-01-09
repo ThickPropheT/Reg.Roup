@@ -10,8 +10,7 @@ public static partial class ExpectationExtensions
     //  consider adding other overloads for less specific node types
     //  and for other parameter configurations for 'seek'
     public static IExpectation<TNode> WithEachChild<TNode, TChild>(
-        this IExpectation<TNode> e,
-        IBaseExpectation.Selector<TNode, IEnumerable<TChild>> selectChildren,
+        this IExpectation<TNode> e, IBaseExpectation.Selector<TNode, IEnumerable<TChild>> selectChildren,
         IBaseExpectation.NextChild<TNode, TChild> seek
     )
         where TNode : Expression
