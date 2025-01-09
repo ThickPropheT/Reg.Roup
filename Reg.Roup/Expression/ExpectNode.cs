@@ -9,9 +9,15 @@
         public static IExpectation<TNode> OfType<TNode>(ExpressionType? nodeType = null)
             where TNode : Expression
             => ((IExpectNode)new ExpectNode()).OfType<TNode>(nodeType);
+        
+        IExpectation<TNode> IExpectNode.OfType<TNode>(ExpressionType? nodeType)
+            => new NodeTypeExpectation<TNode>(nodeType);
 
         public static IExpectation<Expression> OfType(ExpressionType nodeType)
             => ((IExpectNode)new ExpectNode()).OfType(nodeType);
+        
+        IExpectation<Expression> IExpectNode.OfType(ExpressionType nodeType)
+            => new NodeTypeExpectation<Expression>(nodeType);
 
         // TODO
         //  returning IBaseExpectation is required atm for compatibility w/ VisitorEngine,
@@ -20,12 +26,6 @@
         //  - evaluate whether those methods being exposed is actually ok or useful
         public static IBaseExpectation OneOf(Func<IExpectNode, IEvaluationFrameBuilder[]> getOptions) 
             => new ExpectationProxy((_, expectNode) => expectNode.OneOf(getOptions(expectNode)));
-
-        IExpectation<TNode> IExpectNode.OfType<TNode>(ExpressionType? nodeType)
-            => new NodeTypeExpectation<TNode>(nodeType);
-
-        IExpectation<Expression> IExpectNode.OfType(ExpressionType nodeType)
-            => new NodeTypeExpectation<Expression>(nodeType);
 
         IEvaluationFrameBuilder IExpectNode.OneOf(params IEvaluationFrameBuilder[] options)
             => new ExpectOneOf(options);
