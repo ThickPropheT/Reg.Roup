@@ -1,43 +1,42 @@
 ﻿using Reg.Roup.Expression;
 
-namespace Reg.Roup.Tests.Visitor
+namespace Reg.Roup.Tests.Visitor;
+
+using System.Linq.Expressions;
+
+[TestFixture]
+public class WhereExpectation
 {
-    using System.Linq.Expressions;
+    private IBaseExpectation _expectation;
 
-    [TestFixture]
-    public class WhereExpectation
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
     {
-        private IBaseExpectation expectation;
+        _expectation = ExpectNode
+            .OfType<ConstantExpression>()
+            .Where(n => n.Value is 69);
+    }
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            expectation = ExpectNode
-                .OfType<ConstantExpression>()
-                .Where(n => n.Value is int i && i == 69);
-        }
+    [Test]
+    public void ThrowsOnInvalidSchemas()
+    {
+        var invalidExpression = Expression.Add(Expression.Constant(1), Expression.Constant(1));
 
-        [Test]
-        public void ThrowsOnInvalidSchemas()
-        {
-            var invalidExpression = Expression.Add(Expression.Constant(1), Expression.Constant(1));
+        Assert.That(() => new VisitorEngine(_expectation).Visit(invalidExpression), Throws.Exception);
+    }
 
-            Assert.That(() => new VisitorEngine(expectation).Visit(invalidExpression), Throws.Exception);
-        }
+    [Test]
+    public void PassesThroughValidSchemas()
+    {
+        var validExpression = Expression.Constant(69);
 
-        [Test]
-        public void PassesThroughValidSchemas()
-        {
-            var validExpression = Expression.Constant(69);
+        var validatedExpression = new VisitorEngine(_expectation).Visit(validExpression);
 
-            var validatedExpression = new VisitorEngine(expectation).Visit(validExpression);
+        Assert.That(validatedExpression, Is.Not.Null);
 
-            Assert.That(validatedExpression, Is.Not.Null);
+        var expressionResult = Expression.Lambda(validatedExpression).Compile().DynamicInvoke();
 
-            var expressionResult = Expression.Lambda(validatedExpression).Compile().DynamicInvoke();
-
-            Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Constant));
-            Assert.That(expressionResult, Is.EqualTo(69));
-        }
+        Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Constant));
+        Assert.That(expressionResult, Is.EqualTo(69));
     }
 }
