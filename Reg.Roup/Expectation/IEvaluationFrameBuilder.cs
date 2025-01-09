@@ -1,7 +1,7 @@
-﻿namespace Reg.Roup.Expression
-{
-    using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
+namespace Reg.Roup.Expectation
+{
     public interface IEvaluationFrameBuilder
     {
         IEvaluationFrame BuildFrame(Expression? node);

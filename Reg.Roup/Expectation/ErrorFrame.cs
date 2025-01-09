@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Linq.Expressions;
 
-namespace Reg.Roup.Expression
+namespace Reg.Roup.Expectation
 {
-    using System.Linq.Expressions;
-
     public class ErrorFrame : IEvaluationFrame
     {
         public Exception Exception { get; }

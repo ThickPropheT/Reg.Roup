@@ -1,9 +1,9 @@
-﻿namespace Reg.Roup.Expression
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
+namespace Reg.Roup.Expectation
+{
     public class ExpectEach<T> : IEvaluationFrameBuilder
     {
         private readonly IEnumerator<T> enumerator;

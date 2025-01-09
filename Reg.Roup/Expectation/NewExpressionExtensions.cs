@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expression
+namespace Reg.Roup.Expectation
 {
     public static class NewExpressionExtensions
     {

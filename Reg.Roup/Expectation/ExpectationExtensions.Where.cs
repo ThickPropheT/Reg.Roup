@@ -1,6 +1,6 @@
-namespace Reg.Roup.Expression;
-
 using System.Linq.Expressions;
+
+namespace Reg.Roup.Expectation;
 
 public static partial class ExpectationExtensions
 {

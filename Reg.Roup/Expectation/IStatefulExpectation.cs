@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Reg.Roup.Expression
+﻿namespace Reg.Roup.Expectation
 {
     public interface IStatefulExpectation<T> : IBaseExpectation
     {

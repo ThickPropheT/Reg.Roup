@@ -1,5 +1,4 @@
 ﻿using Reg.Roup.Conversions;
-using Reg.Roup.Expression;
 using Reg.Roup.Tests.Resources.TestScenarios;
 using Reg.Roup.Tests.Resources.TestScenarios.Default;
 using System;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Reg.Roup.Expectation;
 using static Reg.Roup.Tests.Resources.TestScenarios.Default.DefaultSchema;
 
 namespace Reg.Roup.Tests.Visitor

@@ -536,3 +536,5 @@
 //        return drone.Visit(node);
 //    }
 //*/
+
+namespace Reg.Roup.Expectation;

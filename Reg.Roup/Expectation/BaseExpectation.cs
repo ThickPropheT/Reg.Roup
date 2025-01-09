@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
-namespace Reg.Roup.Expression
+namespace Reg.Roup.Expectation
 {
-    using System;
-    using System.Linq;
-    using System.Linq.Expressions;
-
     public abstract class BaseExpectation : IBaseExpectation
     {
         private readonly List<IConditionProxy> conditions;

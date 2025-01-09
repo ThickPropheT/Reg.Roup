@@ -1,8 +1,8 @@
-﻿namespace Reg.Roup.Expression
-{
-    using System;
-    using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 
+namespace Reg.Roup.Expectation
+{
     public class EvaluationResult
     {
         private readonly Func<SeekResult>? seekNext;

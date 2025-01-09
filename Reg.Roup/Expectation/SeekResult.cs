@@ -1,7 +1,7 @@
-﻿namespace Reg.Roup.Expression
-{
-    using System;
+﻿using System;
 
+namespace Reg.Roup.Expectation
+{
     public class SeekResult
     {
         private readonly Action<Func<IEvaluationFrameBuilder>> onPop;
