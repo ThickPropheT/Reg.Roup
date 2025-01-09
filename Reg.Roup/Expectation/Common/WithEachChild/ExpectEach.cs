@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation.Common.Each;
+namespace Reg.Roup.Expectation.Common.WithEachChild;
 
 // TODO reconcile the naming convention for this and others under Common namespace
 public class ExpectEach<T> : IEvaluationFrameBuilder
