@@ -27,6 +27,9 @@
         public static IBaseExpectation OneOf(Func<IExpectNode, IEvaluationFrameBuilder[]> getOptions) 
             => new ExpectationProxy((_, expectNode) => expectNode.OneOf(getOptions(expectNode)));
 
+        // TODO
+        //  bespoke 'OneOf' methods for common things like constants would be cool.
+        //  e.g. expectNode.Constant<int>().Where(@const => @const.Value == someNumber);
         IEvaluationFrameBuilder IExpectNode.OneOf(params IEvaluationFrameBuilder[] options)
             => new ExpectOneOf(options);
 
