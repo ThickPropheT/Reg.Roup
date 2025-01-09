@@ -5,16 +5,16 @@ namespace Reg.Roup.Expectation;
 
 public class ExpectOneOf : IEvaluationFrameBuilder
 {
-    private readonly IEvaluationFrameBuilder[] options;
+    private readonly IEvaluationFrameBuilder[] _options;
 
     public ExpectOneOf(IEvaluationFrameBuilder[] options)
     {
-        this.options = options;
+        _options = options;
     }
 
     public IEvaluationFrame BuildFrame(Expression? node)
     {
-        var match = options
+        var match = _options
             .Select(o => o.BuildFrame(node))
             .FirstOrDefault(f => f is not ErrorFrame);
 

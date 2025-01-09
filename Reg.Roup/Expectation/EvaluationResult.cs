@@ -6,8 +6,8 @@ namespace Reg.Roup.Expectation;
 // TODO unused
 public class EvaluationResult
 {
-    private readonly Func<SeekResult>? seekNext;
-    private readonly Func<IBaseExpectation.Transformer<Expression?>?>? findTransformer;
+    private readonly Func<SeekResult>? _seekNext;
+    private readonly Func<IBaseExpectation.Transformer<Expression?>?>? _findTransformer;
 
     public bool IsMatch { get; }
 
@@ -18,8 +18,8 @@ public class EvaluationResult
     )
     {
         IsMatch = isMatch;
-        this.seekNext = seekNext;
-        this.findTransformer = findTransformer;
+        _seekNext = seekNext;
+        _findTransformer = findTransformer;
     }
 
     public static EvaluationResult PassWith(
@@ -39,8 +39,8 @@ public class EvaluationResult
         );
 
     public SeekResult SeekNext()
-        => seekNext?.Invoke() ?? new SeekResult(null);
+        => _seekNext?.Invoke() ?? new SeekResult(null);
 
     public IBaseExpectation.Transformer<Expression?>? FindTransformer()
-        => findTransformer?.Invoke();
+        => _findTransformer?.Invoke();
 }

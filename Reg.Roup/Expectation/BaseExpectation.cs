@@ -7,31 +7,31 @@ namespace Reg.Roup.Expectation;
 
 public abstract class BaseExpectation : IBaseExpectation
 {
-    private readonly List<IConditionProxy> conditions;
-    private IBaseExpectation.Next<Expression>? seek;
+    private readonly List<IConditionProxy> _conditions;
+    private IBaseExpectation.Next<Expression>? _seek;
 
     protected BaseExpectation(IBaseExpectation.Condition<Expression> nodeTypeCondition)
     {
-        conditions = [new TestNull(nodeTypeCondition)];
+        _conditions = [new TestNull(nodeTypeCondition)];
     }
 
     public void AddCondition(IBaseExpectation.Condition<Expression> condition)
-        => conditions.Add(new ForgiveNull(condition));
+        => _conditions.Add(new ForgiveNull(condition));
 
     public void SetNext(IBaseExpectation.Next<Expression> seek)
-        => this.seek = seek;
+        => _seek = seek;
 
     public TExpectation TransferTo<TExpectation>(TExpectation expectation)
         where TExpectation : IBaseExpectation
     {
-        foreach (var proxy in conditions)
+        foreach (var proxy in _conditions)
         {
             expectation.AddCondition(proxy.Condition);
         }
 
-        if (seek != null)
+        if (_seek != null)
         {
-            expectation.SetNext(seek);
+            expectation.SetNext(_seek);
         }
 
         return expectation;
@@ -39,7 +39,7 @@ public abstract class BaseExpectation : IBaseExpectation
 
     public IEvaluationFrame BuildFrame(Expression? node)
     {
-        var failed = conditions.FirstOrDefault(c => !c.Evaluate(node));
+        var failed = _conditions.FirstOrDefault(c => !c.Evaluate(node));
         var isMatch = failed == null;
 
         Func<IBaseExpectation.Transformer<Expression?>?>? findTransformer = null;
@@ -58,7 +58,7 @@ public abstract class BaseExpectation : IBaseExpectation
         return EvaluationFrame.Found(
             this,
             // TODO it would be nice to find some way to reuse an instance 'Expect'
-            n => seek?.Invoke(node!, new ExpectNode())?.BuildFrame(n)
+            n => _seek?.Invoke(node!, new ExpectNode())?.BuildFrame(n)
         );
     }
 

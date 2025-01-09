@@ -5,11 +5,12 @@ namespace Reg.Roup.Expectation;
 
 public class EvaluationFrame : IEvaluationFrame
 {
+    // TODO evaluate whether this truly needs to be protected
     protected readonly Func<Expression?, IEvaluationFrame?> seekNext;
-    private IEvaluationFrame.Push onPush;
-    private Action<IEvaluationFrame.IStackController> onPop;
+    private IEvaluationFrame.Push _onPush;
+    private Action<IEvaluationFrame.IStackController> _onPop;
 
-    private IEvaluationFrame? next;
+    private IEvaluationFrame? _next;
 
     public IEvaluationFrameBuilder Origin { get; }
 
@@ -17,8 +18,8 @@ public class EvaluationFrame : IEvaluationFrame
     {
         Origin = origin;
         this.seekNext = seekNext;
-        onPush = TryPushNext;
-        onPop = PopOne;
+        _onPush = TryPushNext;
+        _onPop = PopOne;
     }
 
     public static EvaluationFrame Found(IEvaluationFrameBuilder origin, Func<Expression?, IEvaluationFrame?> seekNext)
@@ -26,24 +27,24 @@ public class EvaluationFrame : IEvaluationFrame
 
     public IEvaluationFrame OnPush(IEvaluationFrame.Push onPush)
     {
-        this.onPush = onPush;
+        _onPush = onPush;
         return this;
     }
 
     public IEvaluationFrame OnPop(Action<IEvaluationFrame.IStackController> onPop)
     {
-        this.onPop = onPop;
+        _onPop = onPop;
         return this;
     }
 
     public virtual IEvaluationFrame? SeekNext(Expression? node)
-        => next ??= seekNext(node);
+        => _next ??= seekNext(node);
 
     public void PushTo(IEvaluationFrame.IStackController controller)
-        => onPush(this, controller);
+        => _onPush(this, controller);
 
     public void PopFrom(IEvaluationFrame.IStackController controller)
-        => onPop(controller);
+        => _onPop(controller);
 
     private void TryPushNext(IEvaluationFrame self, IEvaluationFrame.IStackController controller)
         => controller.TryPushFrame(self);

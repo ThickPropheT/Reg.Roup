@@ -6,12 +6,12 @@ namespace Reg.Roup.Expectation;
 public class StatefulExpectation<TNode, T> : BaseExpectation, IStatefulExpectation<T>
     where TNode : Expression
 {
-    private readonly IBaseExpectation.State<TNode, T> state;
+    private readonly IBaseExpectation.State<TNode, T> _state;
 
     public StatefulExpectation(IBaseExpectation.State<TNode, T> state)
         : base(n => true)
     {
-        this.state = state;
+        _state = state;
     }
 
     public IStatefulExpectation<T> Where(IBaseExpectation.Condition<T> condition)
@@ -23,7 +23,7 @@ public class StatefulExpectation<TNode, T> : BaseExpectation, IStatefulExpectati
 
     public IStatefulExpectation<T> WithChildren(IBaseExpectation.Next<T> nested)
     {
-        SetNext((n, options) => nested(state((TNode) n), options));
+        SetNext((n, options) => nested(_state((TNode) n), options));
         return this;
     }
 }

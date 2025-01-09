@@ -6,23 +6,23 @@ namespace Reg.Roup.Expectation;
 
 public class ExpectEach<T> : IEvaluationFrameBuilder
 {
-    private readonly IEnumerator<T> enumerator;
-    private readonly Func<T, IEvaluationFrameBuilder> body;
+    private readonly IEnumerator<T> _enumerator;
+    private readonly Func<T, IEvaluationFrameBuilder> _body;
 
     public ExpectEach(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body)
     {
-        this.enumerator = enumerator;
-        this.body = body;
+        _enumerator = enumerator;
+        _body = body;
     }
 
     public IEvaluationFrame BuildFrame(Expression? node)
     {
-        if (!enumerator.MoveNext())
+        if (!_enumerator.MoveNext())
         {
             return ErrorFrame.NotFound(this);
         }
 
-        var inner = body(enumerator.Current);
+        var inner = _body(_enumerator.Current);
 
         var result = inner.BuildFrame(node);
 
@@ -30,12 +30,12 @@ public class ExpectEach<T> : IEvaluationFrameBuilder
                 this,
                 n =>
                 {
-                    if (!enumerator.MoveNext())
+                    if (!_enumerator.MoveNext())
                     {
                         return ErrorFrame.NotFound(this);
                     }
 
-                    var inner = body(enumerator.Current);
+                    var inner = _body(_enumerator.Current);
 
                     var result = inner.BuildFrame(n);
                     return result;

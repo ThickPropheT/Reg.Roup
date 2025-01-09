@@ -20,7 +20,7 @@ public class ErrorFrame : IEvaluationFrame
     IEvaluationFrame IEvaluationFrame.OnPush(IEvaluationFrame.Push onPush) => this;
     IEvaluationFrame IEvaluationFrame.OnPop(Action<IEvaluationFrame.IStackController> onPop) => this;
 
-    public IEvaluationFrame? SeekNext(Expression? node)
+    public IEvaluationFrame SeekNext(Expression? node)
         => throw Exception;
 
     public void PushTo(IEvaluationFrame.IStackController controller)
