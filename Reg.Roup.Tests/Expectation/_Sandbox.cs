@@ -1,21 +1,22 @@
-﻿using System.Linq.Expressions;
+﻿
+
+using System.Linq.Expressions;
 using Reg.Roup.Conversions;
 using Reg.Roup.Expectation;
-using Reg.Roup.Expectation.Common.Each;
 using Reg.Roup.Expectation.Common.OfType;
 using Reg.Roup.Expectation.Common.OneOf;
-using Reg.Roup.Expectation.Common.Using;
 using Reg.Roup.Expectation.Common.Where;
 using Reg.Roup.Expectation.Common.WithChildren;
+using Reg.Roup.Expectation.Common.WithEachChild;
 using Reg.Roup.Expectation.NewExpression;
 using Reg.Roup.Tests._TestResources.Scenarios;
-using DefaultScenario = Reg.Roup.Tests._TestResources.Scenarios.Default.DefaultScenario;
+using Reg.Roup.Tests._TestResources.Scenarios.Default;
 
 namespace Reg.Roup.Tests.Expectation;
 
 // TODO keep this around for refrence until the rest of the test suite in this namespace is complete
 [TestFixture]
-public class _Tests
+public class _Sandbox
 {
     [Test]
     [Ignore("migrating this into a set of real tests")]
@@ -66,24 +67,28 @@ public static class TestsExtensions
             //  should there be a 'WithChild'?
             //  - probly so - being strict about child count is probably a good idea. ig lambda will only ever have 1, but in cases with variable children, it might help to be specific
             //  - figure out the logistics of this. WithChildren is just a pass-thru wrapper to SetNext, so it doesn't have any agency over validation logic
-            .WithChildren((_, options) =>
-                options.OneOf(
+            .WithChildren((_, expectNode) =>
+                expectNode.OneOf(
                     // TODO add tests combining multiple/nested expectations like this (e.g. 'OneOf' + 'Each')
-                    options.OfType<NewExpression>()
+                    expectNode.OfType<NewExpression>()
                         .Where(n => n.Constructor != null && n.Arguments.Any())
-                        .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
-                        .WithChildren((state, options) =>
-                            options.Each(
-                                state.ParamNames,
-                                m =>
-                                    //options.OneOf(
-                                    options
-                                        .OfType<ConstantExpression>()
-                                //.Transform(n => )
-                                //)
-                            )
-                        ),
-                    options.OfType<MemberInitExpression>()
+                        .WithEachChild(
+                            @new => @new.GetMappedArguments(),
+                            (@new, arg, i, expectNode) => 
+                                expectNode.OfType<ConstantExpression>()),
+                        // .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
+                        // .WithChildren((state, options) =>
+                        //     options.Each(
+                        //         state.ParamNames,
+                        //         m =>
+                        //             //options.OneOf(
+                        //             options
+                        //                 .OfType<ConstantExpression>()
+                        //         //.Transform(n => )
+                        //         //)
+                        //     )
+                        // ),
+                        expectNode.OfType<MemberInitExpression>()
                 )
             );
 

@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LinqExpressions = System.Linq.Expressions;
 
 namespace Reg.Roup.Expectation.NewExpression;
 
-// TODO idk why, but this is still necessary here to get NewExpression to resolve below
-using System.Linq.Expressions;
-
 public static class NewExpressionExtensions
 {
-    public static IEnumerable<string> GetParameterNames(this NewExpression ne)
+    public static IEnumerable<string> GetParameterNames(this LinqExpressions.NewExpression ne)
     {
         if (ne.Members != null)
         {
@@ -21,5 +19,11 @@ public static class NewExpressionExtensions
         }
 
         return [];
+    }
+
+    public static IEnumerable<KeyValuePair<string, LinqExpressions.Expression>> GetMappedArguments(this LinqExpressions.NewExpression ne)
+    {
+        var parameterNames = ne.GetParameterNames().ToArray();
+        return ne.Arguments.Select((arg, i) => new KeyValuePair<string, LinqExpressions.Expression>(parameterNames[i], arg));
     }
 }

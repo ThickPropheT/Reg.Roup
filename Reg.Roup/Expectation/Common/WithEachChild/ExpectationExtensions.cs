@@ -15,7 +15,6 @@ public static class ExpectationExtensions
         IBaseExpectation.NextChild<TNode, TChild> seek
     )
         where TNode : Expression
-        where TChild : Expression
     {
         e.SetNext((n, expectNode) =>
         {
