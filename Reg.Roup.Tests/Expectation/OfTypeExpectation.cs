@@ -1,8 +1,7 @@
-﻿using Reg.Roup.Expectation;
+﻿using System.Linq.Expressions;
+using Reg.Roup.Expectation;
 
-namespace Reg.Roup.Tests.Visitor;
-
-using System.Linq.Expressions;
+namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
 public class OfTypeExpectation

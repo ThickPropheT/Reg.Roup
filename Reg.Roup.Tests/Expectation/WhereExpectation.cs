@@ -1,11 +1,10 @@
-﻿using Reg.Roup.Expectation;
+﻿using System.Linq.Expressions;
+using Reg.Roup.Expectation;
 
-namespace Reg.Roup.Tests.Visitor;
+namespace Reg.Roup.Tests.Expectation;
 
-using System.Linq.Expressions;
-    
 [TestFixture]
-public class WithChildrenExpectation
+public class WhereExpectation
 {
     private IBaseExpectation _expectation;
 
@@ -13,10 +12,8 @@ public class WithChildrenExpectation
     public void OneTimeSetUp()
     {
         _expectation = ExpectNode
-            .OfType(ExpressionType.Negate)
-            .WithChildren((_, expectNode) =>
-                expectNode.OfType(ExpressionType.Constant)
-            );
+            .OfType<ConstantExpression>()
+            .Where(n => n.Value is 69);
     }
 
     [Test]
@@ -30,7 +27,7 @@ public class WithChildrenExpectation
     [Test]
     public void PassesThroughValidSchemas()
     {
-        var validExpression = Expression.Negate(Expression.Constant(69));
+        var validExpression = Expression.Constant(69);
 
         var validatedExpression = new VisitorEngine(_expectation).Visit(validExpression);
 
@@ -38,7 +35,7 @@ public class WithChildrenExpectation
 
         var expressionResult = Expression.Lambda(validatedExpression).Compile().DynamicInvoke();
 
-        Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Negate));
-        Assert.That(expressionResult, Is.EqualTo(-69));
+        Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Constant));
+        Assert.That(expressionResult, Is.EqualTo(69));
     }
 }

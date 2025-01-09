@@ -1,9 +1,8 @@
+using System.Linq.Expressions;
 using System.Reflection;
 using Reg.Roup.Expectation;
 
-namespace Reg.Roup.Tests.Visitor;
-
-using System.Linq.Expressions;
+namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
 public class UsingExpectation
