@@ -1,4 +1,4 @@
-﻿namespace Reg.Roup.Tests.Resources.TestScenarios
+﻿namespace Reg.Roup.Tests._TestResources.Scenarios
 {
     public class RegexDeserializationResult<TActual>(TActual actual)
     {

@@ -1,5 +1,6 @@
-﻿using Reg.Roup.Tests.Resources.TestScenarios;
-using Reg.Roup.Tests.Resources.TestScenarios.Default;
+﻿using Reg.Roup.Tests._TestResources.Scenarios;
+using Reg.Roup.Tests._TestResources.Scenarios.Default;
+using DefaultScenario = Reg.Roup.Tests._TestResources.Scenarios.Default.DefaultScenario;
 
 namespace Reg.Roup.Tests.RegexExtensions.DeserializeMatch
 {

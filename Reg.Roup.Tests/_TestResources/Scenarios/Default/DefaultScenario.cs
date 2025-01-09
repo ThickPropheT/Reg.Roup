@@ -1,7 +1,6 @@
-﻿using Reg.Roup.Tests.Resources.TestScenarios.Default;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Reg.Roup.Tests.Resources.TestScenarios.Default
+namespace Reg.Roup.Tests._TestResources.Scenarios.Default
 {
     public partial class DefaultScenario(DefaultSchema.Expected? expected = null)
         : GivenTextMatchedByRegex<DefaultSchema.Expected>(expected ?? DefaultInput, () => ToText(expected ?? DefaultInput), GenerateRegex())

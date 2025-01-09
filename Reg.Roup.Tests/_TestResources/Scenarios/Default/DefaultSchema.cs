@@ -1,6 +1,6 @@
-﻿using static Reg.Roup.Tests.Resources.TestScenarios.Default.DefaultSchema;
+﻿using static Reg.Roup.Tests._TestResources.Scenarios.Default.DefaultSchema;
 
-namespace Reg.Roup.Tests.Resources.TestScenarios.Default
+namespace Reg.Roup.Tests._TestResources.Scenarios.Default
 {
     public static class DefaultSchema
     {

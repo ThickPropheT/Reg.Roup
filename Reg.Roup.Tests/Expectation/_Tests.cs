@@ -1,13 +1,14 @@
 ﻿using System.Linq.Expressions;
 using Reg.Roup.Conversions;
 using Reg.Roup.Expectation;
-using Reg.Roup.Tests.Resources.TestScenarios;
-using Reg.Roup.Tests.Resources.TestScenarios.Default;
+using Reg.Roup.Tests._TestResources.Scenarios;
+using DefaultScenario = Reg.Roup.Tests._TestResources.Scenarios.Default.DefaultScenario;
 
 namespace Reg.Roup.Tests.Expectation;
 
+// TODO keep this around for refrence until the rest of the test suite in this namespace is complete
 [TestFixture]
-public class Tests
+public class _Tests
 {
     [Test]
     [Ignore("migrating this into a set of real tests")]

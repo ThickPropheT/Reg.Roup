@@ -1,8 +1,8 @@
-﻿using Reg.Roup.Conversions;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using Reg.Roup.Conversions;
 
-namespace Reg.Roup.Tests.Resources.TestScenarios
+namespace Reg.Roup.Tests._TestResources.Scenarios
 {
     public class GivenTextMatchedByRegex(Func<string> getText, Regex regex)
     {
