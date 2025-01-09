@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.Each;
 
+// TODO reconcile the naming convention for this and others under Common namespace
 public class ExpectEach<T> : IEvaluationFrameBuilder
 {
     private readonly IEnumerator<T> _enumerator;

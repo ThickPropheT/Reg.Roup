@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.OneOf;
 
+// TODO reconcile the naming convention for this and others under Common namespace
 public class ExpectOneOf : IEvaluationFrameBuilder
 {
     private readonly IEvaluationFrameBuilder[] _options;

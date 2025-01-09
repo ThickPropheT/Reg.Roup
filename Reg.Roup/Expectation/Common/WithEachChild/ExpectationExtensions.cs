@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Reg.Roup.Expectation.Common.Each;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.WithEachChild;
 
-public static partial class ExpectationExtensions
+public static class ExpectationExtensions
 {
     // TODO
     //  consider adding other overloads for less specific node types

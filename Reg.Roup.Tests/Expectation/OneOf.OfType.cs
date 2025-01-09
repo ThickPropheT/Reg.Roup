@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Reg.Roup.Expectation;
+using Reg.Roup.Expectation.Common.OfType;
 
 namespace Reg.Roup.Tests.Expectation;
 

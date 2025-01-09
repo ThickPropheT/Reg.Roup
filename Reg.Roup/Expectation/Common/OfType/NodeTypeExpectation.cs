@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.OfType;
 
+// TODO reconcile the naming convention for this and others under Common namespace
 public class NodeTypeExpectation<TNode> : BaseExpectation, IExpectation<TNode>
     where TNode : Expression
 {

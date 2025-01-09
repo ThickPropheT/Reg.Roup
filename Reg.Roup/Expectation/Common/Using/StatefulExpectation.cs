@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.Using;
 
 public class StatefulExpectation<TNode, T> : BaseExpectation, IStatefulExpectation<T>
     where TNode : Expression

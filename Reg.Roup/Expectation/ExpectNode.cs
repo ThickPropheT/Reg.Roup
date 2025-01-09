@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
+using Reg.Roup.Expectation.Common.OfType;
+using Reg.Roup.Expectation.Common.OneOf;
 
 namespace Reg.Roup.Expectation;
 
@@ -8,16 +9,10 @@ public class ExpectNode : IExpectNode
 {
     public static IExpectation<TNode> OfType<TNode>(ExpressionType? nodeType = null)
         where TNode : Expression
-        => ((IExpectNode) new ExpectNode()).OfType<TNode>(nodeType);
-
-    IExpectation<TNode> IExpectNode.OfType<TNode>(ExpressionType? nodeType)
-        => new NodeTypeExpectation<TNode>(nodeType);
+        => new ExpectNode().OfType<TNode>(nodeType);
 
     public static IExpectation<Expression> OfType(ExpressionType nodeType)
-        => ((IExpectNode) new ExpectNode()).OfType(nodeType);
-
-    IExpectation<Expression> IExpectNode.OfType(ExpressionType nodeType)
-        => new NodeTypeExpectation<Expression>(nodeType);
+        => new ExpectNode().OfType(nodeType);
 
     // TODO
     //  returning IBaseExpectation is required atm for compatibility w/ VisitorEngine,
@@ -30,11 +25,6 @@ public class ExpectNode : IExpectNode
     // TODO
     //  bespoke 'OneOf' methods for common things like constants would be cool.
     //  e.g. expectNode.Constant<int>().Where(@const => @const.Value == someNumber);
-    IEvaluationFrameBuilder IExpectNode.OneOf(params IEvaluationFrameBuilder[] options)
-        => new ExpectOneOf(options);
-
-    public IEvaluationFrameBuilder Each<T>(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body)
-        => new ExpectEach<T>(enumerator, body);
 
     // TODO
     //  investigate if/how this can be merged into implementations of IEvaluationFrameBuilder (i.e. ExpectOneOf & ExpectEach)

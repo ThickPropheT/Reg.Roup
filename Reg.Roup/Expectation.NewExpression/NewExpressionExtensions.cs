@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.NewExpression;
+
+// TODO idk why, but this is still necessary here to get NewExpression to resolve below
+using System.Linq.Expressions;
 
 public static class NewExpressionExtensions
 {

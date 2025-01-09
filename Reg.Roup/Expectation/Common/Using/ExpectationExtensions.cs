@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.Using;
 
-public static partial class ExpectationExtensions
+public static class ExpectationExtensions
 {
     public static IStatefulExpectation<T> Using<T>(
         this IBaseExpectation e, IBaseExpectation.State<Expression, T> state

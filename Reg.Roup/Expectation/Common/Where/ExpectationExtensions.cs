@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
+using Reg.Roup.Expectation.Common.OfType;
 
-namespace Reg.Roup.Expectation;
+namespace Reg.Roup.Expectation.Common.Where;
 
-public static partial class ExpectationExtensions
+public static class ExpectationExtensions
 {
     public static IBaseExpectation Where(
         this IBaseExpectation e, IBaseExpectation.Condition<Expression> condition

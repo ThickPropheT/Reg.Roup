@@ -18,4 +18,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Expectation\Common\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,13 @@
 ﻿using System.Linq.Expressions;
 using Reg.Roup.Conversions;
 using Reg.Roup.Expectation;
+using Reg.Roup.Expectation.Common.Each;
+using Reg.Roup.Expectation.Common.OfType;
+using Reg.Roup.Expectation.Common.OneOf;
+using Reg.Roup.Expectation.Common.Using;
+using Reg.Roup.Expectation.Common.Where;
+using Reg.Roup.Expectation.Common.WithChildren;
+using Reg.Roup.Expectation.NewExpression;
 using Reg.Roup.Tests._TestResources.Scenarios;
 using DefaultScenario = Reg.Roup.Tests._TestResources.Scenarios.Default.DefaultScenario;
 
