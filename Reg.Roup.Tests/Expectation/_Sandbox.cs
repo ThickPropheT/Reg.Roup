@@ -40,7 +40,8 @@ public class _Sandbox
                     name = "",
                     index = 0,
                     isEnabled = false,
-                    version = parse.With(Version.Parse)
+                    version = parse.With(Version.Parse),
+                    optional = (int?)null
                 }
             )
             .Assert((expected, actual) => { });
@@ -75,6 +76,7 @@ public static class TestsExtensions
                         .WithEachChild(
                             @new => @new.GetMappedArguments(),
                             (@new, arg, i, expectNode) =>
+                                // TODO only these 2 are defined, but optional still doesn't cause a failure
                                 expectNode.OneOf(
                                     expectNode.OfType<ConstantExpression>(),
                                     expectNode
