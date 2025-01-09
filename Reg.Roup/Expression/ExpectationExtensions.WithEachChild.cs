@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Reg.Roup.Expression;
 
+using System.Linq.Expressions;
+
 public static partial class ExpectationExtensions
 {
     // TODO
@@ -13,19 +15,19 @@ public static partial class ExpectationExtensions
         IBaseExpectation.Selector<TNode, IEnumerable<TChild>> selectChildren,
         IBaseExpectation.NextChild<TNode, TChild> seek
     )
-        where TNode : System.Linq.Expressions.Expression
-        where TChild : System.Linq.Expressions.Expression
+        where TNode : Expression
+        where TChild : Expression
     {
-        e.SetNext((n, options) =>
+        e.SetNext((n, expectNode) =>
         {
             var node = (TNode) n;
             var children = selectChildren(node);
             var indexedChildren = children.Select((c, i) => (c, i));
             using var enumerator = indexedChildren.GetEnumerator();
 
-            return options.Each(
+            return expectNode.Each(
                 enumerator,
-                a => seek(node, a.c, a.i, options)
+                a => seek(node, a.c, a.i, expectNode)
             );
         });
 
