@@ -4,7 +4,7 @@ using Reg.Roup.Expectation;
 namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
-public class EachExpectation
+public class Each
 {
     private static readonly Expression[] InvalidExpressions =
     [

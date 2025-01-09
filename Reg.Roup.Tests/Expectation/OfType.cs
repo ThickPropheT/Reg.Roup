@@ -4,7 +4,7 @@ using Reg.Roup.Expectation;
 namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
-public class OfTypeExpectation
+public class OfType
 {
     private IBaseExpectation _expectation;
 

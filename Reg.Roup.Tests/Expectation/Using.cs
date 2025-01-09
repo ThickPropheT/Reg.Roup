@@ -5,7 +5,7 @@ using Reg.Roup.Expectation;
 namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
-public class UsingExpectation
+public class Using
 {
     private static readonly ConstructorInfo TargetCtor =
         typeof(Target).GetConstructor([typeof(string), typeof(string), typeof(string)])!;

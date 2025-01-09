@@ -4,7 +4,7 @@ using Reg.Roup.Expectation;
 namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
-public class WhereExpectation
+public class WithChildren
 {
     private IBaseExpectation _expectation;
 
@@ -12,8 +12,10 @@ public class WhereExpectation
     public void OneTimeSetUp()
     {
         _expectation = ExpectNode
-            .OfType<ConstantExpression>()
-            .Where(n => n.Value is 69);
+            .OfType(ExpressionType.Negate)
+            .WithChildren((_, expectNode) =>
+                expectNode.OfType(ExpressionType.Constant)
+            );
     }
 
     [Test]
@@ -27,7 +29,7 @@ public class WhereExpectation
     [Test]
     public void PassesThroughValidSchemas()
     {
-        var validExpression = Expression.Constant(69);
+        var validExpression = Expression.Negate(Expression.Constant(69));
 
         var validatedExpression = new VisitorEngine(_expectation).Visit(validExpression);
 
@@ -35,7 +37,7 @@ public class WhereExpectation
 
         var expressionResult = Expression.Lambda(validatedExpression).Compile().DynamicInvoke();
 
-        Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Constant));
-        Assert.That(expressionResult, Is.EqualTo(69));
+        Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.Negate));
+        Assert.That(expressionResult, Is.EqualTo(-69));
     }
 }

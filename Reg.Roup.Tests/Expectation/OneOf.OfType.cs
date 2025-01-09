@@ -4,7 +4,7 @@ using Reg.Roup.Expectation;
 namespace Reg.Roup.Tests.Expectation;
 
 [TestFixture]
-public partial class OneOfExpectation
+public partial class OneOf
 {
     [TestFixture]
     public class OfType
