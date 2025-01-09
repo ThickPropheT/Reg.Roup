@@ -6,13 +6,14 @@ namespace Reg.Roup.Tests.Expectation;
 [TestFixture]
 public class EachExpectation
 {
-    private static readonly Expression[] InvalidExpressions = [
+    private static readonly Expression[] InvalidExpressions =
+    [
         Expression.Add(Expression.Constant(1), Expression.Add(Expression.Constant(1), Expression.Constant(2))),
         Expression.Subtract(Expression.Constant(2), Expression.Constant(4))
     ];
-    
+
     private IBaseExpectation _expectation;
-    
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -24,7 +25,7 @@ public class EachExpectation
                     var values = new[] {1, 3};
                     // TODO does this obsolete 'Using'?
                     using var enumerator = (children as IEnumerable<Expression>).GetEnumerator();
-                    
+
                     return expectNode.Each(
                         enumerator,
                         _ => expectNode
@@ -34,13 +35,13 @@ public class EachExpectation
                 }
             );
     }
-    
+
     [TestCaseSource(nameof(InvalidExpressions))]
     public void ThrowsOnInvalidSchemas(Expression invalidExpression)
     {
         Assert.That(() => new VisitorEngine(_expectation).Visit(invalidExpression), Throws.Exception);
     }
-    
+
     [Test]
     public void PassesThroughValidSchemas()
     {

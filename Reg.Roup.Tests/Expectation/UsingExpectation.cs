@@ -7,15 +7,17 @@ namespace Reg.Roup.Tests.Expectation;
 [TestFixture]
 public class UsingExpectation
 {
-    private static readonly ConstructorInfo TargetCtor = typeof(Target).GetConstructor([typeof(string), typeof(string), typeof(string)])!;
-    
-    private static readonly Expression[] InvalidExpressions = [
+    private static readonly ConstructorInfo TargetCtor =
+        typeof(Target).GetConstructor([typeof(string), typeof(string), typeof(string)])!;
+
+    private static readonly Expression[] InvalidExpressions =
+    [
         Expression.Add(Expression.Constant(0), Expression.Constant(0)),
         Expression.New(TargetCtor, Expression.Constant("_s1"), Expression.Constant("_s2"), Expression.Constant("_s3"))
     ];
-    
+
     private IBaseExpectation _expectation;
-    
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -45,10 +47,11 @@ public class UsingExpectation
     [Test]
     public void PassesThroughValidSchemas()
     {
-        var expression = Expression.New(TargetCtor, Expression.Constant("s1"), Expression.Constant("s2"), Expression.Constant("s3"));
-        
+        var expression = Expression.New(TargetCtor, Expression.Constant("s1"), Expression.Constant("s2"),
+            Expression.Constant("s3"));
+
         var validatedExpression = new VisitorEngine(_expectation).Visit(expression);
-        
+
         Assert.That(validatedExpression, Is.Not.Null);
 
         var expressionResult = Expression.Lambda(validatedExpression).Compile().DynamicInvoke();
@@ -56,7 +59,7 @@ public class UsingExpectation
         Assert.That(validatedExpression.NodeType, Is.EqualTo(ExpressionType.New));
         Assert.That(expressionResult, Is.EqualTo(new Target("s1", "s2", "s3")));
     }
-    
+
     private class Target
     {
         public string S1 { get; }

@@ -6,14 +6,15 @@ namespace Reg.Roup.Tests.Expectation;
 [TestFixture]
 public class WithEachChildExpectation
 {
-    private static readonly Expression[] InvalidExpressions = [
+    private static readonly Expression[] InvalidExpressions =
+    [
         Expression.Add(Expression.Constant(0), Expression.Add(Expression.Constant(1), Expression.Constant(2))),
         Expression.Subtract(Expression.Constant(1), Expression.Constant(2)),
         Expression.Add(Expression.Constant(1), Expression.Constant(1))
     ];
-    
+
     private IBaseExpectation _expectation;
-    
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -27,13 +28,13 @@ public class WithEachChildExpectation
                         .Where(@const => @const.Value is int v && v == i)
             );
     }
-    
+
     [TestCaseSource(nameof(InvalidExpressions))]
     public void ThrowsOnInvalidSchemas(Expression invalidExpression)
     {
         Assert.That(() => new VisitorEngine(_expectation).Visit(invalidExpression), Throws.Exception);
     }
-    
+
     [Test]
     public void PassesThroughValidSchemas()
     {
