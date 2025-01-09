@@ -19,7 +19,7 @@ namespace Reg.Roup.Tests.Expectation;
 public class _Sandbox
 {
     [Test]
-    [Ignore("migrating this into a set of real tests")]
+    // [Ignore("migrating this into a set of real tests")]
     public void Test()
     {
         //new DefaultScenario()
@@ -39,8 +39,8 @@ public class _Sandbox
                 {
                     name = "",
                     index = 0,
-                    isEnabled = false
-                    //version = parse.With(Version.Parse)
+                    isEnabled = false,
+                    version = parse.With(Version.Parse)
                 }
             )
             .Assert((expected, actual) => { });
@@ -61,7 +61,7 @@ public static class TestsExtensions
         //                            new ExpectAnyNode(engine)
         //                        ))));
 
-        var v = ExpectNode
+        var expectation = ExpectNode
             .OfType(ExpressionType.Lambda)
             // TODO
             //  should there be a 'WithChild'?
@@ -74,28 +74,33 @@ public static class TestsExtensions
                         .Where(n => n.Constructor != null && n.Arguments.Any())
                         .WithEachChild(
                             @new => @new.GetMappedArguments(),
-                            (@new, arg, i, expectNode) => 
-                                expectNode.OfType<ConstantExpression>()),
-                        // .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
-                        // .WithChildren((state, options) =>
-                        //     options.Each(
-                        //         state.ParamNames,
-                        //         m =>
-                        //             //options.OneOf(
-                        //             options
-                        //                 .OfType<ConstantExpression>()
-                        //         //.Transform(n => )
-                        //         //)
-                        //     )
-                        // ),
-                        expectNode.OfType<MemberInitExpression>()
+                            (@new, arg, i, expectNode) =>
+                                expectNode.OneOf(
+                                    expectNode.OfType<ConstantExpression>(),
+                                    expectNode
+                                        .OfType<MethodCallExpression>()
+                                        .Where(call => call.Method.DeclaringType == typeof(IParse))
+                                )),
+                    // .Using(n => (n, ParamNames: n.GetParameterNames().GetEnumerator()))
+                    // .WithChildren((state, options) =>
+                    //     options.Each(
+                    //         state.ParamNames,
+                    //         m =>
+                    //             //options.OneOf(
+                    //             options
+                    //                 .OfType<ConstantExpression>()
+                    //         //.Transform(n => )
+                    //         //)
+                    //     )
+                    // ),
+                    expectNode.OfType<MemberInitExpression>()
                 )
             );
 
-        var eng = new VisitorEngine(v);
+        var eng = new VisitorEngine(expectation);
         var r = eng.Visit(schema);
 
-        throw new NotImplementedException();
+        throw new NotImplementedException("END OF THE LINE FOOL");
 
         //var engine = new VisitorEngine(
         //    en => new ExpectNodeType(
