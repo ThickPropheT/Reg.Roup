@@ -21,7 +21,8 @@ public static class NewExpressionExtensions
         return [];
     }
 
-    public static IEnumerable<KeyValuePair<string, LinqExpressions.Expression>> GetMappedArguments(this LinqExpressions.NewExpression ne)
+    // TODO is KeyValuePair here primitive obsession?
+    public static IEnumerable<KeyValuePair<string, LinqExpressions.Expression>> GetArgsMappedByParamName(this LinqExpressions.NewExpression ne)
     {
         var parameterNames = ne.GetParameterNames().ToArray();
         return ne.Arguments.Select((arg, i) => new KeyValuePair<string, LinqExpressions.Expression>(parameterNames[i], arg));

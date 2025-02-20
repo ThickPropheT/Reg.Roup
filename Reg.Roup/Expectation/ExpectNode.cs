@@ -37,7 +37,13 @@ public class ExpectNode : IExpectNode
             _seek = seek;
         }
 
-        public void AddCondition(IBaseExpectation.Condition<Expression> condition)
+        public string Describe(Expression? node)
+            => "I am but a lowly proxy :shrug:"; // see above TODO for why this is the way it is
+        
+        public void AppendCondition(ICondition condition)
+            => throw new NotSupportedException();
+
+        public void AppendCondition(IBaseExpectation.Condition<Expression> condition, string message = "")
             => throw new NotSupportedException();
 
         public void SetNext(IBaseExpectation.Next<Expression> seek)

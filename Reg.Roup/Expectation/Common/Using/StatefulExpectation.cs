@@ -9,7 +9,6 @@ public class StatefulExpectation<TNode, T> : BaseExpectation, IStatefulExpectati
     private readonly IBaseExpectation.State<TNode, T> _state;
 
     public StatefulExpectation(IBaseExpectation.State<TNode, T> state)
-        : base(n => true)
     {
         _state = state;
     }

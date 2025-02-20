@@ -1,8 +1,20 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Reg.Roup.Expectation;
 
-public interface IBaseExpectation : IEvaluationFrameBuilder
+// TODO these two interfaces may deserve their own files provided they survive for long
+public interface ICondition : IDescribable
+{
+    bool Evaluate(Expression? node);
+}
+
+public interface IConditionChain
+{
+    void AppendCondition(ICondition condition);
+}
+
+public interface IBaseExpectation : IEvaluationFrameBuilder, IConditionChain
 {
     // TODO consider renaming to Filter
     public delegate bool Condition<in TNode>(TNode node);
@@ -19,7 +31,7 @@ public interface IBaseExpectation : IEvaluationFrameBuilder
 
     public delegate Expression Transformer<in TNode>(TNode node);
 
-    void AddCondition(Condition<Expression> condition);
+    void AppendCondition(Condition<Expression> condition, [CallerArgumentExpression(nameof(condition))] string message = "");
     void SetNext(Next<Expression> seek);
 
     TExpectation TransferTo<TExpectation>(TExpectation expectation)

@@ -37,20 +37,20 @@ public class _Sandbox
             ._WhenMatchDeserializedVia(parse =>
                 new
                 {
+                    version = parse.With(Version.Parse),
+                    optional = (int?) null,
                     name = "",
                     index = 0,
                     isEnabled = false,
-                    version = parse.With(Version.Parse),
-                    optional = (int?)null
                 }
-            )
-            .Assert((expected, actual) => { });
+            );
+        // .Assert((expected, actual) => { });
     }
 }
 
 public static class TestsExtensions
 {
-    public static RegexDeserializationResult<TExpected, Actual> _WhenMatchDeserializedVia<TExpected, Actual>(
+    public static void _WhenMatchDeserializedVia<TExpected, Actual>(
         this GivenTextMatchedByRegex<TExpected> given, Expression<Func<IParse, Actual>> schema)
     {
         //var engine = new DefaultVisitorEngine();
@@ -74,7 +74,7 @@ public static class TestsExtensions
                     expectNode.OfType<NewExpression>()
                         .Where(n => n.Constructor != null && n.Arguments.Any())
                         .WithEachChild(
-                            @new => @new.GetMappedArguments(),
+                            @new => @new.GetArgsMappedByParamName(),
                             (@new, arg, i, expectNode) =>
                                 // TODO only these 2 are defined, but optional still doesn't cause a failure
                                 expectNode.OneOf(
@@ -100,9 +100,7 @@ public static class TestsExtensions
             );
 
         var eng = new VisitorEngine(expectation);
-        var r = eng.Visit(schema);
-
-        throw new NotImplementedException("END OF THE LINE FOOL");
+        Assert.That(() => eng.Visit(schema), Throws.Exception);
 
         //var engine = new VisitorEngine(
         //    en => new ExpectNodeType(

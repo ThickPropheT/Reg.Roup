@@ -13,15 +13,22 @@ public class ExpectOneOf : IEvaluationFrameBuilder
         _options = options;
     }
 
+    public string Describe(Expression? node)
+        => $"Expect.OneOf: {{\n{string.Join("\n| ", _options.Select(o => o.Describe(node)))}\n}}";
+
     public IEvaluationFrame BuildFrame(Expression? node)
     {
-        var match = _options
+        var results = _options
             .Select(o => o.BuildFrame(node))
+            .ToArray();
+        
+        var match = results
             .FirstOrDefault(f => f is not ErrorFrame);
 
         if (match == null)
         {
-            return ErrorFrame.NotFound(this);
+            var errorFrame = results.FirstOrDefault(f => f is ErrorFrame);
+            return errorFrame ?? ErrorFrame.NotFound(this);
         }
 
         return EvaluationFrame

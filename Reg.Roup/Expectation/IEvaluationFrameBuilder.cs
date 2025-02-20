@@ -2,7 +2,7 @@
 
 namespace Reg.Roup.Expectation;
 
-public interface IEvaluationFrameBuilder
+public interface IEvaluationFrameBuilder : IDescribable
 {
     IEvaluationFrame BuildFrame(Expression? node);
 }

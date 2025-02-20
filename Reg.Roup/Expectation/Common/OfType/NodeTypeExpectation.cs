@@ -10,7 +10,16 @@ public class NodeTypeExpectation<TNode> : BaseExpectation, IExpectation<TNode>
     public ExpressionType? NodeType { get; }
 
     public NodeTypeExpectation(ExpressionType? nodeType = null)
-        : base(n => n is TNode && nodeType == null || n.NodeType == nodeType)
+        : base(conditions =>
+            conditions
+                .OfType<TNode>()
+                .Or(oneOf =>
+                    [
+                        oneOf.Where(_ => nodeType == null),
+                        oneOf.OfNodeType(() => (ExpressionType) nodeType!)
+                    ]
+                )
+        )
     {
         NodeType = nodeType;
     }

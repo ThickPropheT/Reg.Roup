@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Reg.Roup.Expectation;
@@ -45,6 +46,11 @@ public class VisitorEngine : IEvaluationFrame.IStackController
     {
         var frame = _frames.Peek().SeekNext(node);
 
+        if (frame is ErrorFrame err)
+        {
+            // TODO breakpoint here
+        }
+
         frame?.PushTo(this);
 
         return null;
@@ -72,11 +78,27 @@ public class VisitorEngine : IEvaluationFrame.IStackController
     {
         if (frame == null)
         {
+            Console.WriteLine("Warning: ValidatorEngine.TryPushFrame: frame is null");
             return;
         }
 
-        Console.WriteLine($"Pushing {frame.Origin.GetType().Name}");
+        PrintFramePush(frame);
+
         _frames.Push(frame);
+    }
+
+    private void PrintFramePush(IEvaluationFrame frame)
+    {
+        var originType = frame.Origin.GetType();
+        var genericArgs = originType.GetGenericArguments()
+            .Select((arg, i) => (argName: arg.Name, i))
+            .ToArray();
+
+        Console.WriteLine($"Pushing {originType.Name}[{(
+            genericArgs.Any()
+                ? string.Join(',', genericArgs.Select(a => a.argName))
+                : ""
+        )}]");
     }
 
     public IEvaluationFrame? PopFrame()
@@ -85,7 +107,7 @@ public class VisitorEngine : IEvaluationFrame.IStackController
             ? frame
             : null;
 
-        Console.WriteLine($"Poped {f?.Origin.GetType().Name ?? "n/a"}");
+        Console.WriteLine($"Popped {f?.Origin.GetType().Name ?? "n/a"}");
         return f;
     }
 

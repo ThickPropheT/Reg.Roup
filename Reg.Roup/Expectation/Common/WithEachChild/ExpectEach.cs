@@ -1,19 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Reg.Roup.Expectation.Common.WithEachChild;
 
 // TODO reconcile the naming convention for this and others under Common namespace
 public class ExpectEach<T> : IEvaluationFrameBuilder
+    where T : notnull
 {
+    private readonly IEnumerable<T> _enumerable;
     private readonly IEnumerator<T> _enumerator;
     private readonly Func<T, IEvaluationFrameBuilder> _body;
 
-    public ExpectEach(IEnumerator<T> enumerator, Func<T, IEvaluationFrameBuilder> body)
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration",
+        Justification = "_enumerable is cached for the sole purpose of re-enumerating in Describe().")]
+    public ExpectEach(IEnumerable<T> enumerable, Func<T, IEvaluationFrameBuilder> body)
     {
-        _enumerator = enumerator;
+        _enumerable = enumerable;
+        _enumerator = enumerable.GetEnumerator();
         _body = body;
+    }
+
+    public string Describe(Expression? node)
+    {
+        var each = _enumerable.Select(t => (text: t.ToString(), next: _body(t))).ToArray();
+        
+        return
+            $"Each: {{\nOf:\n{string.Join(",\n", each.Select(e => e.text))},\nAre.{string.Join("\n& ", each.Select(e => e.next.Describe(node)))}\n}}";
     }
 
     public IEvaluationFrame BuildFrame(Expression? node)
