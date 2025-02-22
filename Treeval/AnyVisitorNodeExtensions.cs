@@ -4,7 +4,7 @@ namespace Treeval;
 
 public static class AnyVisitorNodeExtensions
 {
-    public static IVisitorNode Any(this IVisitorNodeFactory factory)
+    public static IVisitorNode AnyOne(this IVisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
     public static IVisitorNode AcceptChildren(this IVisitorNodeFactory factory, Expression parent)
