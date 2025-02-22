@@ -38,10 +38,7 @@ public class RecordedExpressionTree
                 // version6 = parse.With(s => Version.Parse(s)),
             });
 
-        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
-        var head = new TapeHead(tape);
-
-        var visitorTree = ExpressionVisitorNodeFactory.Create(node =>
+        var evaluator = ExpressionVisitorNodeFactory.Create(node =>
             node.Lambda(
                 parameters: [node.Parameter<IParse>()],
                 body: node.New()
@@ -49,41 +46,33 @@ public class RecordedExpressionTree
                         @new => @new.GetArgsMappedByParamName(),
                         _ => node.OneOf(
                             node.Constant(),
-                            
+
                             node.Cast(node.Constant(value: null)),
-                            
-                            node.Debug(e =>
-                            {
-                                
-                            }),
-                            
+
+                            node.Debug(e => { }),
+
                             node
                                 .IgnoreBoxing() // TODO i don't think this is working right
                                 .MethodCall<IParse>(
-                                name: nameof(IParse.With),
-                                node.OneOf(
-                                    node.Debug(e =>
-                                    {
-                                        
-                                    }),
-                                    
-                                    node
-                                        .IgnoreBoxing()
-                                        .MethodCallDelegate(target: node.AcceptChildren),
-                                    
-                                    node.Lambda(
-                                        parameters: [node.Parameter<string>()],
-                                        body: node.MethodCall(node.AcceptChildren)
+                                    name: nameof(IParse.With),
+                                    node.OneOf(
+                                        node.Debug(e => { }),
+
+                                        node
+                                            .IgnoreBoxing()
+                                            .MethodCallDelegate(target: node.AcceptChildren),
+
+                                        node.Lambda(
+                                            parameters: [node.Parameter<string>()],
+                                            body: node.MethodCall(node.AcceptChildren)
+                                        )
                                     )
                                 )
-                            )
                         )
                     )
             )
         );
-
-        var visitation = new VisitationContext(head);
-
-        var visitedExpressionTree = visitorTree.Visit(visitation);
+        
+        evaluator.DoIt(expressionTree);
     }
 }

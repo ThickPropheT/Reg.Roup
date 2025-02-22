@@ -40,9 +40,16 @@ public interface IVisitorNodeFactory
     IVisitorNode OneOf(params IVisitorNode[] children);
 }
 
-public static class ExpressionVisitorNodeFactory
+public class ExpressionVisitorNodeFactory
 {
-    public static IExpressionVisitorNode Create(Func<IVisitorNodeFactory, IVisitorNode> doIt)
+    private readonly RootNode _rootNode;
+
+    private ExpressionVisitorNodeFactory(RootNode rootNode)
+    {
+        _rootNode = rootNode;
+    }
+    
+    public static ExpressionVisitorNodeFactory Create(Func<IVisitorNodeFactory, IVisitorNode> doIt)
     {
         var factory = new VisitorNodeFactory();
 
@@ -53,7 +60,18 @@ public static class ExpressionVisitorNodeFactory
             throw new NotSupportedException();
         }
 
-        return new RootNode(root.ToVisitor());
+        return new ExpressionVisitorNodeFactory(new RootNode(root.ToVisitor()));
+    }
+
+    // TODO find a way to return the expression tree here
+    public void DoIt(Expression expressionTree)
+    {
+        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
+        var head = new TapeHead(tape);
+        
+        var visitation = new VisitationContext(head);
+
+        _rootNode.Visit(visitation);
     }
 
     private class RootNode : IExpressionVisitorNode
