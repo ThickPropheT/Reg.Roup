@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-using Reg.Roup.Expectation;
-using Reg.Roup.Expectation._RecycleBin;
 
-namespace Reg.Roup.Tests.Expectation;
+namespace Treeval.Tests;
 
 [TestFixture]
 public class Constant

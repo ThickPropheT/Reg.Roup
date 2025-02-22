@@ -1,7 +1,7 @@
 using Reg.Roup.Conversions;
 using Reg.Roup.Expectation;
-using Reg.Roup.Expectation._RecycleBin;
-using Reg.Roup.Expectation.NewExpression;
+using Treeval;
+using Treeval.Expr.New;
 
 namespace Reg.Roup.Tests.Expectation.Scenario;
 

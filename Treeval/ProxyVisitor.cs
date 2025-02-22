@@ -1,8 +1,6 @@
-using System;
 using System.Linq.Expressions;
-using Reg.Roup.Expectation._RecycleBin;
 
-namespace Reg.Roup.Expectation;
+namespace Treeval;
 
 public class ProxyVisitor : IExpressionVisitorNode
 {

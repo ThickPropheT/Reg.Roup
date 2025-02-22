@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reg.Roup\Reg.Roup.csproj" />
+    <ProjectReference Include="..\Treeval\Treeval.csproj" />
   </ItemGroup>
 
   <ItemGroup>
