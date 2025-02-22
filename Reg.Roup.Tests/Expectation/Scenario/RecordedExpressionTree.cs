@@ -38,7 +38,7 @@ public class RecordedExpressionTree
                 // version6 = parse.With(s => Version.Parse(s)),
             });
 
-        var evaluator = ExpressionVisitorNodeFactory.Create(node =>
+        var evaluator = ExpressionTreeEvaluator.Create(node =>
             node.Lambda(
                 parameters: [node.Parameter<IParse>()],
                 body: node.New()

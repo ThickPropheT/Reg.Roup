@@ -5,27 +5,28 @@ namespace Treeval.Tests;
 [TestFixture]
 public class Constant
 {
-    private ExpressionVisitorNodeFactory _evaluator;
+    private static readonly Expression InvalidExpression =
+        Expression.Add(Expression.Constant(1), Expression.Constant(1));
 
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
+    private static readonly Expression ValidExpression =
+        Expression.Constant(69);
+
+    private static readonly ExpressionTreeEvaluator[] Evaluators =
+    [
+        ExpressionTreeEvaluator.Create(node => node.Constant()),
+        ExpressionTreeEvaluator.Create(node => node.Constant(69)),
+        ExpressionTreeEvaluator.Create(node => node.Constant<int>())
+    ];
+
+    [TestCaseSource(nameof(Evaluators))]
+    public void ThrowsOnInvalidSchemas(ExpressionTreeEvaluator evaluator)
     {
-        _evaluator = ExpressionVisitorNodeFactory.Create(node => node.Constant(69));
+        Assert.That(() => evaluator.Evaluate(InvalidExpression), Throws.Exception);
     }
-    
-    [Test]
-    public void ThrowsOnInvalidSchemas()
+
+    [TestCaseSource(nameof(Evaluators))]
+    public void DoesNotThrowOnValidSchemas(ExpressionTreeEvaluator evaluator)
     {
-        var invalidExpression = Expression.Add(Expression.Constant(1), Expression.Constant(1));
-        
-        Assert.That(() => _evaluator.Evaluate(invalidExpression), Throws.Exception);
-    }
-    
-    [Test]
-    public void DoesNotThrowOnValidSchemas()
-    {
-        var invalidExpression = Expression.Constant(69);
-        
-        Assert.That(() => _evaluator.Evaluate(invalidExpression),  Throws.Nothing);
+        Assert.That(() => evaluator.Evaluate(ValidExpression), Throws.Nothing);
     }
 }

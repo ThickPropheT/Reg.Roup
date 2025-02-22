@@ -10,7 +10,7 @@ public static class AnyVisitorNodeExtensions
     public static IVisitorNode AcceptChildren(this IVisitorNodeFactory factory, Expression parent)
         => new AcceptChildrenNode(parent);
 
-    private class AcceptChildrenNode : ExpressionVisitorNodeFactory.VisitorNodeBase
+    private class AcceptChildrenNode : ExpressionTreeEvaluator.VisitorNodeBase
     {
         private readonly Expression _parent;
 

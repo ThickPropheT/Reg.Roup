@@ -37,16 +37,16 @@ public interface IVisitorNodeFactory
     IVisitorNode OneOf(params IVisitorNode[] children);
 }
 
-public class ExpressionVisitorNodeFactory
+public class ExpressionTreeEvaluator
 {
     private readonly RootNode _rootNode;
 
-    private ExpressionVisitorNodeFactory(RootNode rootNode)
+    private ExpressionTreeEvaluator(RootNode rootNode)
     {
         _rootNode = rootNode;
     }
     
-    public static ExpressionVisitorNodeFactory Create(Func<IVisitorNodeFactory, IVisitorNode> doIt)
+    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IVisitorNode> doIt)
     {
         var factory = new VisitorNodeFactory();
 
@@ -57,7 +57,7 @@ public class ExpressionVisitorNodeFactory
             throw new NotSupportedException();
         }
 
-        return new ExpressionVisitorNodeFactory(new RootNode(root.ToVisitor()));
+        return new ExpressionTreeEvaluator(new RootNode(root.ToVisitor()));
     }
 
     // TODO find a way to return the expression tree here

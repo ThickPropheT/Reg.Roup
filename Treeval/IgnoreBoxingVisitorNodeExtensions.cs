@@ -34,7 +34,7 @@ public static class IgnoreBoxingVisitorNodeExtensions
         
     }
 
-    private class IgnoreNode : ExpressionVisitorNodeFactory.VisitorNodeBase
+    private class IgnoreNode : ExpressionTreeEvaluator.VisitorNodeBase
     {
         private readonly IVisitorNode _ignored;
         private readonly IVisitorNode _inner;
