@@ -73,6 +73,6 @@ public class RecordedExpressionTree
             )
         );
         
-        evaluator.DoIt(expressionTree);
+        evaluator.Evaluate(expressionTree);
     }
 }

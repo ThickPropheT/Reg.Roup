@@ -64,7 +64,7 @@ public class ExpressionVisitorNodeFactory
     }
 
     // TODO find a way to return the expression tree here
-    public void DoIt(Expression expressionTree)
+    public void Evaluate(Expression expressionTree)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
         var head = new TapeHead(tape);
