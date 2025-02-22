@@ -210,33 +210,6 @@ public abstract class BaseExpectation : IBaseExpectation
         INotNullOptions MoveNext();
     }
 
-    private class NotNullCondition : ICondition
-    {
-        public string Describe(Expression? _)
-            => "Condition.NotNull";
-
-        public bool Evaluate(Expression? node)
-            => node is not null;
-    }
-
-    private class WhereCondition : ICondition
-    {
-        private readonly string _message;
-        private readonly Func<Expression, bool> _predicate;
-
-        public WhereCondition(string message, Func<Expression, bool> predicate)
-        {
-            _message = message;
-            _predicate = predicate;
-        }
-
-        public string Describe(Expression? _)
-            => $"Condition.Where: ( {_message} )";
-
-        public bool Evaluate(Expression? node)
-            => _predicate(node!);
-    }
-
     private class OrCondition : ICondition
     {
         private readonly ICondition[] _options;

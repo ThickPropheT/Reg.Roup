@@ -1,0 +1,59 @@
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+
+namespace Reg.Roup.Expectation._RecycleBin;
+
+public static class MethodCallVisitorNodeExtensions
+{
+    public static IVisitorNode<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Func<MethodCallExpression, IVisitorNode> target)
+        => factory
+            .OfType<MethodCallExpression>()
+            .HavingChildren(call => [target(call)]);
+    
+    public static IVisitorNode<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        string? name,
+        params IVisitorNode[] parameters)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Where(call => call.Method.DeclaringType == typeof(TOwner))
+            .Where(call => name == null || call.Method.Name == name)
+            .HavingChildren(
+                new[]
+                    {
+                        factory
+                            .OfType<Expression>()
+                            .Where(@object => @object.Type == typeof(TOwner))
+                    }
+                    .Concat(parameters)
+                    .ToArray());
+
+    public static IVisitorNode MethodCallDelegate(
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, IVisitorNode>? target = null,
+        Func<MethodInfo, bool>? methodPredicate = null)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
+            .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
+            .HavingChildren(call =>
+                [
+                    factory
+                        .OfType<ConstantExpression>()
+                        .Where(constant => constant.Value is MethodInfo)
+                        .Where(constant => methodPredicate?.Invoke((MethodInfo) constant.Value!) != false),
+
+                    factory
+                        .OfType<ConstantExpression>()
+                        .Where(constant => constant.Type == typeof(Type)),
+
+                    target?.Invoke(call) ?? factory
+                        .OfType<ConstantExpression>()
+                        .Where(constant => constant.Value == null)
+                ]
+            );
+}
