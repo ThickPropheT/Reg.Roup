@@ -18,7 +18,7 @@ public static class ConversionVisitorNodeExtensions
             .Where(cast => cast.Type == typeof(T))
             .HavingChild(operand);
     
-    public static IVisitorNode<UnaryExpression> Cast(this IVisitorNodeFactory factory, Type toType, IVisitorNode operand)
+    public static IVisitorNode<UnaryExpression> Cast(this IVisitorNodeFactory factory, IVisitorNode operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)
