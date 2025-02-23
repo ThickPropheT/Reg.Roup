@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Treeval;
+namespace TreeVal;
 
 public static class MethodCallVisitorNodeExtensions
 {

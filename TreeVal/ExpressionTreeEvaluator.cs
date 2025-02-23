@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Treeval.Condition;
+using TreeVal.Condition;
 
-namespace Treeval;
+namespace TreeVal;
 
 public interface IVisitorFactory
 {
@@ -23,7 +23,7 @@ public interface IVisitorNode<out TNode> : IVisitorNode
         string predicateExpression = "");
 
     new IVisitorNode<TNode> HavingChild(IVisitorNode child);
-    new IVisitorNode<TNode> HavingChildren(IVisitorNode[] children);
+    new IVisitorNode<TNode> HavingChildren(params IVisitorNode[] children);
     new IVisitorNode<TNode> HavingChildren(Func<TNode, IVisitorNode[]> buildChildren);
 
     IVisitorNode<TNode> WithEachChildBeing<TChild>(Func<TNode, IEnumerable<TChild>> findChildren,
@@ -69,6 +69,11 @@ public class ExpressionTreeEvaluator
         var visitation = new VisitationContext(head);
 
         _rootNode.Visit(visitation);
+
+        if (visitation.HasRejection)
+        {
+            throw new TreeRejectedException();
+        }
     }
 
     private class RootNode : IExpressionVisitorNode
@@ -86,7 +91,8 @@ public class ExpressionTreeEvaluator
 
             if (context.CanMoveForward())
             {
-                throw new NotSupportedException();
+                // TODO reevaluated whether this should be tree rejected and not some other ex type
+                throw new TreeRejectedException();
             }
 
             return result;
@@ -108,19 +114,22 @@ public class ExpressionTreeEvaluator
         {
             var current = context.MoveForward();
 
-            var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
-
-            if (failedConditions.Any())
+            try
             {
-                // TODO pass in failedConditions
-                context.Reject(this);
-
-                foreach (var failedCondition in failedConditions)
+                var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
+                
+                if (failedConditions.Any())
                 {
-                    failedCondition.Evaluate(current);
-                }
+                    // TODO pass in failedConditions
+                    context.Reject(this);
 
-                // TODO figure out method of returning an Expression
+                    // TODO figure out method of returning an Expression
+                    return null;
+                }
+            }
+            catch (TreeRejectedException)
+            {
+                context.Reject(this);
                 return null;
             }
 
@@ -203,7 +212,10 @@ public class ExpressionTreeEvaluator
         public VisitorNode(ExpressionType? nodeType)
         {
             NodeType = nodeType;
-            AddCondition(new NodeTypeCondition(typeof(TNode), nodeType));
+            AddCondition(new NodeTypeCondition(typeof(TNode), nodeType)
+            {
+                Throw = new TreeRejectedException()
+            });
         }
 
         public IVisitorNode<TNode> Where(Func<TNode, bool> predicate,
@@ -228,7 +240,7 @@ public class ExpressionTreeEvaluator
             return this;
         }
 
-        public new IVisitorNode<TNode> HavingChildren(IVisitorNode[] children)
+        public new IVisitorNode<TNode> HavingChildren(params IVisitorNode[] children)
         {
             base.HavingChildren(children);
             return this;

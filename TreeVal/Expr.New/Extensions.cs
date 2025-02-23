@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Treeval.Expr.New;
+namespace TreeVal.Expr.New;
 
 public static class Extensions
 {

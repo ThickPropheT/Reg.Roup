@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Treeval.Condition;
+namespace TreeVal.Condition;
 
 public class NotNullCondition : ICondition
 {

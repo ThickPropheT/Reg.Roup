@@ -1,4 +1,4 @@
-namespace Treeval;
+namespace TreeVal;
 
 public static class ConstructorVisitorNodeExtensions
 {

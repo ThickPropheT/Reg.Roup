@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Treeval;
+namespace TreeVal;
 
 public static class IgnoreBoxingVisitorNodeExtensions
 {
@@ -80,7 +80,7 @@ public static class IgnoreBoxingVisitorNodeExtensions
         public new IVisitorNode<T> HavingChild(IVisitorNode child)
             => _innerT.HavingChild(child);
 
-        public new IVisitorNode<T> HavingChildren(IVisitorNode[] children)
+        public new IVisitorNode<T> HavingChildren(params IVisitorNode[] children)
             => _innerT.HavingChildren(children);
 
         public IVisitorNode<T> HavingChildren(Func<T, IVisitorNode[]> buildChildren)

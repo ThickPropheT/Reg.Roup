@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treeval", "Treeval\Treeval.csproj", "{5DC51D37-434B-4DA6-9DAD-C53A99413E90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeVal", "TreeVal\TreeVal.csproj", "{5DC51D37-434B-4DA6-9DAD-C53A99413E90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Treeval.Tests", "Treeval.Tests\Treeval.Tests.csproj", "{71EF1F78-51FA-4843-A221-BBED8430419B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeVal.Tests", "TreeVal.Tests\TreeVal.Tests.csproj", "{71EF1F78-51FA-4843-A221-BBED8430419B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

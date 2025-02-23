@@ -1,4 +1,4 @@
-﻿namespace Treeval;
+﻿namespace TreeVal;
 
 [Serializable]
 public class SkepticalException : Exception

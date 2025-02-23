@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Treeval;
+namespace TreeVal;
 
 public class ProxyVisitor : IExpressionVisitorNode
 {

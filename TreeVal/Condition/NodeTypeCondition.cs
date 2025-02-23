@@ -1,11 +1,13 @@
 using System.Linq.Expressions;
 
-namespace Treeval.Condition;
+namespace TreeVal.Condition;
 
 public class NodeTypeCondition : ICondition
 {
     private readonly string _description;
     private readonly Func<Expression, bool> _predicate;
+
+    public Exception? Throw { get; init; }
     
     public NodeTypeCondition(ExpressionType nodeType)
     {
@@ -31,5 +33,19 @@ public class NodeTypeCondition : ICondition
         => $"Condition.OfType: {{ {_description} }}";
 
     public bool Evaluate(Expression? node)
-        => _predicate(node!);
+    {
+        var isValid = _predicate(node!);
+
+        if (Throw == null)
+        {
+            return isValid;
+        }
+
+        if (!isValid)
+        {
+            throw Throw;
+        }
+        
+        return true;
+    }
 }

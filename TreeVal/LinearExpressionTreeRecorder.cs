@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace Treeval;
+namespace TreeVal;
 
 public static class LinearExpressionTreeRecorder
 {
