@@ -13,7 +13,7 @@ public interface IVisitorFactory
 // TODO figure out better naming alignment w/ IExpressionVisitorNode
 public interface IVisitorNode : IVisitorFactory
 {
-    // TODO merge this w/ IVisitorFactory
+    IVisitorNode HavingChildren(IVisitorNode[] buildChildren);
 }
 
 public interface IVisitorNode<out TNode> : IVisitorNode
@@ -68,7 +68,14 @@ public class ExpressionTreeEvaluator
         
         var visitation = new VisitationContext(head);
 
-        _rootNode.Visit(visitation);
+        try
+        {
+            _rootNode.Visit(visitation);
+        }
+        catch (Exception)
+        {
+            throw new TreeRejectedException();
+        }
 
         if (visitation.HasRejection)
         {
