@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
 
-namespace Treeval.Tests;
+namespace TreeVal.Tests;
 
 [TestFixture]
-public class Conversion
+public class Cast
 {
     private static readonly Expression InvalidExpression =
         Expression.Add(Expression.Constant(1), Expression.Constant(1));
@@ -22,7 +22,7 @@ public class Conversion
     [TestCaseSource(nameof(Evaluators))]
     public void ThrowsOnInvalidSchemas(ExpressionTreeEvaluator evaluator)
     {
-        Assert.That(() => evaluator.Evaluate(InvalidExpression), Throws.Exception);
+        Assert.That(() => evaluator.Evaluate(InvalidExpression), Throws.TypeOf<TreeRejectedException>());
     }
 
     [TestCaseSource(nameof(Evaluators))]
