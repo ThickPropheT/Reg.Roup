@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Treeval;
+namespace TreeVal;
 
 public static class AnyVisitorNodeExtensions
 {
@@ -33,6 +33,20 @@ public static class AnyVisitorNodeExtensions
                     if (current != null)
                     {
                         tape.Remove(current);
+                    }
+
+                    if (!context.CanMoveForward())
+                    {
+                        if (!tape.Any())
+                        {
+                            context.Accept(self);
+                        }
+                        else
+                        {
+                            context.Reject(self);
+                        }
+
+                        return null;
                     }
 
                     current = context.MoveForward();

@@ -1,13 +1,13 @@
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
-namespace Treeval.Tests;
+namespace TreeVal.Tests;
 
 [TestFixture]
-public class Any
+public class AnyOne
 {
     private static readonly Expression[] InvalidExpressions =
     [
+        Expression.Convert(Expression.Constant(1), typeof(short)),
         Expression.Add(Expression.Constant(1), Expression.Constant(1))
     ];
 
