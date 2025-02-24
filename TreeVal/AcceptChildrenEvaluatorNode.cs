@@ -7,7 +7,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
     private readonly Expression _parent;
 
-    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent) 
+    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
         : base(conditions, [])
     {
         _parent = parent;
@@ -21,9 +21,10 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         while (tape.Contains(current))
         {
             tape.Remove(current);
-            
-            // know if i can move forward
-            if (!context.CanMoveForward())
+
+            var c = context.PeekForward();
+
+            if (c == null)
             {
                 if (tape.Any())
                 {
@@ -37,13 +38,10 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 
                 return;
             }
-            
-            // move forward
-            current = context.MoveForward();
-        }
 
-        // don't move too far forward
-        context.MoveBackward();
+            current = c;
+            context.MoveForward();
+        }
 
         // TODO add auto-accept and remove this
         context.Accept(this);

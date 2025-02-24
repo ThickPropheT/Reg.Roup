@@ -15,9 +15,11 @@ public interface ITapeHead
 
     bool CanMoveForward();
     Expression MoveForward();
+    Expression? PeekForward();
     
     bool CanMoveBackward();
     Expression MoveBackward();
+    Expression? PeekBackward();
 
     ICheckpoint Checkpoint();
 }
@@ -57,6 +59,11 @@ public class TapeHead : ITapeHead
         return Read();
     }
 
+    public Expression? PeekForward()
+        => CanMoveForward()
+            ? _tape[_currentIndex + 1]
+            : null;
+
     public bool CanMoveBackward()
         => _currentIndex > 0;
 
@@ -71,6 +78,11 @@ public class TapeHead : ITapeHead
 
         return Read();
     }
+
+    public Expression? PeekBackward()
+        => CanMoveBackward()
+            ? _tape[_currentIndex - 1]
+            : null;
 
     public ICheckpoint Checkpoint() 
         => new TapeHeadCheckpoint(this, new TapeHead(_tape, _currentIndex));

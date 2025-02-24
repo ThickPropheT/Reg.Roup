@@ -12,13 +12,9 @@ public interface IVisitationTracker
 
 public interface IVisitationContext : IVisitationTracker
 {
-    Expression ReadCurrent();
-
     bool CanMoveForward();
     Expression MoveForward();
-
-    bool CanMoveBackward();
-    Expression MoveBackward();
+    Expression? PeekForward();
 
     IVisitationTracker Try(Action<IVisitationContext> scope);
 }
@@ -34,20 +30,14 @@ public class VisitationContext : IVisitationContext
         _head = head;
     }
 
-    public Expression ReadCurrent()
-        => _head.Read();
-
     public bool CanMoveForward()
         => _head.CanMoveForward();
 
     public Expression MoveForward()
         => _head.MoveForward();
 
-    public bool CanMoveBackward()
-        => _head.CanMoveBackward();
-
-    public Expression MoveBackward()
-        => _head.MoveBackward();
+    public Expression? PeekForward()
+        => _head.PeekForward();
 
     public void Accept(IEvaluatorNode visitor)
     {
