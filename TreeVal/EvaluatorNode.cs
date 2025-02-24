@@ -32,6 +32,7 @@ public class EvaluatorNode : IEvaluatorNode
 
         EvaluateChildren(context, current);
 
+        // TODO add auto-accept and remove this
         context.Accept(this);
     }
 

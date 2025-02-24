@@ -24,13 +24,14 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
             
             if (!context.CanMoveForward())
             {
-                if (!tape.Any())
+                if (tape.Any())
                 {
-                    context.Accept(this);
+                    context.Reject(this);
                 }
                 else
                 {
-                    context.Reject(this);
+                    // TODO add auto-accept and remove this
+                    context.Accept(this);
                 }
 
                 return;
@@ -42,6 +43,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         // if current wasn't a child of _parent, then move back one
         context.MoveBackward();
 
+        // TODO add auto-accept and remove this
         context.Accept(this);
     }
 }

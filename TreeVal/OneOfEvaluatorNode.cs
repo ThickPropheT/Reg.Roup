@@ -15,7 +15,7 @@ public class OneOfEvaluatorNode : EvaluatorNode
 
     protected override void EvaluateChildren(IVisitationContext context, Expression current)
     {
-        foreach (var option in _options)
+        var accepted = _options.FirstOrDefault(option =>
         {
             var tracker = context.Try(copy =>
             {
@@ -23,15 +23,17 @@ public class OneOfEvaluatorNode : EvaluatorNode
                 visitor.Evaluate(copy);
             });
 
-            if (!tracker.HasRejection)
-            {
-                context.Accept(this);
-                return;
-            }
-        }
+            return !tracker.HasRejection;
+        });
 
-        // TODO does this really need to reject AND throw?
-        context.Reject(this);
-        throw new TreeRejectedException(nameof(OneOfEvaluatorNode));
+        if (accepted == null)
+        {
+            context.Reject(this);
+        }
+        else
+        {
+            // TODO add auto-accept and remove this
+            context.Accept(this);
+        }
     }
 }
