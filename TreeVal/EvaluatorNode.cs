@@ -15,7 +15,7 @@ public class EvaluatorNode : IEvaluatorNode
         _childLookups = childLookups;
     }
 
-    public Expression? Evaluate(IVisitationContext context)
+    public void Evaluate(IVisitationContext context)
     {
         var current = context.MoveForward();
 
@@ -27,15 +27,13 @@ public class EvaluatorNode : IEvaluatorNode
             {
                 // TODO pass in failedConditions
                 context.Reject(this);
-
-                // TODO figure out method of returning an Expression
-                return null;
+                return;
             }
         }
         catch (TreeRejectedException)
         {
             context.Reject(this);
-            return null;
+            return;
         }
 
         foreach (var child in _childLookups.SelectMany(lookup => lookup(current!)))
@@ -45,15 +43,11 @@ public class EvaluatorNode : IEvaluatorNode
 
             if (context.HasRejection)
             {
-                // TODO figure out method of returning an Expression
                 context.Reject(this);
-                return null;
+                return;
             }
         }
 
         context.Accept(this);
-
-        // TODO figure out method of returning an Expression
-        return null;
     }
 }

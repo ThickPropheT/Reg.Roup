@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace TreeVal;
 
 public class OneOfEvaluatorBuilder : EvaluatorBuilderBase
@@ -26,7 +24,7 @@ public class OneOfEvaluatorBuilder : EvaluatorBuilderBase
             _options = options;
         }
 
-        public Expression? Evaluate(IVisitationContext context)
+        public void Evaluate(IVisitationContext context)
         {
             foreach (var option in _options)
             {
@@ -39,15 +37,12 @@ public class OneOfEvaluatorBuilder : EvaluatorBuilderBase
                 if (!tracker.HasRejection)
                 {
                     context.Accept(this);
-                    // TODO figure out method of returning an Expression
-                    return null;
+                    return;
                 }
             }
 
             context.Reject(this);
-
-            // TODO figure out method of returning an Expression
-            throw new NotSupportedException("No OneOf matched expression");
+            throw new TreeRejectedException("No OneOf matched expression");
         }
     }
 }

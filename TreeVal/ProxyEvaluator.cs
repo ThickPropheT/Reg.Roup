@@ -11,6 +11,6 @@ public class ProxyEvaluator : IEvaluatorNode
         _onVisit = onVisit;
     }
 
-    public Expression? Evaluate(IVisitationContext context)
+    public void Evaluate(IVisitationContext context)
         => _onVisit(this, context);
 }

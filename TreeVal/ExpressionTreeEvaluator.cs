@@ -78,17 +78,15 @@ public class ExpressionTreeEvaluator
             _tree = tree;
         }
 
-        public Expression? Evaluate(IVisitationContext context)
+        public void Evaluate(IVisitationContext context)
         {
-            var result = _tree.Evaluate(context);
+            _tree.Evaluate(context);
 
             if (context.CanMoveForward())
             {
                 // TODO reevaluated whether this should be tree rejected and not some other ex type
                 throw new TreeRejectedException();
             }
-
-            return result;
         }
     }
 }
