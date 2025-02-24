@@ -4,21 +4,23 @@ namespace TreeVal.Extensions;
 
 public static class ConversionEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory)
-        => factory.OfType<UnaryExpression>(ExpressionType.Convert);
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory)
+        => factory
+            .OfType<UnaryExpression>(ExpressionType.Convert)
+            .AcceptChildren();
     
-    public static IEvaluatorBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory, IEvaluatorBuilder operand)
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory, IEvaluatorNodeFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .HavingChild(operand);
     
-    public static IEvaluatorBuilder<UnaryExpression> Cast<T>(this VisitorNodeFactory factory, IEvaluatorBuilder operand)
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast<T>(this VisitorNodeFactory factory, IEvaluatorNodeFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == typeof(T))
             .HavingChild(operand);
     
-    public static IEvaluatorBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory, IEvaluatorBuilder operand, Type toType)
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this VisitorNodeFactory factory, IEvaluatorNodeFactory operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)

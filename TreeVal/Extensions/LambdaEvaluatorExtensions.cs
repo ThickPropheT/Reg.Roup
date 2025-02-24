@@ -5,8 +5,7 @@ namespace TreeVal.Extensions;
 public static class LambdaEvaluatorExtensions
 {
     public static IEvaluatorBuilder<LambdaExpression> Lambda(
-        // TODO consider changing parameters to IVisitorNode<ParameterExpression>[]
-        this VisitorNodeFactory factory, IEvaluatorBuilder[] parameters, IEvaluatorBuilder body)
+        this VisitorNodeFactory factory, IEvaluatorNodeFactory[] parameters, IEvaluatorNodeFactory body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChildren(new[] {body}.Concat(parameters).ToArray());

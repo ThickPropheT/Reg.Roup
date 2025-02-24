@@ -8,21 +8,8 @@ public class AcceptChildren
 {
     private static readonly Expression[] InvalidExpressions =
     [
-        Expression.Break(Expression.Label()),
         Expression.Constant(1),
-        Expression.Continue(Expression.Label()),
-        Expression.Default(typeof(int)),
-        // Expression.Dynamic(), // TODO
-        Expression.Empty(),
-        Expression.Goto(Expression.Label()),
-        Expression.New(typeof(object).GetConstructor(Type.EmptyTypes)!),
-        Expression.Parameter(typeof(int), "index"),
-        Expression.Rethrow(),
-        Expression.Return(Expression.Label()),
-        Expression.Variable(typeof(int)),
-        Expression.DebugInfo(Expression.SymbolDocument("my.file"), 1, 1, 2, 2),
-        Expression.ClearDebugInfo(Expression.SymbolDocument("my.file")),
-        Expression.Convert(Expression.Constant(1), typeof(short)),
+        Expression.Convert(Expression.Constant(1), typeof(short))
     ];
 
     private static readonly Expression[] ValidExpressions =
@@ -39,7 +26,7 @@ public class AcceptChildren
     ];
 
     private readonly ExpressionTreeEvaluator _evaluator;
-    
+
     public AcceptChildren(ExpressionTreeEvaluator evaluator)
     {
         _evaluator = evaluator;

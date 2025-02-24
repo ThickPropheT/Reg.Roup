@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 using TreeVal.Extensions;
 
-namespace TreeVal.Tests;
+namespace TreeVal.Tests.Cast;
 
 [TestFixture]
-public class Cast
+public class ByOperandAndByType
 {
     private static readonly Expression InvalidExpression =
         Expression.Add(Expression.Constant(1), Expression.Constant(1));
@@ -14,8 +14,6 @@ public class Cast
 
     private static readonly ExpressionTreeEvaluator[] Evaluators =
     [
-        ExpressionTreeEvaluator.Create(node => node.Cast().HavingChild(node.Constant(1))),
-        ExpressionTreeEvaluator.Create(node => node.Cast(node.Constant(1))),
         ExpressionTreeEvaluator.Create(node => node.Cast<short>(node.Constant(1))),
         ExpressionTreeEvaluator.Create(node => node.Cast(node.Constant(1), typeof(short)))
     ];

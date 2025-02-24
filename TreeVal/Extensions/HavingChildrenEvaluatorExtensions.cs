@@ -4,35 +4,35 @@ namespace TreeVal.Extensions;
 public static class HavingChildrenEvaluatorExtensions
 {
     public static IEvaluatorBuilder HavingChild(
-        this IEvaluatorBuilder builder, IEvaluatorBuilder child)
+        this IEvaluatorBuilder builder, IEvaluatorNodeFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
     public static IEvaluatorBuilder HavingChildren(
-        this IEvaluatorBuilder builder, params IEvaluatorBuilder[] children)
+        this IEvaluatorBuilder builder, params IEvaluatorNodeFactory[] children)
     {
         builder.AddChildren(_ => children);
         return builder;
     }
 
     public static IEvaluatorBuilder<TNode> HavingChild<TNode>(
-        this IEvaluatorBuilder<TNode> builder, IEvaluatorBuilder child)
+        this IEvaluatorBuilder<TNode> builder, IEvaluatorNodeFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
     public static IEvaluatorBuilder<TNode> HavingChildren<TNode>(
-        this IEvaluatorBuilder<TNode> node, params IEvaluatorBuilder[] children)
+        this IEvaluatorBuilder<TNode> node, params IEvaluatorNodeFactory[] children)
     {
         node.AddChildren(_ => children);
         return node;
     }
 
     public static IEvaluatorBuilder<TNode> HavingChild<TNode>(
-        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEvaluatorBuilder> getChild)
+        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEvaluatorNodeFactory> getChild)
     {
         builder.AddChildren(node =>
         {
@@ -48,7 +48,7 @@ public static class HavingChildrenEvaluatorExtensions
     }
 
     public static IEvaluatorBuilder<TNode> HavingChildren<TNode>(
-        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEnumerable<IEvaluatorBuilder>> getChildren)
+        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEnumerable<IEvaluatorNodeFactory>> getChildren)
     {
         builder.AddChildren(node =>
         {

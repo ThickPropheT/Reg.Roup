@@ -6,11 +6,13 @@ namespace TreeVal.Extensions;
 
 public static class WhereEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Where(
-        this IEvaluatorBuilder node,
-        Func<Expression?, bool> predicate,
+    public static TBuilder Where<TBuilder>(
+        this TBuilder node,
+        Func<Expression, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
-        string predicateExpression = "")
+        string predicateExpression = ""
+    )
+        where TBuilder : IEvaluatorConditionBuilder
     {
         node.AddCondition(new WhereCondition(predicateExpression, predicate));
         return node;
@@ -20,7 +22,8 @@ public static class WhereEvaluatorExtensions
         this IEvaluatorBuilder<T> node,
         Func<T, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
-        string predicateExpression = "")
+        string predicateExpression = ""
+    )
     {
         node.AddCondition(new WhereCondition(predicateExpression, n =>
         {

@@ -5,7 +5,6 @@ namespace TreeVal;
 
 public static class LinearExpressionTreeRecorder
 {
-    // TODO just return an array
     public static IEnumerable<Expression?> RecordVisitationOf(Expression? node)
     {
         var visitor = new Visitor();

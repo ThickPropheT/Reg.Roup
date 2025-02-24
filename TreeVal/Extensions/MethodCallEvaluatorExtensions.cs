@@ -5,18 +5,19 @@ namespace TreeVal.Extensions;
 
 public static class MethodCallEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorBuilder> target)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
             .OfType<MethodCallExpression>()
             .HavingChildren(call => [target(call)]);
-    
+
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this VisitorNodeFactory factory,
         // TODO
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        params IEvaluatorBuilder[] parameters)
+        params IEvaluatorNodeFactory[] parameters)
         => factory
             .OfType<MethodCallExpression>()
             .Where(call => call.Method.DeclaringType == typeof(TOwner))
@@ -24,15 +25,13 @@ public static class MethodCallEvaluatorExtensions
             .HavingChildren(
                 new[]
                     {
-                        factory
-                            .OfType<Expression>()
-                            .Where(@object => @object.Type == typeof(TOwner))
+                        factory.Where(@object => @object.Type == typeof(TOwner))
                     }
                     .Concat(parameters)
                     .ToArray());
 
     public static IEvaluatorBuilder MethodCallDelegate(
-        this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorBuilder>? target = null,
+        this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory>? target = null,
         Func<MethodInfo, bool>? methodPredicate = null)
         => factory
             .OfType<MethodCallExpression>()

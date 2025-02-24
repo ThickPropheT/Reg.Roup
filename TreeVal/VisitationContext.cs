@@ -5,7 +5,7 @@ namespace TreeVal;
 public interface IVisitationTracker
 {
     bool HasRejection { get; }
-    
+
     void Accept(IEvaluatorNode visitor);
     void Reject(IEvaluatorNode visitor);
 }
@@ -17,10 +17,10 @@ public interface IVisitationContext : IVisitationTracker
     Expression? ReadCurrent();
 
     bool CanMoveForward();
-    Expression? MoveForward();
-    
+    Expression MoveForward();
+
     bool CanMoveBackward();
-    Expression? MoveBackward();
+    Expression MoveBackward();
 
     IVisitationTracker Try(Action<IVisitationContext> scope);
 }
@@ -28,7 +28,7 @@ public interface IVisitationContext : IVisitationTracker
 public class VisitationContext : IVisitationContext
 {
     private readonly ITapeHead _head;
-    
+
     public bool HasRejection { get; private set; }
 
     public VisitationContext(ITapeHead head)

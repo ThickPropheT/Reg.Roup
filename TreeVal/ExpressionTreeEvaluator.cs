@@ -8,14 +8,23 @@ public interface IEvaluatorNodeFactory
     IEvaluatorNode ToEvaluator();
 }
 
-// TODO figure out better naming alignment w/ IExpressionVisitorNode
-public interface IEvaluatorBuilder : IEvaluatorNodeFactory
+public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
 {
     void AddCondition(ICondition condition);
+}
+
+// TODO figure out better naming alignment w/ IExpressionVisitorNode
+public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
+{
     void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
 }
 
-public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder
+public interface IEvaluatorConditionBuilder<TNode> : IEvaluatorNodeFactory
+{
+    
+}
+
+public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TNode>
 {
     // TODO
     //  can this be merged into IEvaluatorBuilder above,
@@ -32,7 +41,7 @@ public class ExpressionTreeEvaluator
         _rootNode = rootNode;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorBuilder> getNodes)
+    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorNodeFactory> getNodes)
     {
         var factory = new VisitorNodeFactory();
 
@@ -58,9 +67,13 @@ public class ExpressionTreeEvaluator
         {
             _rootNode.Evaluate(context);
         }
-        catch (Exception)
+        catch (TreeRejectedException)
         {
-            throw new TreeRejectedException();
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new TreeRejectedException(nameof(ExpressionTreeEvaluator), ex);
         }
 
         if (context.HasRejection)

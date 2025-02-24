@@ -5,11 +5,12 @@ namespace TreeVal;
 
 public class EvaluatorNode : IEvaluatorNode
 {
-    private readonly ICondition[] _conditions;
+    private readonly IEnumerable<ICondition> _conditions;
     private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
 
     public EvaluatorNode(
-        ICondition[] conditions, IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
     {
         _conditions = conditions;
         _childLookups = childLookups;
@@ -21,14 +22,7 @@ public class EvaluatorNode : IEvaluatorNode
 
         try
         {
-            var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
-
-            if (failedConditions.Any())
-            {
-                // TODO pass in failedConditions
-                context.Reject(this);
-                return;
-            }
+            EvaluateConditions(context, current);
         }
         catch (TreeRejectedException)
         {
@@ -36,7 +30,25 @@ public class EvaluatorNode : IEvaluatorNode
             return;
         }
 
-        foreach (var child in _childLookups.SelectMany(lookup => lookup(current!)))
+        EvaluateChildren(context, current);
+
+        context.Accept(this);
+    }
+
+    protected virtual void EvaluateConditions(IVisitationContext context, Expression current)
+    {
+        var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
+
+        if (failedConditions.Any())
+        {
+            // TODO pass in failedConditions
+            context.Reject(this);
+        }
+    }
+
+    protected virtual void EvaluateChildren(IVisitationContext context, Expression current)
+    {
+        foreach (var child in _childLookups.SelectMany(lookup => lookup(current)))
         {
             var visitor = child.ToEvaluator();
             visitor.Evaluate(context);
@@ -47,7 +59,5 @@ public class EvaluatorNode : IEvaluatorNode
                 return;
             }
         }
-
-        context.Accept(this);
     }
 }
