@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class LambdaVisitorNodeExtensions
+public static class LambdaEvaluatorExtensions
 {
     public static IEvaluatorBuilder<LambdaExpression> Lambda(
         // TODO consider changing parameters to IVisitorNode<ParameterExpression>[]

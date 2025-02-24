@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class MethodCallVisitorNodeExtensions
+public static class MethodCallEvaluatorExtensions
 {
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorBuilder> target)
         => factory

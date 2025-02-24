@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class ConstructorVisitorNodeExtensions
+public static class ConstructorEvaluatorExtensions
 {
     public static IEvaluatorBuilder<NewExpression> New(this IVisitorNodeFactory factory)
         => factory

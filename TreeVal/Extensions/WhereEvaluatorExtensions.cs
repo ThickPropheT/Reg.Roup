@@ -2,9 +2,9 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class WhereVisitorNodeExtensions
+public static class WhereEvaluatorExtensions
 {
     public static IEvaluatorBuilder Where(
         this IEvaluatorBuilder node,

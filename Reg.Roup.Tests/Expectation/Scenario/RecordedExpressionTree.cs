@@ -2,6 +2,7 @@ using Reg.Roup.Conversions;
 using Reg.Roup.Expectation;
 using TreeVal;
 using TreeVal.Expr.New;
+using TreeVal.Extensions;
 
 namespace Reg.Roup.Tests.Expectation.Scenario;
 

@@ -1,6 +1,6 @@
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class WithEachChildBeingVisitorNodeExtensions
+public static class EachChildEvaluatorExtensions
 {
     public static IEvaluatorBuilder<TNode> WithEachChildBeing<TNode, TChild>(
         this IEvaluatorBuilder<TNode> builder, 

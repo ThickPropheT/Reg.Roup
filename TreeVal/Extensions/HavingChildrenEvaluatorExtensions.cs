@@ -1,7 +1,7 @@
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
 // TODO test coverage
-public static class HavingChildrenVisitorNodeExtensions
+public static class HavingChildrenEvaluatorExtensions
 {
     public static IEvaluatorBuilder HavingChild(
         this IEvaluatorBuilder builder, IEvaluatorBuilder child)

@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class IgnoreBoxingVisitorNodeExtensions
+public static class IgnoreBoxingEvaluatorExtensions
 {
     // TODO
     //  modify this to take a child IVisitorNode, rather than doing this chaining thing.

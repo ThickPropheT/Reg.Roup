@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class ConversionVisitorNodeExtensions
+public static class ConversionEvaluatorExtensions
 {
     public static IEvaluatorBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory)
         => factory.OfType<UnaryExpression>(ExpressionType.Convert);

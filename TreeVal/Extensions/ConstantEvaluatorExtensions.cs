@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
-public static class ConstantVisitorNodeExtensions
+public static class ConstantEvaluatorExtensions
 {
     public static IEvaluatorBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory)
         => factory.OfType<ConstantExpression>();
