@@ -23,13 +23,6 @@ public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder
     //  perhaps these two could/should just be concrete implementations now?
 }
 
-public interface IVisitorNodeFactory
-{
-    IEvaluatorBuilder OfType(ExpressionType nodeType);
-    IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null) where TExpression : Expression;
-    IEvaluatorBuilder OneOf(params IEvaluatorBuilder[] children);
-}
-
 public class ExpressionTreeEvaluator
 {
     private readonly RootNode _rootNode;
@@ -39,7 +32,7 @@ public class ExpressionTreeEvaluator
         _rootNode = rootNode;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IEvaluatorBuilder> doIt)
+    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorBuilder> doIt)
     {
         var factory = new VisitorNodeFactory();
 
@@ -76,7 +69,7 @@ public class ExpressionTreeEvaluator
         }
     }
 
-    private class RootNode : IEvaluatorNode
+    private class RootNode
     {
         private readonly IEvaluatorNode _tree;
 
@@ -97,169 +90,5 @@ public class ExpressionTreeEvaluator
 
             return result;
         }
-    }
-
-    private class EvaluatorNode : IEvaluatorNode
-    {
-        private readonly ICondition[] _conditions;
-        private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
-
-        public EvaluatorNode(ICondition[] conditions,
-            IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
-        {
-            _conditions = conditions;
-            _childLookups = childLookups;
-        }
-
-        public Expression? Evaluate(IVisitationContext context)
-        {
-            var current = context.MoveForward();
-
-            try
-            {
-                var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
-
-                if (failedConditions.Any())
-                {
-                    // TODO pass in failedConditions
-                    context.Reject(this);
-
-                    // TODO figure out method of returning an Expression
-                    return null;
-                }
-            }
-            catch (TreeRejectedException)
-            {
-                context.Reject(this);
-                return null;
-            }
-
-            foreach (var child in _childLookups.SelectMany(lookup => lookup(current!)))
-            {
-                var visitor = child.ToEvaluator();
-                visitor.Evaluate(context);
-
-                if (context.HasRejection)
-                {
-                    // TODO figure out method of returning an Expression
-                    context.Reject(this);
-                    return null;
-                }
-            }
-
-            context.Accept(this);
-
-            // TODO figure out method of returning an Expression
-            return null;
-        }
-    }
-
-    public abstract class EvaluatorBuilderBase : IEvaluatorBuilder
-    {
-        private readonly List<ICondition> _conditions = new(1);
-        private readonly List<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);
-
-        protected EvaluatorBuilderBase()
-        {
-            AddCondition(new NotNullCondition());
-        }
-
-        public virtual IEvaluatorNode ToEvaluator()
-            => new EvaluatorNode(_conditions.ToArray(), _childLookups);
-
-        public void AddCondition(ICondition condition)
-            => _conditions.Add(condition);
-
-        public void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren)
-            => _childLookups.Add(getChildren);
-    }
-
-    private class EvaluatorBuilder : EvaluatorBuilderBase
-    {
-        public ExpressionType NodeType { get; }
-
-        public EvaluatorBuilder(ExpressionType nodeType)
-        {
-            NodeType = nodeType;
-            AddCondition(NodeTypeCondition.RejectNonMatching(nodeType));
-        }
-    }
-
-    private class EvaluatorBuilder<TNode> : EvaluatorBuilderBase, IEvaluatorBuilder<TNode>
-        where TNode : Expression
-    {
-        public ExpressionType? NodeType { get; }
-
-        public EvaluatorBuilder(ExpressionType? nodeType)
-        {
-            NodeType = nodeType;
-            AddCondition(NodeTypeCondition.AssertMatching<TNode>(nodeType));
-        }
-    }
-
-    private class OneOfNode : EvaluatorBuilderBase
-    {
-        private readonly IEvaluatorBuilder[] _options;
-
-        public OneOfNode(IEvaluatorBuilder[] options)
-        {
-            _options = options;
-        }
-
-        // TODO
-        //  this doesn't handle conditions
-        //  it probably shouldn't be able to have children
-        public override IEvaluatorNode ToEvaluator()
-            => new OneOfVisitor(_options);
-
-        private class OneOfVisitor : IEvaluatorNode
-        {
-            private readonly IEvaluatorBuilder[] _options;
-
-            public OneOfVisitor(IEvaluatorBuilder[] options)
-            {
-                _options = options;
-            }
-
-            public Expression? Evaluate(IVisitationContext context)
-            {
-                foreach (var option in _options)
-                {
-                    var tracker = context.Try(copy =>
-                    {
-                        var visitor = option.ToEvaluator();
-                        visitor.Evaluate(copy);
-                    });
-
-                    if (!tracker.HasRejection)
-                    {
-                        context.Accept(this);
-                        // TODO figure out method of returning an Expression
-                        return null;
-                    }
-                }
-
-                context.Reject(this);
-
-                // TODO figure out method of returning an Expression
-                throw new NotSupportedException("No OneOf matched expression");
-            }
-        }
-    }
-
-    private class VisitorNodeFactory : IVisitorNodeFactory
-    {
-        public IEvaluatorBuilder OfType(ExpressionType nodeType)
-            => new EvaluatorBuilder(nodeType);
-
-        public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
-            where TExpression : Expression
-            => new EvaluatorBuilder<TExpression>(nodeType);
-
-        public IEvaluatorBuilder OneOf(IEvaluatorBuilder[] children)
-            => new OneOfNode(children);
-
-        public IEvaluatorBuilder OneOf(Func<IEvaluatorBuilder[]> buildChildren)
-            => OneOf(buildChildren());
     }
 }

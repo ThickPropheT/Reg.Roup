@@ -4,26 +4,26 @@ namespace TreeVal.Extensions;
 
 public static class ConstantEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder<ConstantExpression> Constant(this VisitorNodeFactory factory)
         => factory.OfType<ConstantExpression>();
     
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory, EValue<object?>? value)
+    public static IEvaluatorBuilder<ConstantExpression> Constant(this VisitorNodeFactory factory, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
             .Where(constant => value?.IsEqualTo(constant.Value) != false);
     
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory, EType type)
+    public static IEvaluatorBuilder<ConstantExpression> Constant(this VisitorNodeFactory factory, EType type)
         => factory
             .OfType<ConstantExpression>()
             .Where(constant => type.IsEqualTo(constant.Type));
     
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory, EType type, EValue<object?>? value)
+    public static IEvaluatorBuilder<ConstantExpression> Constant(this VisitorNodeFactory factory, EType type, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
             .Where(constant => type.IsEqualTo(constant.Type))
             .Where(constant => value?.IsEqualTo(constant.Value) != false);
     
-    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this VisitorNodeFactory factory)
     {
         EType type = typeof(T);
         
@@ -32,7 +32,7 @@ public static class ConstantEvaluatorExtensions
             .Where(constant => type.IsEqualTo(constant.Type));
     }
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this IVisitorNodeFactory factory, EValue<T?>? value)
+    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this VisitorNodeFactory factory, EValue<T?>? value)
     {
         EType type = typeof(T);
         value ??= EValue<T>.Null();

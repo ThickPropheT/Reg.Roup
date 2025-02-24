@@ -4,7 +4,7 @@ namespace TreeVal.Extensions;
 
 public static class DebugEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Debug(this IVisitorNodeFactory factory, Action<Expression> observe)
+    public static IEvaluatorBuilder Debug(this VisitorNodeFactory factory, Action<Expression> observe)
         => factory
             .OfType<Expression>()
             .Where(e =>

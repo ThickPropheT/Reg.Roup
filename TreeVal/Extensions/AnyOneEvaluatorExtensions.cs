@@ -4,13 +4,13 @@ namespace TreeVal.Extensions;
 
 public static class AnyOneEvaluatorExtensions
 {
-    public static IEvaluatorBuilder AnyOne(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder AnyOne(this VisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
-    public static IEvaluatorBuilder AcceptChildren(this IVisitorNodeFactory factory, Expression parent)
+    public static IEvaluatorBuilder AcceptChildren(this VisitorNodeFactory factory, Expression parent)
         => new AcceptChildrenNode(parent);
 
-    private class AcceptChildrenNode : ExpressionTreeEvaluator.EvaluatorBuilderBase
+    private class AcceptChildrenNode : EvaluatorBuilderBase
     {
         private readonly Expression _parent;
 
