@@ -25,25 +25,25 @@ public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder
 
 public class ExpressionTreeEvaluator
 {
-    private readonly RootNode _rootNode;
+    private readonly IEvaluatorNode _rootNode;
 
-    private ExpressionTreeEvaluator(RootNode rootNode)
+    private ExpressionTreeEvaluator(IEvaluatorNode rootNode)
     {
         _rootNode = rootNode;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorBuilder> doIt)
+    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorBuilder> getNodes)
     {
         var factory = new VisitorNodeFactory();
 
-        var root = doIt(factory);
+        var root = getNodes(factory);
 
         if (root == null)
         {
             throw new NotSupportedException();
         }
 
-        return new ExpressionTreeEvaluator(new RootNode(root.ToEvaluator()));
+        return new ExpressionTreeEvaluator(root.ToEvaluator());
     }
 
     // TODO find a way to return the expression tree here
@@ -52,41 +52,26 @@ public class ExpressionTreeEvaluator
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
         var head = new TapeHead(tape);
 
-        var visitation = new VisitationContext(head);
+        var context = new VisitationContext(head);
 
         try
         {
-            _rootNode.Evaluate(visitation);
+            _rootNode.Evaluate(context);
         }
         catch (Exception)
         {
             throw new TreeRejectedException();
         }
 
-        if (visitation.HasRejection)
+        if (context.HasRejection)
         {
             throw new TreeRejectedException();
         }
-    }
 
-    private class RootNode
-    {
-        private readonly IEvaluatorNode _tree;
-
-        public RootNode(IEvaluatorNode tree)
+        if (context.CanMoveForward())
         {
-            _tree = tree;
-        }
-
-        public void Evaluate(IVisitationContext context)
-        {
-            _tree.Evaluate(context);
-
-            if (context.CanMoveForward())
-            {
-                // TODO reevaluated whether this should be tree rejected and not some other ex type
-                throw new TreeRejectedException();
-            }
+            // TODO reevaluated whether this should be tree rejected and not some other ex type
+            throw new TreeRejectedException();
         }
     }
 }
