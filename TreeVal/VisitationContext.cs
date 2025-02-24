@@ -1,43 +1,15 @@
-﻿using System.Linq.Expressions;
+﻿namespace TreeVal;
 
-namespace TreeVal;
-
-public interface IVisitationTracker
+public class VisitationContext
 {
-    bool HasRejection { get; }
-
-    void Accept(IEvaluatorNode visitor);
-    void Reject(IEvaluatorNode visitor);
-}
-
-public interface IVisitationContext : IVisitationTracker
-{
-    bool CanMoveForward();
-    Expression MoveForward();
-    Expression? PeekForward();
-
-    IVisitationTracker Try(Action<IVisitationContext> scope);
-}
-
-public class VisitationContext : IVisitationContext
-{
-    private readonly ITapeHead _head;
+    public TapeHead Head { get; }
 
     public bool HasRejection { get; private set; }
 
-    public VisitationContext(ITapeHead head)
+    public VisitationContext(TapeHead head)
     {
-        _head = head;
+        Head = head;
     }
-
-    public bool CanMoveForward()
-        => _head.CanMoveForward();
-
-    public Expression MoveForward()
-        => _head.MoveForward();
-
-    public Expression? PeekForward()
-        => _head.PeekForward();
 
     public void Accept(IEvaluatorNode visitor)
     {
@@ -53,18 +25,37 @@ public class VisitationContext : IVisitationContext
         HasRejection = true;
     }
 
-    public IVisitationTracker Try(Action<IVisitationContext> scope)
+    public Branch CreateBranch() => new(this, Head.CreateBranch());
+
+    private void Merge(Branch branch)
     {
-        var checkpoint = _head.Checkpoint();
-        var copy = new VisitationContext(checkpoint.Head);
+        // TODO start actually tracking passes/fails
+        HasRejection = branch.HasRejection;
+    }
 
-        scope(copy);
+    public class Branch : VisitationContext
+    {
+        private readonly VisitationContext _parent;
+        private readonly TapeHead.Branch _head;
 
-        if (!copy.HasRejection)
+        public Branch(VisitationContext parent, TapeHead.Branch head)
+            : base(head)
         {
-            checkpoint.Commit();
+            _parent = parent;
+            _head = head;
         }
 
-        return copy;
+        public bool TryMerge()
+        {
+            if (HasRejection)
+            {
+                return false;
+            }
+
+            _head.Merge();
+            _parent.Merge(this);
+            
+            return true;
+        }
     }
 }

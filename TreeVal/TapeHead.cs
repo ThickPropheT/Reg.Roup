@@ -2,29 +2,7 @@ using System.Linq.Expressions;
 
 namespace TreeVal;
 
-public interface ICheckpoint
-{
-    ITapeHead Head { get; }
-    
-    void Commit();
-}
-
-public interface ITapeHead
-{
-    Expression Read();
-
-    bool CanMoveForward();
-    Expression MoveForward();
-    Expression? PeekForward();
-    
-    bool CanMoveBackward();
-    Expression MoveBackward();
-    Expression? PeekBackward();
-
-    ICheckpoint Checkpoint();
-}
-
-public class TapeHead : ITapeHead
+public class TapeHead
 {
     private readonly Expression[] _tape;
     private int _currentIndex;
@@ -53,9 +31,9 @@ public class TapeHead : ITapeHead
         {
             throw new IndexOutOfRangeException();
         }
-        
+
         _currentIndex++;
-        
+
         return Read();
     }
 
@@ -73,7 +51,7 @@ public class TapeHead : ITapeHead
         {
             throw new IndexOutOfRangeException();
         }
-        
+
         _currentIndex--;
 
         return Read();
@@ -84,31 +62,23 @@ public class TapeHead : ITapeHead
             ? _tape[_currentIndex - 1]
             : null;
 
-    public ICheckpoint Checkpoint() 
-        => new TapeHeadCheckpoint(this, new TapeHead(_tape, _currentIndex));
+    public Branch CreateBranch() => new(this);
+    private void Merge(Branch branch) => _currentIndex = branch._currentIndex;
 
-    private void CopyFrom(TapeHead other)
+    public class Branch : TapeHead
     {
-        _currentIndex = other._currentIndex;
-        // TODO may have a problem if tape ever becomes read/write instead of read-only
-    }
+        private readonly TapeHead _parent;
 
-    private class TapeHeadCheckpoint : ICheckpoint
-    {
-        private readonly TapeHead _original;
-        private readonly TapeHead _copy;
-
-        public ITapeHead Head => _copy;
-        
-        public TapeHeadCheckpoint(TapeHead original, TapeHead copy)
+        public Branch(TapeHead parent)
+            : base(parent._tape.ToArray(), parent._currentIndex)
         {
-            _original = original;
-            _copy = copy;
+            _parent = parent;
         }
 
-        public void Commit()
+        public TapeHead Merge()
         {
-            _original.CopyFrom(_copy);
+            _parent.Merge(this);
+            return _parent;
         }
     }
 }

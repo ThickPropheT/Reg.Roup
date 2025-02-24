@@ -13,7 +13,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         _parent = parent;
     }
 
-    protected override void EvaluateChildren(IVisitationContext context, Expression current)
+    protected override void EvaluateChildren(VisitationContext context, Expression current)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
@@ -22,7 +22,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         {
             tape.Remove(current);
 
-            var c = context.PeekForward();
+            var c = context.Head.PeekForward();
 
             if (c == null)
             {
@@ -40,7 +40,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
             }
 
             current = c;
-            context.MoveForward();
+            context.Head.MoveForward();
         }
 
         // TODO add auto-accept and remove this

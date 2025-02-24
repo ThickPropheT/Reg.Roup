@@ -78,7 +78,7 @@ public class ExpressionTreeEvaluator
             throw new TreeRejectedException();
         }
 
-        if (context.CanMoveForward())
+        if (context.Head.CanMoveForward())
         {
             // TODO reevaluated whether this should be tree rejected and not some other ex type
             throw new TreeRejectedException();

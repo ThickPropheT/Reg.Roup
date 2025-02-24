@@ -13,17 +13,16 @@ public class OneOfEvaluatorNode : EvaluatorNode
         _options = options;
     }
 
-    protected override void EvaluateChildren(IVisitationContext context, Expression current)
+    protected override void EvaluateChildren(VisitationContext context, Expression current)
     {
         var accepted = _options.FirstOrDefault(option =>
-        {
-            var tracker = context.Try(copy =>
-            {
-                var visitor = option.ToEvaluator();
-                visitor.Evaluate(copy);
-            });
+        { 
+            var branch = context.CreateBranch();
+            
+            var visitor = option.ToEvaluator();
+            visitor.Evaluate(branch);
 
-            return !tracker.HasRejection;
+            return branch.TryMerge();
         });
 
         if (accepted == null)

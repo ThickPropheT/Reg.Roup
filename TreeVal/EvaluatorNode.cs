@@ -16,9 +16,9 @@ public class EvaluatorNode : IEvaluatorNode
         _childLookups = childLookups;
     }
 
-    public void Evaluate(IVisitationContext context)
+    public void Evaluate(VisitationContext context)
     {
-        var current = context.MoveForward();
+        var current = context.Head.MoveForward();
 
         try
         {
@@ -36,7 +36,7 @@ public class EvaluatorNode : IEvaluatorNode
         context.Accept(this);
     }
 
-    protected virtual void EvaluateConditions(IVisitationContext context, Expression current)
+    protected virtual void EvaluateConditions(VisitationContext context, Expression current)
     {
         var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
 
@@ -47,7 +47,7 @@ public class EvaluatorNode : IEvaluatorNode
         }
     }
 
-    protected virtual void EvaluateChildren(IVisitationContext context, Expression current)
+    protected virtual void EvaluateChildren(VisitationContext context, Expression current)
     {
         foreach (var child in _childLookups.SelectMany(lookup => lookup(current)))
         {
