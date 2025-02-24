@@ -3,7 +3,7 @@ using TreeVal.Extensions;
 
 namespace TreeVal.Tests;
 
-[TestFixture]
+[TestFixtureSource(nameof(Evaluators))]
 public class AcceptChildren
 {
     private static readonly Expression[] InvalidExpressions =
@@ -24,34 +24,36 @@ public class AcceptChildren
         Expression.ClearDebugInfo(Expression.SymbolDocument("my.file")),
         Expression.Convert(Expression.Constant(1), typeof(short)),
     ];
-    
+
     private static readonly Expression[] ValidExpressions =
     [
         Expression.Add(Expression.Constant(1), Expression.Constant(1)),
         Expression.Subtract(Expression.Constant(1), Expression.Constant(1)),
+        Expression.Subtract(Expression.Multiply(Expression.Constant(1), Expression.Constant(1)), Expression.Constant(1))
     ];
 
-    
+    private static readonly ExpressionTreeEvaluator[] Evaluators =
+    [
+        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().HavingChild(node.AcceptChildren)),
+        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().AcceptChildren())
+    ];
 
-    private static readonly ExpressionTreeEvaluator Evaluator =
-        ExpressionTreeEvaluator.Create(node =>
-            node
-                .OfType<BinaryExpression>()
-                .HavingChildren(binary =>
-                [
-                    node.AcceptChildren(binary)
-                ])
-        );
+    private readonly ExpressionTreeEvaluator _evaluator;
+    
+    public AcceptChildren(ExpressionTreeEvaluator evaluator)
+    {
+        _evaluator = evaluator;
+    }
 
     [TestCaseSource(nameof(InvalidExpressions))]
     public void ThrowsOnInvalidSchemas(Expression invalidExpression)
     {
-        Assert.That(() => Evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
+        Assert.That(() => _evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
     }
 
     [TestCaseSource(nameof(ValidExpressions))]
     public void DoesNotThrowOnValidSchemas(Expression validExpression)
     {
-        Assert.That(() => Evaluator.Evaluate(validExpression), Throws.Nothing);
+        Assert.That(() => _evaluator.Evaluate(validExpression), Throws.Nothing);
     }
 }

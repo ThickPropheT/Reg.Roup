@@ -10,6 +10,10 @@ public static class AnyOneEvaluatorExtensions
     public static IEvaluatorBuilder AcceptChildren(this VisitorNodeFactory factory, Expression parent)
         => new AcceptChildrenNode(parent);
 
+    public static IEvaluatorBuilder<TNode> AcceptChildren<TNode>(this IEvaluatorBuilder<TNode> builder)
+        where TNode : Expression
+        => builder.HavingChild(parent => new VisitorNodeFactory().AcceptChildren(parent));
+
     private class AcceptChildrenNode : EvaluatorBuilderBase
     {
         private readonly Expression _parent;
