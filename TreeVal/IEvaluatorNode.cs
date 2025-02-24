@@ -6,8 +6,8 @@ public interface IVisitationTracker
 {
     bool HasRejection { get; }
     
-    void Accept(IExpressionVisitorNode visitor);
-    void Reject(IExpressionVisitorNode visitor);
+    void Accept(IEvaluatorNode visitor);
+    void Reject(IEvaluatorNode visitor);
 }
 
 // TODO evaluate naming
@@ -51,7 +51,7 @@ public class VisitationContext : IVisitationContext
     public Expression? MoveBackward()
         => _head.MoveBackward();
 
-    public void Accept(IExpressionVisitorNode visitor)
+    public void Accept(IEvaluatorNode visitor)
     {
         // TODO
         //  is this even useful? I can't think of anything interesting to use this for
@@ -59,7 +59,7 @@ public class VisitationContext : IVisitationContext
         //  maybe build graph of what was accepted and rejected?
     }
 
-    public void Reject(IExpressionVisitorNode visitor)
+    public void Reject(IEvaluatorNode visitor)
     {
         // TODO start actually tracking what failed
         HasRejection = true;
@@ -81,12 +81,11 @@ public class VisitationContext : IVisitationContext
     }
 }
 
-// TODO figure out better naming alignment w/ IVisitorNode
-public interface IExpressionVisitorNode
+public interface IEvaluatorNode
 {
     // TODO
     //  does this need to return a nullable expression?
     //  maybe this shouldn't be ITapeHead per se.
     //  maybe something that could offer a more tailored experience to visitor nodes. 
-    Expression? Visit(IVisitationContext context);
+    Expression? Evaluate(IVisitationContext context);
 }

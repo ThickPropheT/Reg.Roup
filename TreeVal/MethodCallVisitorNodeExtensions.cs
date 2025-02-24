@@ -5,18 +5,18 @@ namespace TreeVal;
 
 public static class MethodCallVisitorNodeExtensions
 {
-    public static IVisitorNode<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Func<MethodCallExpression, IVisitorNode> target)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorBuilder> target)
         => factory
             .OfType<MethodCallExpression>()
             .HavingChildren(call => [target(call)]);
     
-    public static IVisitorNode<MethodCallExpression> MethodCall<TOwner>(
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this IVisitorNodeFactory factory,
         // TODO
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        params IVisitorNode[] parameters)
+        params IEvaluatorBuilder[] parameters)
         => factory
             .OfType<MethodCallExpression>()
             .Where(call => call.Method.DeclaringType == typeof(TOwner))
@@ -31,8 +31,8 @@ public static class MethodCallVisitorNodeExtensions
                     .Concat(parameters)
                     .ToArray());
 
-    public static IVisitorNode MethodCallDelegate(
-        this IVisitorNodeFactory factory, Func<MethodCallExpression, IVisitorNode>? target = null,
+    public static IEvaluatorBuilder MethodCallDelegate(
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorBuilder>? target = null,
         Func<MethodInfo, bool>? methodPredicate = null)
         => factory
             .OfType<MethodCallExpression>()

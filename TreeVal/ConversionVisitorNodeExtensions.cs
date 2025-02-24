@@ -4,21 +4,21 @@ namespace TreeVal;
 
 public static class ConversionVisitorNodeExtensions
 {
-    public static IVisitorNode<UnaryExpression> Cast(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory)
         => factory.OfType<UnaryExpression>(ExpressionType.Convert);
     
-    public static IVisitorNode<UnaryExpression> Cast(this IVisitorNodeFactory factory, IVisitorNode operand)
+    public static IEvaluatorBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory, IEvaluatorBuilder operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .HavingChild(operand);
     
-    public static IVisitorNode<UnaryExpression> Cast<T>(this IVisitorNodeFactory factory, IVisitorNode operand)
+    public static IEvaluatorBuilder<UnaryExpression> Cast<T>(this IVisitorNodeFactory factory, IEvaluatorBuilder operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == typeof(T))
             .HavingChild(operand);
     
-    public static IVisitorNode<UnaryExpression> Cast(this IVisitorNodeFactory factory, IVisitorNode operand, Type toType)
+    public static IEvaluatorBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory, IEvaluatorBuilder operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)

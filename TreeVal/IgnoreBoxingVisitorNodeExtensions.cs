@@ -14,7 +14,7 @@ public static class IgnoreBoxingVisitorNodeExtensions
     private class IgnoreBoxingVisitorNodeFactory : IVisitorNodeFactory
     {
         private readonly IVisitorNodeFactory _source;
-        private readonly IVisitorNode<UnaryExpression> _ignored;
+        private readonly IEvaluatorBuilder<UnaryExpression> _ignored;
 
         public IgnoreBoxingVisitorNodeFactory(IVisitorNodeFactory source)
         {
@@ -22,36 +22,36 @@ public static class IgnoreBoxingVisitorNodeExtensions
             _ignored = source.Cast();
         }
 
-        public IVisitorNode OfType(ExpressionType nodeType) 
+        public IEvaluatorBuilder OfType(ExpressionType nodeType) 
             => new IgnoreNode(_ignored, _source.OfType(nodeType));
 
-        public IVisitorNode<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
+        public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
             where TExpression : Expression
             => new IgnoreNode<TExpression>(_ignored, _source.OfType<TExpression>(nodeType));
 
-        public IVisitorNode OneOf(params IVisitorNode[] children)
+        public IEvaluatorBuilder OneOf(params IEvaluatorBuilder[] children)
             => new IgnoreNode(_ignored, _source.OneOf(children));
         
     }
 
-    private class IgnoreNode : ExpressionTreeEvaluator.VisitorNodeBase
+    private class IgnoreNode : ExpressionTreeEvaluator.EvaluatorBuilderBase
     {
-        private readonly IVisitorNode _ignored;
-        private readonly IVisitorNode _inner;
+        private readonly IEvaluatorBuilder _ignored;
+        private readonly IEvaluatorBuilder _inner;
 
-        public IgnoreNode(IVisitorNode ignored, IVisitorNode inner)
+        public IgnoreNode(IEvaluatorBuilder ignored, IEvaluatorBuilder inner)
         {
             _ignored = ignored;
             _inner = inner;
         }
         
         // TODO this doesn't handle conditions or children
-        public override IExpressionVisitorNode ToVisitor()
-            => new ProxyVisitor((self, context) =>
+        public override IEvaluatorNode ToEvaluator()
+            => new ProxyEvaluator((self, context) =>
             {
-                context.Try(copy => _ignored.ToVisitor().Visit(copy));
+                context.Try(copy => _ignored.ToEvaluator().Evaluate(copy));
 
-                _inner.ToVisitor().Visit(context);
+                _inner.ToEvaluator().Evaluate(context);
 
                 if (context.HasRejection)
                 {
@@ -64,29 +64,29 @@ public static class IgnoreBoxingVisitorNodeExtensions
             });
     }
 
-    private class IgnoreNode<T> : IgnoreNode, IVisitorNode<T>
+    private class IgnoreNode<T> : IgnoreNode, IEvaluatorBuilder<T>
     {
-        private readonly IVisitorNode<T> _innerT;
+        private readonly IEvaluatorBuilder<T> _innerT;
 
-        public IgnoreNode(IVisitorNode ignored, IVisitorNode<T> inner) 
+        public IgnoreNode(IEvaluatorBuilder ignored, IEvaluatorBuilder<T> inner) 
             : base(ignored, inner)
         {
             _innerT = inner;
         }
 
-        public IVisitorNode<T> Where(Func<T, bool> predicate, string predicateExpression = "")
+        public IEvaluatorBuilder<T> Where(Func<T, bool> predicate, string predicateExpression = "")
             => _innerT.Where(predicate, predicateExpression);
 
-        public new IVisitorNode<T> HavingChild(IVisitorNode child)
+        public new IEvaluatorBuilder<T> HavingChild(IEvaluatorBuilder child)
             => _innerT.HavingChild(child);
 
-        public new IVisitorNode<T> HavingChildren(params IVisitorNode[] children)
+        public new IEvaluatorBuilder<T> HavingChildren(params IEvaluatorBuilder[] children)
             => _innerT.HavingChildren(children);
 
-        public IVisitorNode<T> HavingChildren(Func<T, IVisitorNode[]> buildChildren)
+        public IEvaluatorBuilder<T> HavingChildren(Func<T, IEvaluatorBuilder[]> buildChildren)
             => _innerT.HavingChildren(buildChildren);
 
-        public IVisitorNode<T> WithEachChildBeing<TChild>(Func<T, IEnumerable<TChild>> findChildren, Func<TChild, IVisitorNode> buildChildren)
+        public IEvaluatorBuilder<T> WithEachChildBeing<TChild>(Func<T, IEnumerable<TChild>> findChildren, Func<TChild, IEvaluatorBuilder> buildChildren)
             => _innerT.WithEachChildBeing(findChildren, buildChildren);
     }
 }

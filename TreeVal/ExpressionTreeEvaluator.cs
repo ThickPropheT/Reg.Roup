@@ -1,40 +1,33 @@
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using TreeVal.Condition;
 
 namespace TreeVal;
 
-public interface IVisitorFactory
+public interface IEvaluatorNodeFactory
 {
-    // TODO improve naming
-    IExpressionVisitorNode ToVisitor();
+    IEvaluatorNode ToEvaluator();
 }
 
 // TODO figure out better naming alignment w/ IExpressionVisitorNode
-public interface IVisitorNode : IVisitorFactory
+public interface IEvaluatorBuilder : IEvaluatorNodeFactory
 {
-    IVisitorNode HavingChildren(IVisitorNode[] buildChildren);
+    void AddCondition(ICondition condition);
+    void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
 }
 
-public interface IVisitorNode<out TNode> : IVisitorNode
+public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder
 {
-    IVisitorNode<TNode> Where(Func<TNode, bool> predicate,
-        [CallerArgumentExpression(nameof(predicate))]
-        string predicateExpression = "");
-
-    new IVisitorNode<TNode> HavingChild(IVisitorNode child);
-    new IVisitorNode<TNode> HavingChildren(params IVisitorNode[] children);
-    new IVisitorNode<TNode> HavingChildren(Func<TNode, IVisitorNode[]> buildChildren);
-
-    IVisitorNode<TNode> WithEachChildBeing<TChild>(Func<TNode, IEnumerable<TChild>> findChildren,
-        Func<TChild, IVisitorNode> buildChildren);
+    // TODO
+    //  can this be merged into IEvaluatorBuilder above,
+    //  replacing usages of IEvaluatorBuilder w/ IEvaluatorBuilder<Expression>?
+    //  perhaps these two could/should just be concrete implementations now?
 }
 
 public interface IVisitorNodeFactory
 {
-    IVisitorNode OfType(ExpressionType nodeType);
-    IVisitorNode<TExpression> OfType<TExpression>(ExpressionType? nodeType = null) where TExpression : Expression;
-    IVisitorNode OneOf(params IVisitorNode[] children);
+    IEvaluatorBuilder OfType(ExpressionType nodeType);
+    IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null) where TExpression : Expression;
+    IEvaluatorBuilder OneOf(params IEvaluatorBuilder[] children);
 }
 
 public class ExpressionTreeEvaluator
@@ -45,8 +38,8 @@ public class ExpressionTreeEvaluator
     {
         _rootNode = rootNode;
     }
-    
-    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IVisitorNode> doIt)
+
+    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IEvaluatorBuilder> doIt)
     {
         var factory = new VisitorNodeFactory();
 
@@ -57,7 +50,7 @@ public class ExpressionTreeEvaluator
             throw new NotSupportedException();
         }
 
-        return new ExpressionTreeEvaluator(new RootNode(root.ToVisitor()));
+        return new ExpressionTreeEvaluator(new RootNode(root.ToEvaluator()));
     }
 
     // TODO find a way to return the expression tree here
@@ -65,12 +58,12 @@ public class ExpressionTreeEvaluator
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
         var head = new TapeHead(tape);
-        
+
         var visitation = new VisitationContext(head);
 
         try
         {
-            _rootNode.Visit(visitation);
+            _rootNode.Evaluate(visitation);
         }
         catch (Exception)
         {
@@ -83,18 +76,18 @@ public class ExpressionTreeEvaluator
         }
     }
 
-    private class RootNode : IExpressionVisitorNode
+    private class RootNode : IEvaluatorNode
     {
-        private readonly IExpressionVisitorNode _tree;
+        private readonly IEvaluatorNode _tree;
 
-        public RootNode(IExpressionVisitorNode tree)
+        public RootNode(IEvaluatorNode tree)
         {
             _tree = tree;
         }
 
-        public Expression? Visit(IVisitationContext context)
+        public Expression? Evaluate(IVisitationContext context)
         {
-            var result = _tree.Visit(context);
+            var result = _tree.Evaluate(context);
 
             if (context.CanMoveForward())
             {
@@ -106,25 +99,26 @@ public class ExpressionTreeEvaluator
         }
     }
 
-    private class ExpressionVisitorNode : IExpressionVisitorNode
+    private class EvaluatorNode : IEvaluatorNode
     {
         private readonly ICondition[] _conditions;
-        private readonly IVisitorFactory[] _children;
+        private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
 
-        public ExpressionVisitorNode(ICondition[] conditions, IVisitorFactory[] children)
+        public EvaluatorNode(ICondition[] conditions,
+            IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
         {
             _conditions = conditions;
-            _children = children;
+            _childLookups = childLookups;
         }
 
-        public Expression? Visit(IVisitationContext context)
+        public Expression? Evaluate(IVisitationContext context)
         {
             var current = context.MoveForward();
 
             try
             {
                 var failedConditions = _conditions.Where(c => !c.Evaluate(current)).ToArray();
-                
+
                 if (failedConditions.Any())
                 {
                     // TODO pass in failedConditions
@@ -140,10 +134,10 @@ public class ExpressionTreeEvaluator
                 return null;
             }
 
-            foreach (var child in _children)
+            foreach (var child in _childLookups.SelectMany(lookup => lookup(current!)))
             {
-                var visitor = child.ToVisitor();
-                visitor.Visit(context);
+                var visitor = child.ToEvaluator();
+                visitor.Evaluate(context);
 
                 if (context.HasRejection)
                 {
@@ -160,63 +154,43 @@ public class ExpressionTreeEvaluator
         }
     }
 
-    public abstract class VisitorNodeBase : IVisitorNode
+    public abstract class EvaluatorBuilderBase : IEvaluatorBuilder
     {
         private readonly List<ICondition> _conditions = new(1);
-        private readonly List<IVisitorFactory> _children = new(1);
+        private readonly List<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);
 
-        protected VisitorNodeBase()
+        protected EvaluatorBuilderBase()
         {
             AddCondition(new NotNullCondition());
         }
 
-        public IVisitorNode Where(Func<Expression?, bool> predicate,
-            [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "")
-        {
-            AddCondition(new WhereCondition(predicateExpression, predicate));
-            return this;
-        }
+        public virtual IEvaluatorNode ToEvaluator()
+            => new EvaluatorNode(_conditions.ToArray(), _childLookups);
 
-        public IVisitorNode HavingChild(IVisitorNode child)
-            => HavingChildren([child]);
-
-        public IVisitorNode HavingChildren(IVisitorNode[] children)
-        {
-            // TODO
-            AddChildren((IVisitorNode[])children);
-            return this;
-        }
-
-        public IVisitorNode HavingChildren(Func<IVisitorNode[]> buildChildren)
-            => HavingChildren(buildChildren());
-
-        public virtual IExpressionVisitorNode ToVisitor()
-            => new ExpressionVisitorNode(_conditions.ToArray(), _children.ToArray());
-
-        protected void AddCondition(ICondition condition)
+        public void AddCondition(ICondition condition)
             => _conditions.Add(condition);
 
-        protected void AddChildren(params IVisitorFactory[] children)
-            => _children.AddRange(children);
+        public void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+            => _childLookups.Add(getChildren);
     }
 
-    private class VisitorNode : VisitorNodeBase
+    private class EvaluatorBuilder : EvaluatorBuilderBase
     {
         public ExpressionType NodeType { get; }
 
-        public VisitorNode(ExpressionType nodeType)
+        public EvaluatorBuilder(ExpressionType nodeType)
         {
             NodeType = nodeType;
             AddCondition(new NodeTypeCondition(nodeType));
         }
     }
 
-    private class VisitorNode<TNode> : VisitorNodeBase, IVisitorNode<TNode>
+    private class EvaluatorBuilder<TNode> : EvaluatorBuilderBase, IEvaluatorBuilder<TNode>
         where TNode : Expression
     {
         public ExpressionType? NodeType { get; }
 
-        public VisitorNode(ExpressionType? nodeType)
+        public EvaluatorBuilder(ExpressionType? nodeType)
         {
             NodeType = nodeType;
             AddCondition(new NodeTypeCondition(typeof(TNode), nodeType)
@@ -224,126 +198,13 @@ public class ExpressionTreeEvaluator
                 Throw = new TreeRejectedException()
             });
         }
-
-        public IVisitorNode<TNode> Where(Func<TNode, bool> predicate,
-            [CallerArgumentExpression(nameof(predicate))]
-            string predicateExpression = "")
-        {
-            AddCondition(new WhereCondition(predicateExpression, node =>
-            {
-                if (node is not TNode n)
-                {
-                    throw new InvalidOperationException();
-                }
-                
-                return predicate(n);
-            }));
-            return this;
-        }
-
-        public new IVisitorNode<TNode> HavingChild(IVisitorNode child)
-        {
-            base.HavingChild(child);
-            return this;
-        }
-
-        public new IVisitorNode<TNode> HavingChildren(params IVisitorNode[] children)
-        {
-            base.HavingChildren(children);
-            return this;
-        }
-
-        public IVisitorNode<TNode> HavingChildren(Func<TNode, IVisitorNode[]> buildChildren)
-        {
-            AddChildren(new HavingChildrenFactory(buildChildren));
-            return this;
-        }
-
-        public IVisitorNode<TNode> WithEachChildBeing<TChild>(Func<TNode, IEnumerable<TChild>> findChildren,
-            Func<TChild, IVisitorNode> buildChildren)
-        {
-            AddChildren(new EachChildFactory<TChild>(findChildren, buildChildren));
-            return this;
-        }
-
-        private class HavingChildrenFactory : IVisitorFactory
-        {
-            private readonly Func<TNode, IVisitorNode[]> _buildChildren;
-
-            public HavingChildrenFactory(Func<TNode, IVisitorNode[]> buildChildren)
-            {
-                _buildChildren = buildChildren;
-            }
-
-            public IExpressionVisitorNode ToVisitor()
-                => new ProxyVisitor((self, context) =>
-                {
-                    var current = context.ReadCurrent()!;
-                    var children = _buildChildren((TNode)current);
-                    
-                    foreach (var child in children)
-                    {
-                        var visitor = child.ToVisitor();
-                        visitor.Visit(context);
-
-                        if (context.HasRejection)
-                        {
-                            // TODO figure out method of returning an Expression
-                            throw new NotImplementedException();
-                        }
-                    }
-
-                    context.Accept(self);
-
-                    // TODO figure out method of returning an Expression
-                    return null;
-                });
-        }
-
-        private class EachChildFactory<TChild> : IVisitorFactory
-        {
-            private readonly Func<TNode, IEnumerable<TChild>> _findChildren;
-            private readonly Func<TChild, IVisitorNode> _buildChildren;
-
-            public EachChildFactory(Func<TNode, IEnumerable<TChild>> findChildren,
-                Func<TChild, IVisitorNode> buildChildren)
-            {
-                _findChildren = findChildren;
-                _buildChildren = buildChildren;
-            }
-
-            public IExpressionVisitorNode ToVisitor()
-                => new ProxyVisitor((self, context) =>
-                {
-                    var current = context.ReadCurrent()!;
-                    var children = _findChildren((TNode) current);
-
-                    foreach (var child in children)
-                    {
-                        var node = _buildChildren(child);
-                        var visitor = node.ToVisitor();
-                        visitor.Visit(context);
-
-                        if (context.HasRejection)
-                        {
-                            // TODO figure out method of returning an Expression
-                            throw new NotImplementedException();
-                        }
-                    }
-
-                    context.Accept(self);
-
-                    // TODO figure out method of returning an Expression
-                    return null;
-                });
-        }
     }
 
-    private class OneOfNode : VisitorNodeBase
+    private class OneOfNode : EvaluatorBuilderBase
     {
-        private readonly IVisitorNode[] _options;
+        private readonly IEvaluatorBuilder[] _options;
 
-        public OneOfNode(IVisitorNode[] options)
+        public OneOfNode(IEvaluatorBuilder[] options)
         {
             _options = options;
         }
@@ -351,26 +212,26 @@ public class ExpressionTreeEvaluator
         // TODO
         //  this doesn't handle conditions
         //  it probably shouldn't be able to have children
-        public override IExpressionVisitorNode ToVisitor()
+        public override IEvaluatorNode ToEvaluator()
             => new OneOfVisitor(_options);
 
-        private class OneOfVisitor : IExpressionVisitorNode
+        private class OneOfVisitor : IEvaluatorNode
         {
-            private readonly IVisitorNode[] _options;
+            private readonly IEvaluatorBuilder[] _options;
 
-            public OneOfVisitor(IVisitorNode[] options)
+            public OneOfVisitor(IEvaluatorBuilder[] options)
             {
                 _options = options;
             }
 
-            public Expression? Visit(IVisitationContext context)
+            public Expression? Evaluate(IVisitationContext context)
             {
                 foreach (var option in _options)
                 {
                     var tracker = context.Try(copy =>
                     {
-                        var visitor = option.ToVisitor();
-                        visitor.Visit(copy);
+                        var visitor = option.ToEvaluator();
+                        visitor.Evaluate(copy);
                     });
 
                     if (!tracker.HasRejection)
@@ -382,7 +243,7 @@ public class ExpressionTreeEvaluator
                 }
 
                 context.Reject(this);
-                
+
                 // TODO figure out method of returning an Expression
                 throw new NotSupportedException("No OneOf matched expression");
             }
@@ -391,17 +252,17 @@ public class ExpressionTreeEvaluator
 
     private class VisitorNodeFactory : IVisitorNodeFactory
     {
-        public IVisitorNode OfType(ExpressionType nodeType)
-            => new VisitorNode(nodeType);
+        public IEvaluatorBuilder OfType(ExpressionType nodeType)
+            => new EvaluatorBuilder(nodeType);
 
-        public IVisitorNode<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
+        public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
             where TExpression : Expression
-            => new VisitorNode<TExpression>(nodeType);
+            => new EvaluatorBuilder<TExpression>(nodeType);
 
-        public IVisitorNode OneOf(IVisitorNode[] children)
+        public IEvaluatorBuilder OneOf(IEvaluatorBuilder[] children)
             => new OneOfNode(children);
 
-        public IVisitorNode OneOf(Func<IVisitorNode[]> buildChildren)
+        public IEvaluatorBuilder OneOf(Func<IEvaluatorBuilder[]> buildChildren)
             => OneOf(buildChildren());
     }
 }

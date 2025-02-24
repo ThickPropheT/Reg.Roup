@@ -4,13 +4,13 @@ namespace TreeVal;
 
 public static class AnyVisitorNodeExtensions
 {
-    public static IVisitorNode AnyOne(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder AnyOne(this IVisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
-    public static IVisitorNode AcceptChildren(this IVisitorNodeFactory factory, Expression parent)
+    public static IEvaluatorBuilder AcceptChildren(this IVisitorNodeFactory factory, Expression parent)
         => new AcceptChildrenNode(parent);
 
-    private class AcceptChildrenNode : ExpressionTreeEvaluator.VisitorNodeBase
+    private class AcceptChildrenNode : ExpressionTreeEvaluator.EvaluatorBuilderBase
     {
         private readonly Expression _parent;
 
@@ -20,8 +20,8 @@ public static class AnyVisitorNodeExtensions
         }
 
         // TODO this doesn't handle conditions or children
-        public override IExpressionVisitorNode ToVisitor()
-            => new ProxyVisitor((self, context) =>
+        public override IEvaluatorNode ToEvaluator()
+            => new ProxyEvaluator((self, context) =>
             {
                 var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
                 tape.Remove(_parent);
