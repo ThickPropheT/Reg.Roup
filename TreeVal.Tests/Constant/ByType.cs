@@ -18,11 +18,12 @@ public class ByType
     [
         ExpressionTreeEvaluator.Create(node => node.Constant(TChild)),
         ExpressionTreeEvaluator.Create(node => node.Constant(EType.EqualTo(TChild))),
-
         ExpressionTreeEvaluator.Create(node => node.Constant<Child>()),
         ExpressionTreeEvaluator.Create(node => node.Constant(EType.EqualTo<Child>())),
 
+        ExpressionTreeEvaluator.Create(node => node.Constant(TBase)),
         ExpressionTreeEvaluator.Create(node => node.Constant(EType.Is(TBase))),
+        ExpressionTreeEvaluator.Create(node => node.Constant<Base>()),
         ExpressionTreeEvaluator.Create(node => node.Constant(EType.Is<Base>()))
     ];
 

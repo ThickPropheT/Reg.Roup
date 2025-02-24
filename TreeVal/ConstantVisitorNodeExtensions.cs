@@ -35,10 +35,11 @@ public static class ConstantVisitorNodeExtensions
     public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this IVisitorNodeFactory factory, EValue<T?>? value)
     {
         EType type = typeof(T);
+        value ??= EValue<T>.Null();
         
         return factory
             .OfType<ConstantExpression>()
             .Where(constant => type.IsEqualTo(constant.Type))
-            .Where(constant => value?.IsEqualTo(constant.Value) != false);
+            .Where(constant => value.IsEqualTo(constant.Value));
     }
 }

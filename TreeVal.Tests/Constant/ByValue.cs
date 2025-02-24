@@ -15,8 +15,8 @@ public class ByValue
     private static readonly ExpressionTreeEvaluator[] Evaluators =
     [
         ExpressionTreeEvaluator.Create(node => node.Constant(C1)),
-        ExpressionTreeEvaluator.Create(node => node.Constant(EValue.EqualTo(C2))),
-        ExpressionTreeEvaluator.Create(node => node.Constant(EValue.ReferenceEqualTo(C1)))
+        ExpressionTreeEvaluator.Create(node => node.Constant(EValue.EqualTo<object>(C2))),
+        ExpressionTreeEvaluator.Create(node => node.Constant(EValue.ReferenceEqualTo<object>(C1)))
     ];
 
     [TestCaseSource(nameof(Evaluators))]

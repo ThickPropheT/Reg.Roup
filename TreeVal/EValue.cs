@@ -25,8 +25,9 @@ public class EValue
     }
 
     public static EValue Null() => new(null, Equals);
-    public static EValue EqualTo<T>(T? value) => new(value, Equals);
-    public static EValue ReferenceEqualTo<T>(T? value) => new(value, ReferenceEquals);
+    public static EValue<T?> Null<T>() => EValue<T>.Null();
+    public static EValue<T?> EqualTo<T>(T? value) => EValue<T?>.EqualTo(value);
+    public static EValue<T?> ReferenceEqualTo<T>(T? value) => EValue<T?>.ReferenceEqualTo(value);
     
     public bool IsEqualTo(object? other)
     {
@@ -41,6 +42,10 @@ public class EValue<T> : EValue
         : base(inner, isEqualTo)
     {
     }
+    
+    public new static EValue<T?> Null() => new(null, Equals);
+    public static EValue<T?> EqualTo(T? value) => new(value, Equals);
+    public static EValue<T?> ReferenceEqualTo(T? value) => new(value, ReferenceEquals);
 
     public static implicit operator EValue<T>(T? value) => new(value);
 }
