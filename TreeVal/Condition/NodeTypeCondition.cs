@@ -7,15 +7,15 @@ public class NodeTypeCondition : ICondition
     private readonly string _description;
     private readonly Func<Expression, bool> _predicate;
 
-    public Exception? Throw { get; init; }
-    
-    public NodeTypeCondition(ExpressionType nodeType)
+    private Exception? MismatchException { get; init; }
+
+    private NodeTypeCondition(ExpressionType nodeType)
     {
         _description = $"ExpressionType: {nodeType}";
         _predicate = node => node.NodeType == nodeType;
     }
-    
-    public NodeTypeCondition(Type type, ExpressionType? nodeType = null)
+
+    private NodeTypeCondition(Type type, ExpressionType? nodeType = null)
     {
         if (nodeType == null)
         {
@@ -28,24 +28,36 @@ public class NodeTypeCondition : ICondition
             _predicate = node => node.NodeType == nodeType && node.GetType() == type;
         }
     }
-    
+
+    public static NodeTypeCondition RejectNonMatching(ExpressionType nodeType)
+        => new(nodeType);
+
+    public static NodeTypeCondition RejectNonMatching<TNode>(ExpressionType? nodeType = null)
+        => new(typeof(TNode), nodeType);
+
+    public static NodeTypeCondition AssertMatching(ExpressionType nodeType)
+        => new(nodeType) {MismatchException = new TreeRejectedException()};
+
+    public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
+        => new(typeof(TNode), nodeType) {MismatchException = new TreeRejectedException()};
+
     public string Describe(Expression? node)
         => $"Condition.OfType: {{ {_description} }}";
 
     public bool Evaluate(Expression? node)
     {
-        var isValid = _predicate(node!);
+        var doesMatch = _predicate(node!);
 
-        if (Throw == null)
+        if (MismatchException == null)
         {
-            return isValid;
+            return doesMatch;
         }
 
-        if (!isValid)
+        if (!doesMatch)
         {
-            throw Throw;
+            throw MismatchException;
         }
-        
+
         return true;
     }
 }

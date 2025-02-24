@@ -181,7 +181,7 @@ public class ExpressionTreeEvaluator
         public EvaluatorBuilder(ExpressionType nodeType)
         {
             NodeType = nodeType;
-            AddCondition(new NodeTypeCondition(nodeType));
+            AddCondition(NodeTypeCondition.RejectNonMatching(nodeType));
         }
     }
 
@@ -193,10 +193,7 @@ public class ExpressionTreeEvaluator
         public EvaluatorBuilder(ExpressionType? nodeType)
         {
             NodeType = nodeType;
-            AddCondition(new NodeTypeCondition(typeof(TNode), nodeType)
-            {
-                Throw = new TreeRejectedException()
-            });
+            AddCondition(NodeTypeCondition.AssertMatching<TNode>(nodeType));
         }
     }
 
