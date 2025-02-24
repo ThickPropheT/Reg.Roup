@@ -5,7 +5,7 @@ namespace TreeVal;
 
 public static class LinearExpressionTreeRecorder
 {
-    public static IEnumerable<Expression?> RecordVisitationOf(Expression? node)
+    public static IEnumerable<Expression> RecordVisitationOf(Expression? node)
     {
         var visitor = new Visitor();
         visitor.Visit(node);
@@ -14,8 +14,7 @@ public static class LinearExpressionTreeRecorder
         
     private class Visitor : ExpressionVisitor
     {
-        // TODO consider revisiting initial capacity
-        public readonly List<Expression?> Tape = new(1);
+        public readonly List<Expression> Tape = new(1);
 
         [return: NotNullIfNotNull("node")]
         public override Expression? Visit(Expression? node)

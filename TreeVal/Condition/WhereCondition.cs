@@ -16,6 +16,6 @@ public class WhereCondition : ICondition
     public string Describe(Expression? _)
         => $"Condition.Where: ( {_message} )";
 
-    public bool Evaluate(Expression? node)
-        => _predicate(node!);
+    public bool Evaluate(Expression node)
+        => _predicate(node);
 }

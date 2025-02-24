@@ -22,6 +22,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         {
             tape.Remove(current);
             
+            // know if i can move forward
             if (!context.CanMoveForward())
             {
                 if (tape.Any())
@@ -37,10 +38,11 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
                 return;
             }
             
+            // move forward
             current = context.MoveForward();
         }
 
-        // if current wasn't a child of _parent, then move back one
+        // don't move too far forward
         context.MoveBackward();
 
         // TODO add auto-accept and remove this

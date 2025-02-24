@@ -11,41 +11,41 @@ public interface ICheckpoint
 
 public interface ITapeHead
 {
-    Expression? Read();
+    Expression Read();
 
     bool CanMoveForward();
-    Expression? MoveForward();
+    Expression MoveForward();
     
     bool CanMoveBackward();
-    Expression? MoveBackward();
+    Expression MoveBackward();
 
     ICheckpoint Checkpoint();
 }
 
 public class TapeHead : ITapeHead
 {
-    private readonly Expression?[] _tape;
+    private readonly Expression[] _tape;
     private int _currentIndex;
 
-    public TapeHead(Expression?[] tape)
+    public TapeHead(Expression[] tape)
     {
         _tape = tape;
         _currentIndex = -1;
     }
 
-    private TapeHead(Expression?[] tape, int currentIndex)
+    private TapeHead(Expression[] tape, int currentIndex)
     {
         _tape = tape;
         _currentIndex = currentIndex;
     }
 
-    public Expression? Read()
+    public Expression Read()
         => _tape[_currentIndex];
 
     public bool CanMoveForward()
         => _currentIndex < _tape.Length - 1;
 
-    public Expression? MoveForward()
+    public Expression MoveForward()
     {
         if (!CanMoveForward())
         {
@@ -60,7 +60,7 @@ public class TapeHead : ITapeHead
     public bool CanMoveBackward()
         => _currentIndex > 0;
 
-    public Expression? MoveBackward()
+    public Expression MoveBackward()
     {
         if (!CanMoveBackward())
         {

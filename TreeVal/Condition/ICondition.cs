@@ -4,5 +4,5 @@ namespace TreeVal.Condition;
 
 public interface ICondition : IDescribable
 {
-    bool Evaluate(Expression? node);
+    bool Evaluate(Expression node);
 }

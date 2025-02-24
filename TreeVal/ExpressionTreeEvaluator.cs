@@ -13,7 +13,6 @@ public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
     void AddCondition(ICondition condition);
 }
 
-// TODO figure out better naming alignment w/ IExpressionVisitorNode
 public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
 {
     void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
@@ -21,7 +20,6 @@ public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
 
 public interface IEvaluatorConditionBuilder<TNode> : IEvaluatorNodeFactory
 {
-    
 }
 
 public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TNode>
@@ -55,7 +53,6 @@ public class ExpressionTreeEvaluator
         return new ExpressionTreeEvaluator(root.ToEvaluator());
     }
 
-    // TODO find a way to return the expression tree here
     public void Evaluate(Expression expressionTree)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();

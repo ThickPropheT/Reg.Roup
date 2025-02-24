@@ -44,9 +44,9 @@ public class NodeTypeCondition : ICondition
     public string Describe(Expression? node)
         => $"Condition.OfType: {{ {_description} }}";
 
-    public bool Evaluate(Expression? node)
+    public bool Evaluate(Expression node)
     {
-        var doesMatch = _predicate(node!);
+        var doesMatch = _predicate(node);
 
         if (MismatchException == null)
         {

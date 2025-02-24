@@ -10,11 +10,9 @@ public interface IVisitationTracker
     void Reject(IEvaluatorNode visitor);
 }
 
-// TODO evaluate naming
 public interface IVisitationContext : IVisitationTracker
 {
-    // TODO evaluate call sites where nullability can be ignored
-    Expression? ReadCurrent();
+    Expression ReadCurrent();
 
     bool CanMoveForward();
     Expression MoveForward();
@@ -36,19 +34,19 @@ public class VisitationContext : IVisitationContext
         _head = head;
     }
 
-    public Expression? ReadCurrent()
+    public Expression ReadCurrent()
         => _head.Read();
 
     public bool CanMoveForward()
         => _head.CanMoveForward();
 
-    public Expression? MoveForward()
+    public Expression MoveForward()
         => _head.MoveForward();
 
     public bool CanMoveBackward()
         => _head.CanMoveBackward();
 
-    public Expression? MoveBackward()
+    public Expression MoveBackward()
         => _head.MoveBackward();
 
     public void Accept(IEvaluatorNode visitor)

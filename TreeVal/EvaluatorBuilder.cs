@@ -8,11 +8,6 @@ public class EvaluatorBuilder : IEvaluatorBuilder
     private readonly List<ICondition> _conditions = new(1);
     private readonly List<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);
 
-    public EvaluatorBuilder()
-    {
-        AddCondition(new NotNullCondition());
-    }
-
     public void AddCondition(ICondition condition)
         => _conditions.Add(condition);
 
