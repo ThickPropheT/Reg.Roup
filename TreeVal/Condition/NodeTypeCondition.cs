@@ -25,7 +25,7 @@ public class NodeTypeCondition : ICondition
         else
         {
             _description = $"Type: {type.FullName}, ExpressionType: {nodeType}";
-            _predicate = node => node.NodeType == nodeType && node.GetType() == type;
+            _predicate = node => node.NodeType == nodeType && node.GetType().IsAssignableTo(type);
         }
     }
 

@@ -41,6 +41,7 @@ public class OneOfEvaluatorBuilder : EvaluatorBuilderBase
                 }
             }
 
+            // TODO does this really need to reject AND throw?
             context.Reject(this);
             throw new TreeRejectedException("No OneOf matched expression");
         }
