@@ -32,9 +32,9 @@ public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder, IEvaluatorConditi
 
 public class ExpressionTreeEvaluator
 {
-    private readonly IEvaluatorNode _rootNode;
+    private readonly IEvaluatorNodeFactory _rootNode;
 
-    private ExpressionTreeEvaluator(IEvaluatorNode rootNode)
+    private ExpressionTreeEvaluator(IEvaluatorNodeFactory rootNode)
     {
         _rootNode = rootNode;
     }
@@ -50,7 +50,7 @@ public class ExpressionTreeEvaluator
             throw new NotSupportedException();
         }
 
-        return new ExpressionTreeEvaluator(root.ToEvaluator());
+        return new ExpressionTreeEvaluator(root);
     }
 
     public void Evaluate(Expression expressionTree)
@@ -62,7 +62,8 @@ public class ExpressionTreeEvaluator
 
         try
         {
-            _rootNode.Evaluate(context);
+            var evaluator = _rootNode.ToEvaluator();
+            evaluator.Evaluate(context);
         }
         catch (TreeRejectedException)
         {
