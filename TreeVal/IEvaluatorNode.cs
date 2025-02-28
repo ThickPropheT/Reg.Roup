@@ -1,6 +1,12 @@
+using System.Linq.Expressions;
+using TreeVal.Condition;
+
 namespace TreeVal;
 
 public interface IEvaluatorNode
 {
-    void Evaluate(VisitationContext context);
+    IEnumerable<ICondition> Conditions { get; }
+    VisitationContext.EvaluationStrategy ChildEvaluationStrategy { get; }
+    
+    IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression current);
 }

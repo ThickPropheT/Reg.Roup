@@ -7,13 +7,16 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
     private readonly Expression _parent;
 
+    public override VisitationContext.EvaluationStrategy ChildEvaluationStrategy { get; }
+
     public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
         : base(conditions, [])
     {
         _parent = parent;
+        ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 
-    protected override void EvaluateChildren(VisitationContext context, Expression current)
+    private void EvaluateChildren(VisitationContext context, Expression current)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);

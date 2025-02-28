@@ -62,13 +62,7 @@ public class ExpressionTreeEvaluator
 
         try
         {
-            var evaluator = _rootNode.ToEvaluator();
-            evaluator.Evaluate(context);
-
-            if (!context.HasRejection)
-            {
-                context.Accept(evaluator);
-            }
+            context.Evaluate(_rootNode);
         }
         catch (TreeRejectedException)
         {
