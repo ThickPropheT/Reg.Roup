@@ -24,16 +24,13 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 
             var c = context.Head.PeekForward();
 
+            // if can't move forward
             if (c == null)
             {
+                // if there are children left on the tape
                 if (tape.Any())
                 {
                     context.Reject(this);
-                }
-                else
-                {
-                    // TODO add auto-accept and remove this
-                    context.Accept(this);
                 }
 
                 return;
@@ -42,8 +39,5 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
             current = c;
             context.Head.MoveForward();
         }
-
-        // TODO add auto-accept and remove this
-        context.Accept(this);
     }
 }

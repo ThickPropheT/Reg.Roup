@@ -31,9 +31,6 @@ public class EvaluatorNode : IEvaluatorNode
         }
 
         EvaluateChildren(context, current);
-
-        // TODO add auto-accept and remove this
-        context.Accept(this);
     }
 
     protected virtual void EvaluateConditions(VisitationContext context, Expression current)
@@ -51,10 +48,14 @@ public class EvaluatorNode : IEvaluatorNode
     {
         foreach (var child in _childLookups.SelectMany(lookup => lookup(current)))
         {
-            var visitor = child.ToEvaluator();
-            visitor.Evaluate(context);
+            var evaluator = child.ToEvaluator();
+            evaluator.Evaluate(context);
 
-            if (context.HasRejection)
+            if (!context.HasRejection)
+            {
+                context.Accept(evaluator);
+            }
+            else
             {
                 context.Reject(this);
                 return;

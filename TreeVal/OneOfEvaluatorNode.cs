@@ -15,15 +15,16 @@ public class OneOfEvaluatorNode : EvaluatorNode
 
     protected override void EvaluateChildren(VisitationContext context, Expression current)
     {
-        var accepted = _options.FirstOrDefault(option =>
-        { 
-            var branch = context.CreateBranch();
-            
-            var visitor = option.ToEvaluator();
-            visitor.Evaluate(branch);
+        var accepted = _options
+            .Select(option => option.ToEvaluator())
+            .FirstOrDefault(evaluator =>
+            {
+                var branch = context.CreateBranch();
 
-            return branch.TryMerge();
-        });
+                evaluator.Evaluate(branch);
+
+                return branch.TryMerge();
+            });
 
         if (accepted == null)
         {
@@ -32,7 +33,7 @@ public class OneOfEvaluatorNode : EvaluatorNode
         else
         {
             // TODO add auto-accept and remove this
-            context.Accept(this);
+            context.Accept(accepted);
         }
     }
 }
