@@ -62,23 +62,31 @@ public class TapeHead
             ? _tape[_currentIndex - 1]
             : null;
 
-    public Branch CreateBranch() => new(this);
-    private void Merge(Branch branch) => _currentIndex = branch._currentIndex;
+    public Clip StartClip() => Clip.StartAt(this);
+    private void FastForward(Clip clip) => _currentIndex += clip._currentIndex;
 
-    public class Branch : TapeHead
+    public class Clip : TapeHead
     {
-        private readonly TapeHead _parent;
-
-        public Branch(TapeHead parent)
-            : base(parent._tape.ToArray(), parent._currentIndex - 1)
+        private Clip(Expression[] tape)
+            : base(tape)
         {
-            _parent = parent;
         }
 
-        public TapeHead Merge()
+        public static Clip StartAt(TapeHead current)
         {
-            _parent.Merge(this);
-            return _parent;
+            var source = current._tape.ToArray();
+            var sourceIndex = current._currentIndex;
+            var destinationLength = source.Length - sourceIndex;
+            var destination = new Expression[destinationLength];
+
+            Array.Copy(source, sourceIndex, destination, 0, destinationLength);
+
+            return new Clip(destination);
+        }
+
+        public void SpliceOnto(TapeHead end)
+        {
+            end.FastForward(this);
         }
     }
 }

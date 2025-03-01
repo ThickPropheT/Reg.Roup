@@ -39,11 +39,11 @@ public class ExpressionTreeEvaluator
         _rootNode = rootNode;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorNodeFactory> getNodes)
+    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
     {
         var factory = new VisitorNodeFactory();
 
-        var root = getNodes(factory);
+        var root = buildEvaluatorTree(factory);
 
         if (root == null)
         {

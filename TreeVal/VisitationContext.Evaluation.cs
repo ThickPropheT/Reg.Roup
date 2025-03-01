@@ -1,9 +1,11 @@
-using System.Linq.Expressions;
-
 namespace TreeVal;
 
 public partial class VisitationContext
 {
+    private readonly Dictionary<IEvaluatorNode, EvaluatorInfo> _nodeInfos = new();
+
+    public bool HasRejection => _nodeInfos.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
+
     public void Evaluate(IEvaluatorNodeFactory factory)
     {
         var evaluator = factory.ToEvaluator();
@@ -29,71 +31,50 @@ public partial class VisitationContext
 
         evaluateChildren(evaluator, current);
 
-        if (!HasRejection)
+        TryAccept(evaluator);
+    }
+
+    public void TryAccept(IEvaluatorNode evaluator)
+        => GetOrCreateStatusFor(evaluator).TryAccept();
+
+    public void Reject(IEvaluatorNode evaluator)
+        => GetOrCreateStatusFor(evaluator).Reject();
+
+    private EvaluatorInfo GetOrCreateStatusFor(IEvaluatorNode evaluator)
+        => !_nodeInfos.TryGetValue(evaluator, out var info)
+            ? _nodeInfos[evaluator] = new EvaluatorInfo()
+            : info;
+
+    private void FastForwardStatuses(VisitationContext other)
+    {
+        foreach (var (key, value) in other._nodeInfos)
         {
-            Accept(evaluator);
+            _nodeInfos[key] = value;
         }
     }
 
-    private void EvaluateAll(IEvaluatorNode evaluator, Expression current)
+    private class EvaluatorInfo
     {
-        foreach (var child in evaluator.EnumerateChildren(current))
-        {
-            Evaluate(child);
+        public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unknown;
 
-            if (HasRejection)
+        public void TryAccept()
+        {
+            if (Status == EvaluatorStatus.Rejected)
             {
-                Reject(evaluator);
                 return;
             }
+
+            Status = EvaluatorStatus.Accepted;
         }
+
+        public void Reject()
+            => Status = EvaluatorStatus.Rejected;
     }
 
-    private void EvaluateAny(IEvaluatorNode evaluator, Expression current)
+    private enum EvaluatorStatus
     {
-        var accepted = evaluator.EnumerateChildren(current)
-            .FirstOrDefault(child =>
-            {
-                var branch = CreateBranch();
-
-                branch.Evaluate(child);
-
-                return branch.TryMerge();
-            });
-
-        if (accepted == null)
-        {
-            Reject(evaluator);
-        }
-    }
-
-    private void Apply(Action<VisitationContext, Expression> strategy, IEvaluatorNode evaluator, Expression current)
-    {
-        strategy(this, current);
-
-        if (HasRejection)
-        {
-            Reject(evaluator);
-        }
-    }
-
-    public class EvaluationStrategy
-    {
-        public static EvaluationStrategy AllOf { get; } = new(context => context.EvaluateAll);
-        public static EvaluationStrategy OneOf { get; } = new(context => context.EvaluateAny);
-
-        public static EvaluationStrategy From(Action<VisitationContext, Expression> strategy)
-            => new(context => (evaluator, current) => context.Apply(strategy, evaluator, current));
-        
-
-        private readonly Func<VisitationContext, Action<IEvaluatorNode, Expression>> _lookupStrategy;
-
-        private EvaluationStrategy(Func<VisitationContext, Action<IEvaluatorNode, Expression>> lookupStrategy)
-        {
-            _lookupStrategy = lookupStrategy;
-        }
-
-        public Action<IEvaluatorNode, Expression> GetStrategy(VisitationContext context)
-            => _lookupStrategy(context);
+        Unknown = 0,
+        Accepted,
+        Rejected
     }
 }

@@ -2,26 +2,13 @@
 
 public partial class VisitationContext
 {
+    // TODO
+    //  doesn't seem super useful to keep this partial given all it's got is Head,
+    //  but where else would you put Head?
     public TapeHead Head { get; }
-
-    public bool HasRejection { get; private set; }
 
     public VisitationContext(TapeHead head)
     {
         Head = head;
-    }
-
-    public void Accept(IEvaluatorNode visitor)
-    {
-        // TODO
-        //  is this even useful? I can't think of anything interesting to use this for
-        //  maybe just assume accepted unless rejected?
-        //  maybe build graph of what was accepted and rejected?
-    }
-
-    public void Reject(IEvaluatorNode visitor)
-    {
-        // TODO start actually tracking what failed
-        HasRejection = true;
     }
 }
