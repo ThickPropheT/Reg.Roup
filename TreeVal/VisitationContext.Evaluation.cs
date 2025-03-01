@@ -1,10 +1,13 @@
+using TreeVal.Condition;
+using TreeVal.Extensions2;
+
 namespace TreeVal;
 
 public partial class VisitationContext
 {
-    private readonly Dictionary<IEvaluatorNode, EvaluatorInfo> _nodeInfos = new();
+    private readonly Dictionary<IEvaluatorNode, EvaluationResult> _evaluationResults = new();
 
-    public bool HasRejection => _nodeInfos.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
+    private bool HasRejection => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
 
     public void Evaluate(IEvaluatorNodeFactory factory)
     {
@@ -17,13 +20,12 @@ public partial class VisitationContext
 
             if (failedConditions.Any())
             {
-                // TODO pass in failedConditions
-                Reject(evaluator);
+                Reject(evaluator, failedConditions);
             }
         }
-        catch (TreeRejectedException)
+        catch (ConditionFailedException ex)
         {
-            Reject(evaluator);
+            Reject(evaluator, ex.Condition);
             return;
         }
 
@@ -31,50 +33,99 @@ public partial class VisitationContext
 
         evaluateChildren(evaluator, current);
 
-        TryAccept(evaluator);
+        AcceptOrReject(evaluator);
     }
 
-    public void TryAccept(IEvaluatorNode evaluator)
-        => GetOrCreateStatusFor(evaluator).TryAccept();
+    public void AcceptOrReject(IEvaluatorNode evaluator)
+    {
+        var result = GetOrCreateEvaluationResult(evaluator);
+
+        if (!HasRejection)
+        {
+            result.Accept();
+        }
+        else
+        {
+            result.Reject();
+        }
+    }
+
+    public bool TryReject(IEvaluatorNode evaluator)
+    {
+        if (HasRejection)
+        {
+            Reject(evaluator);
+            return true;
+        }
+
+        return false;
+    }
 
     public void Reject(IEvaluatorNode evaluator)
-        => GetOrCreateStatusFor(evaluator).Reject();
+        => GetOrCreateEvaluationResult(evaluator).Reject();
 
-    private EvaluatorInfo GetOrCreateStatusFor(IEvaluatorNode evaluator)
-        => !_nodeInfos.TryGetValue(evaluator, out var info)
-            ? _nodeInfos[evaluator] = new EvaluatorInfo()
-            : info;
+    public void Reject(IEvaluatorNode evaluator, params ICondition[] failedConditions)
+        => GetOrCreateEvaluationResult(evaluator).Reject(failedConditions);
+
+    public void AssertNoRejections()
+    {
+        var trace = _evaluationResults.Values
+            .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
+            .ToArray();
+
+        if (trace.Last().Status == EvaluatorStatus.Rejected)
+        {
+            throw new TreeRejectedException(trace);
+        }
+
+        if (Head.CanMoveForward())
+        {
+            // TODO better error message than this
+            throw new TreeRejectedException("CanMoveForward");
+        }
+    }
+
+    private EvaluationResult GetOrCreateEvaluationResult(IEvaluatorNode evaluator)
+        => !_evaluationResults.TryGetValue(evaluator, out var result)
+            ? _evaluationResults[evaluator] = new EvaluationResult(evaluator)
+            : result;
 
     private void FastForwardStatuses(VisitationContext other)
     {
-        foreach (var (key, value) in other._nodeInfos)
+        foreach (var result in other._evaluationResults.Values)
         {
-            _nodeInfos[key] = value;
+            _evaluationResults[result.Evaluator] = result;
         }
     }
+}
 
-    private class EvaluatorInfo
+public class EvaluationResult
+{
+    public IEvaluatorNode Evaluator { get; }
+    public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unknown;
+    public ICondition[] FailedConditions { get; private set; } = [];
+
+    public EvaluationResult(IEvaluatorNode evaluator)
     {
-        public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unknown;
-
-        public void TryAccept()
-        {
-            if (Status == EvaluatorStatus.Rejected)
-            {
-                return;
-            }
-
-            Status = EvaluatorStatus.Accepted;
-        }
-
-        public void Reject()
-            => Status = EvaluatorStatus.Rejected;
+        Evaluator = evaluator;
     }
 
-    private enum EvaluatorStatus
+    public void Accept()
+        => Status = EvaluatorStatus.Accepted;
+
+    public void Reject()
+        => Status = EvaluatorStatus.Rejected;
+
+    public void Reject(ICondition[] failedConditions)
     {
-        Unknown = 0,
-        Accepted,
-        Rejected
+        Status = EvaluatorStatus.Rejected;
+        FailedConditions = failedConditions;
     }
+}
+
+public enum EvaluatorStatus
+{
+    Unknown = 0,
+    Accepted,
+    Rejected
 }

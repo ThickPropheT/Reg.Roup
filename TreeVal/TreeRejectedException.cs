@@ -2,8 +2,11 @@ namespace TreeVal;
 
 public class TreeRejectedException : Exception
 {
-    public TreeRejectedException()
+    public EvaluationResult[] Trace { get; }
+
+    public TreeRejectedException(EvaluationResult[] trace)
     {
+        Trace = trace;
     }
 
     public TreeRejectedException(string message) : base(message)

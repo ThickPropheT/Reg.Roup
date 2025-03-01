@@ -10,9 +10,8 @@ public partial class VisitationContext
         {
             Evaluate(child);
 
-            if (HasRejection)
+            if (TryReject(evaluator))
             {
-                Reject(evaluator);
                 return;
             }
         }
@@ -32,18 +31,14 @@ public partial class VisitationContext
 
         if (accepted == null)
         {
-            Reject(evaluator);
+            Reject(evaluator); // TODO pass some explanation in here
         }
     }
 
     private void Apply(Action<VisitationContext, Expression> strategy, IEvaluatorNode evaluator, Expression current)
     {
         strategy(this, current);
-
-        if (HasRejection)
-        {
-            Reject(evaluator);
-        }
+        TryReject(evaluator);
     }
     
     public class EvaluationStrategy

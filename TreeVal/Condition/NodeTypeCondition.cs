@@ -7,7 +7,7 @@ public class NodeTypeCondition : ICondition
     private readonly string _description;
     private readonly Func<Expression, bool> _predicate;
 
-    private Exception? MismatchException { get; init; }
+    private Action<NodeTypeCondition>? _matchFailed;
 
     private NodeTypeCondition(ExpressionType nodeType)
     {
@@ -36,10 +36,10 @@ public class NodeTypeCondition : ICondition
         => new(typeof(TNode), nodeType);
 
     public static NodeTypeCondition AssertMatching(ExpressionType nodeType)
-        => new(nodeType) {MismatchException = new TreeRejectedException()};
+        => new(nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
 
     public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
-        => new(typeof(TNode), nodeType) {MismatchException = new TreeRejectedException()};
+        => new(typeof(TNode), nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
 
     public string Describe(Expression? node)
         => $"Condition.OfType: {{ {_description} }}";
@@ -48,14 +48,14 @@ public class NodeTypeCondition : ICondition
     {
         var doesMatch = _predicate(node);
 
-        if (MismatchException == null)
+        if (_matchFailed == null)
         {
             return doesMatch;
         }
 
         if (!doesMatch)
         {
-            throw MismatchException;
+            _matchFailed(this);
         }
 
         return true;

@@ -33,7 +33,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
                 // if there are children left on the tape
                 if (tape.Any())
                 {
-                    context.Reject(this);
+                    context.Reject(this); // TODO pass some explanation in here
                 }
 
                 return;

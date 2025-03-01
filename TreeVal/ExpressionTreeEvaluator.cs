@@ -70,18 +70,10 @@ public class ExpressionTreeEvaluator
         }
         catch (Exception ex)
         {
+            // TODO better error message than type name
             throw new TreeRejectedException(nameof(ExpressionTreeEvaluator), ex);
         }
 
-        if (context.HasRejection)
-        {
-            throw new TreeRejectedException();
-        }
-
-        if (context.Head.CanMoveForward())
-        {
-            // TODO reevaluated whether this should be tree rejected and not some other ex type
-            throw new TreeRejectedException();
-        }
+        context.AssertNoRejections();
     }
 }
