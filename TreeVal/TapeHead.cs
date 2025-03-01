@@ -70,7 +70,7 @@ public class TapeHead
         private readonly TapeHead _parent;
 
         public Branch(TapeHead parent)
-            : base(parent._tape.ToArray(), parent._currentIndex)
+            : base(parent._tape.ToArray(), parent._currentIndex - 1)
         {
             _parent = parent;
         }

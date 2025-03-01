@@ -17,6 +17,8 @@ public class VisitorNodeFactory
         where TExpression : Expression
         => new TypalEvaluatorBuilder<TExpression>(nodeType);
 
-    public IEvaluatorConditionBuilder OneOf(params IEvaluatorNodeFactory[] options)
-        => new ProxyEvaluatorBuilder((conditions, _) => new OneOfEvaluatorNode(conditions, options));
+    public IEvaluatorConditionBuilder OneOf(
+        IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2, params IEvaluatorNodeFactory[] options)
+        => new ProxyEvaluatorBuilder((conditions, _) =>
+            new OneOfEvaluatorNode(conditions, new[] {option1, option2}.Concat(options).ToArray()));
 }
