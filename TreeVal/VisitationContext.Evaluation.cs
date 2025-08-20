@@ -99,7 +99,7 @@ public partial class VisitationContext
     }
 }
 
-public class EvaluationResult
+public class EvaluationResult : IDescribable
 {
     public IEvaluatorNode Evaluator { get; }
     public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unknown;
@@ -120,6 +120,11 @@ public class EvaluationResult
     {
         Status = EvaluatorStatus.Rejected;
         FailedConditions = failedConditions;
+    }
+
+    public void Describe(IDescription description)
+    {
+        description.EmitResult(Status, Evaluator, FailedConditions);
     }
 }
 

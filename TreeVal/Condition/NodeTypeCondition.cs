@@ -41,8 +41,10 @@ public class NodeTypeCondition : ICondition
     public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
         => new(typeof(TNode), nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
 
-    public string Describe(Expression? node)
-        => $"Condition.OfType: {{ {_description} }}";
+    public void Describe(IDescription description)
+    {
+        // TODO
+    }
 
     public bool Evaluate(Expression node)
     {

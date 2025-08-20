@@ -1,14 +1,22 @@
 using System.Linq.Expressions;
+using TreeVal.Condition;
 
 namespace TreeVal;
+
+public interface IDescription
+{
+    void EmitResult(EvaluatorStatus status, IEvaluatorNode evaluator, ICondition[] failedConditions);
+    void EmitNodeTypeCondition(ExpressionType nodeType);
+    void EmitNodeTypeCondition(Type type, ExpressionType? nodeType = null);
+    void EmitWhereCondition(string message);
+}
 
 public interface IDescribable
 {
     // TODO
-    //  - stop returning string
     //  - add `DescriptionContext` param w/ members:
     //    - Emit(string header, string? value = null)
     //    - Visit(IDescribable child)
     //    - Visit(IEnumerable<IDescribable> children)
-    string Describe(Expression? node);
+    void Describe(IDescription description);
 }

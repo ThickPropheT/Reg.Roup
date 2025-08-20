@@ -13,8 +13,8 @@ public class WhereCondition : ICondition
         _predicate = predicate;
     }
 
-    public string Describe(Expression? _)
-        => $"Condition.Where: ( {_message} )";
+    public void Describe(IDescription description)
+        => description.EmitWhereCondition(_message);
 
     public bool Evaluate(Expression node)
         => _predicate(node);

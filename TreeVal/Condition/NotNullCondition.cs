@@ -7,8 +7,8 @@ namespace TreeVal.Condition;
 //  the linear recorder will never produce null expressions?
 public class NotNullCondition : ICondition
 {
-    public string Describe(Expression? _)
-        => "Condition.NotNull";
+    public void Describe(IDescription description)
+    {}
 
     public bool Evaluate(Expression? node)
         => node is not null;
