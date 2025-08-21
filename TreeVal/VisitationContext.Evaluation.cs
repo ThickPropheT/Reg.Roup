@@ -8,14 +8,7 @@ namespace TreeVal;
 // TODO why is it called VisitationContext? could it be called something better?
 public partial class VisitationContext
 {
-    // TODO
-    //  - key by Expression & default EvaluationResult to Unread
-    //     - ^^^? maybe to allow the expression tree to be the source of truth aka key off of
-    //       the element being evaluated rather than the thing doing the evaluation and
-    //       offer evaluation metadata as the value?
-    //  - update accept/reject methods to also take Expression
-    //    - ^^^? pass in the expression to the EvaluationResult to keep the target and metadata packaged together?
-    private readonly Dictionary<IEvaluatorNode, EvaluationResult> _evaluationResults = new();
+    private readonly Dictionary<Expression, EvaluationResult> _evaluationResults = new();
 
     public bool IsAnyResultRejected => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
 
@@ -90,19 +83,23 @@ public partial class VisitationContext
         var evaluateChildren = evaluator.ChildEvaluationStrategy.GetStrategy(this);
 
         evaluateChildren(evaluator, current);
-        
-        Debug.Assert(wereAnyResultsRejected == IsAnyResultRejected, "Should children be able to affect rejection status on parent?");
+
+        Debug.Assert(wereAnyResultsRejected == IsAnyResultRejected,
+            "Should children be able to affect rejection status on parent?");
 
         return TryAccept(current, evaluator);
     }
-    
+
     public bool TryAccept(Expression current, IEvaluatorNode evaluator)
     {
         var result = GetOrCreateEvaluationResult(current, evaluator);
 
-        if (IsAnyResultRejected) 
+        // TODO
+        //  the fact that this status check is now necessary is sort of a harbinger
+        //  that there may be some node-evaluator incongruency or identity consistencies 
+        if (IsAnyResultRejected || result.Status != EvaluatorStatus.Unread)
             return false;
-        
+
         result.Accept();
         return true;
     }
@@ -114,44 +111,47 @@ public partial class VisitationContext
         => GetOrCreateEvaluationResult(node, evaluator).Reject(failedConditions);
 
     private EvaluationResult GetOrCreateEvaluationResult(Expression node, IEvaluatorNode evaluator)
-        => !_evaluationResults.TryGetValue(evaluator, out var result)
-            ? _evaluationResults[evaluator] = new EvaluationResult(evaluator)
+        => !_evaluationResults.TryGetValue(node, out var result)
+            ? _evaluationResults[node] = new EvaluationResult(node, evaluator)
             : result;
 
     private void FastForwardStatuses(VisitationContext other)
     {
         foreach (var result in other._evaluationResults.Values)
         {
-            _evaluationResults[result.Evaluator] = result;
+            _evaluationResults[result.Node] = result;
         }
     }
 }
 
 public class EvaluationResult : IDescribable
 {
+    public Expression Node { get; }
     public IEvaluatorNode Evaluator { get; }
-    public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unknown;
+    public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unread;
     public ICondition[] FailedConditions { get; private set; } = [];
 
-    public EvaluationResult(IEvaluatorNode evaluator)
+    public EvaluationResult(Expression node, IEvaluatorNode evaluator)
     {
+        Node = node;
         Evaluator = evaluator;
     }
 
     public void Accept()
     {
-        Debug.Assert(Status == EvaluatorStatus.Unknown, $"Should mutable status be allowed? {Status} -> Accepted");
+        Debug.Assert(Status == EvaluatorStatus.Unread, $"Should mutable status be allowed? {Status} -> Accepted");
         Status = EvaluatorStatus.Accepted;
     }
 
     public void Reject()
     {
-        Debug.Assert(Status == EvaluatorStatus.Unknown, $"Should mutable status be allowed? {Status} -> Rejected");
+        Debug.Assert(Status == EvaluatorStatus.Unread, $"Should mutable status be allowed? {Status} -> Rejected");
         Status = EvaluatorStatus.Rejected;
     }
 
     public void Reject(ICondition[] failedConditions)
     {
+        Debug.Assert(Status == EvaluatorStatus.Unread, $"Should mutable status be allowed? {Status} -> Rejected");
         Status = EvaluatorStatus.Rejected;
         FailedConditions = failedConditions;
     }
@@ -164,7 +164,7 @@ public class EvaluationResult : IDescribable
 
 public enum EvaluatorStatus
 {
-    Unknown = 0, // TODO change this to Unread?
+    Unread = 0,
     Accepted,
     Rejected
 }
