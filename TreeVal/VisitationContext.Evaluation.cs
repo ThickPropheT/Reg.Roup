@@ -8,7 +8,7 @@ namespace TreeVal;
 // TODO why is it called VisitationContext? could it be called something better?
 public partial class VisitationContext
 {
-    private readonly Dictionary<Expression, EvaluationResult> _evaluationResults = new();
+    private readonly Dictionary<IEvaluatorNode, EvaluationResult> _evaluationResults = new();
 
     public bool IsAnyResultRejected => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
 
@@ -111,15 +111,15 @@ public partial class VisitationContext
         => GetOrCreateEvaluationResult(node, evaluator).Reject(failedConditions);
 
     private EvaluationResult GetOrCreateEvaluationResult(Expression node, IEvaluatorNode evaluator)
-        => !_evaluationResults.TryGetValue(node, out var result)
-            ? _evaluationResults[node] = new EvaluationResult(node, evaluator)
+        => !_evaluationResults.TryGetValue(evaluator, out var result)
+            ? _evaluationResults[evaluator] = new EvaluationResult(node, evaluator)
             : result;
 
     private void FastForwardStatuses(VisitationContext other)
     {
         foreach (var result in other._evaluationResults.Values)
         {
-            _evaluationResults[result.Node] = result;
+            _evaluationResults[result.Evaluator] = result;
         }
     }
 }
