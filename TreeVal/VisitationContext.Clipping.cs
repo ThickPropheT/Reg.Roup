@@ -2,7 +2,7 @@ namespace TreeVal;
 
 public partial class VisitationContext
 {
-    public Clip StartClip() => new(Head, Head.StartClip());
+    public Clip BranchFromHead() => new(Head, Head.CreateClip().From(p => p.Current).To(p => p.Last));
 
     private void FastForward(Clip clip)
     {
@@ -23,7 +23,7 @@ public partial class VisitationContext
 
         public bool TrySpliceOnto(VisitationContext end)
         {
-            if (HasRejection)
+            if (IsAnyResultRejected)
             {
                 return false;
             }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using TreeVal.Condition;
 
@@ -16,7 +17,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 
-    private void EvaluateChildren(VisitationContext context, Expression current)
+    private void EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
@@ -25,25 +26,19 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         {
             tape.Remove(current);
 
-            var c = context.Head.PeekForward();
+            var next = context.Head.PeekForward();
 
             // if can't move forward
-            if (c == null)
+            if (next == null)
             {
-                // if there are children left on the tape
-                if (tape.Any())
-                {
-                    // TODO
-                    //  can this situation even happen other than by something being really broken?
-                    //  handling this case is fine, but maybe throw ex instead? 
-                    throw new SkepticalException();
-                    // context.Reject(this); // TODO pass some explanation in here
-                }
-
+                // TODO
+                //  can this situation even happen other than by something being really broken?
+                //  handling this case is fine, but maybe throw ex instead?
+                Debug.Assert(!tape.Any(), "expected context.Head to be able to move forward. _parent has unvisited child nodes.");
                 return;
             }
 
-            current = c;
+            current = next;
             context.Head.MoveForward();
         }
     }

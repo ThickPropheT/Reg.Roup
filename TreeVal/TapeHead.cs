@@ -7,6 +7,12 @@ public class TapeHead
     private readonly Expression[] _tape;
     private int _currentIndex;
 
+    private int _currentOrFirst => _currentIndex >= 0
+        ? _currentIndex
+        : 0;
+    
+    private int _length => _tape.Length;
+
     public TapeHead(Expression[] tape)
     {
         _tape = tape;
@@ -21,6 +27,9 @@ public class TapeHead
 
     public Expression Read()
         => _tape[_currentIndex];
+
+    public IEnumerable<Expression> ReadToEnd()
+        => _tape.Take(new Range(_currentOrFirst, _tape.Length - 1));
 
     public bool CanMoveForward()
         => _currentIndex < _tape.Length - 1;
@@ -62,7 +71,8 @@ public class TapeHead
             ? _tape[_currentIndex - 1]
             : null;
 
-    public Clip StartClip() => Clip.StartAt(this);
+    // TODO clean this & related stuff up
+    public Clip.Builder CreateClip() => new(this);
     private void FastForward(Clip clip) => _currentIndex += clip._currentIndex;
 
     public class Clip : TapeHead
@@ -72,14 +82,16 @@ public class TapeHead
         {
         }
 
-        public static Clip StartAt(TapeHead current)
+        public static Clip Create(TapeHead current, int fromIndex, int toIndex)
         {
             var source = current._tape.ToArray();
-            var sourceIndex = current._currentIndex;
-            var destinationLength = source.Length - sourceIndex;
+            // var sourceIndex = current._currentIndex;
+            // var destinationLength = source.Length - sourceIndex;
+            var destinationLength = toIndex + 1 - fromIndex;
             var destination = new Expression[destinationLength];
 
-            Array.Copy(source, sourceIndex, destination, 0, destinationLength);
+            Array.Copy(source, fromIndex, destination, 0, destinationLength);
+            // Array.Copy(source, sourceIndex, destination, 0, destinationLength);
 
             return new Clip(destination);
         }
@@ -88,5 +100,50 @@ public class TapeHead
         {
             end.FastForward(this);
         }
+
+        public class Builder
+        {
+            private readonly TapeHead _current;
+
+            private int _from;
+
+            public Builder(TapeHead current)
+            {
+                _current = current;
+            }
+
+            public Builder From(Func<Positions, int> getIndex)
+            {
+                _from = getIndex(Positions.Of(_current));
+                return this;
+            }
+
+            public Builder From(int index)
+            {
+                _from = index;
+                return this;
+            }
+
+            public Clip To(Func<Positions, int> getIndex)
+                => Create(_current, _from, getIndex(Positions.Of(_current)));
+
+            public Clip To(int index)
+                => Create(_current, _from, index);
+        }
+    }
+
+    public struct Positions
+    {
+        public int First { get; init; }
+        public int Current { get; init; }
+        public int Last { get; init; }
+
+        public static Positions Of(TapeHead head)
+            => new()
+            {
+                First = 0,
+                Current = head._currentIndex,
+                Last = head._length - 1
+            };
     }
 }

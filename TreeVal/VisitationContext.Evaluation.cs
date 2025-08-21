@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using TreeVal.Condition;
 using TreeVal.Extensions2;
@@ -16,13 +17,13 @@ public partial class VisitationContext
     //    - ^^^? pass in the expression to the EvaluationResult to keep the target and metadata packaged together?
     private readonly Dictionary<IEvaluatorNode, EvaluationResult> _evaluationResults = new();
 
-    private bool HasRejection => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
+    public bool IsAnyResultRejected => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
 
     public static void EvaluateTree(Expression expressionTree, IEvaluatorNodeFactory schema)
     {
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
         var head = new TapeHead(tape);
-        
+
         var context = new VisitationContext(head);
 
         try
@@ -44,7 +45,7 @@ public partial class VisitationContext
             .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
             .ToArray();
 
-        if (trace.Last().Status == EvaluatorStatus.Rejected)
+        if (trace.LastOrDefault()?.Status == EvaluatorStatus.Rejected)
         {
             throw TreeRejectedException.ForTrace(trace);
         }
@@ -55,7 +56,7 @@ public partial class VisitationContext
         }
     }
 
-    public void Evaluate(IEvaluatorNodeFactory factory)
+    public bool Evaluate(IEvaluatorNodeFactory factory)
     {
         var evaluator = factory.ToEvaluator();
         var current = Head.MoveForward();
@@ -65,7 +66,7 @@ public partial class VisitationContext
         // and then be able to access it's length without multiple enumeration.
         var conditions = evaluator.Conditions.ToArray();
         var failedConditions = new List<ICondition>(conditions.Length);
-        
+
         try
         {
             // keep failedConditions up-to-date as we evaluate
@@ -81,60 +82,38 @@ public partial class VisitationContext
             // this one failed hard. add it to the pile
             failedConditions.Add(ex.Condition);
             ConditionsFailed(current, evaluator, failedConditions.ToArray());
-            return;
+            return false;
         }
+
+        var wereAnyResultsRejected = IsAnyResultRejected;
 
         var evaluateChildren = evaluator.ChildEvaluationStrategy.GetStrategy(this);
 
         evaluateChildren(evaluator, current);
+        
+        Debug.Assert(wereAnyResultsRejected == IsAnyResultRejected, "Should children be able to affect rejection status on parent?");
 
-        AcceptOrReject(current, evaluator);
+        return TryAccept(current, evaluator);
     }
-
-    /// <summary>
-    /// TODO
-    ///  why does this do what it does? can we and should we provide more context
-    ///  through the Accept() & Reject() calls below? 
-    /// </summary>
-    /// <param name="node">TODO see TODOs above _evaluationResults</param>
-    /// <param name="evaluator"></param>
-    public void AcceptOrReject(Expression node, IEvaluatorNode evaluator)
+    
+    public bool TryAccept(Expression current, IEvaluatorNode evaluator)
     {
-        var result = GetOrCreateEvaluationResult(evaluator);
+        var result = GetOrCreateEvaluationResult(current, evaluator);
 
-        if (!HasRejection)
-        {
-            result.Accept();
-        }
-        else
-        {
-            result.Reject();
-        }
+        if (IsAnyResultRejected) 
+            return false;
+        
+        result.Accept();
+        return true;
     }
 
-    public bool AcquiesceToPriorRejection(IEvaluatorNode evaluator)
-    {
-        if (HasRejection)
-        {
-            Reject(evaluator);
-            return true;
-        }
+    public void Reject(Expression current, IEvaluatorNode evaluator)
+        => GetOrCreateEvaluationResult(current, evaluator).Reject();
 
-        return false;
-    }
-
-    public void Reject(IEvaluatorNode evaluator)
-        => GetOrCreateEvaluationResult(evaluator).Reject();
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="node">TODO see TODOs above _evaluationResults</param>
-    /// <param name="evaluator"></param>
     public void ConditionsFailed(Expression node, IEvaluatorNode evaluator, params ICondition[] failedConditions)
-        => GetOrCreateEvaluationResult(evaluator).Reject(failedConditions);
+        => GetOrCreateEvaluationResult(node, evaluator).Reject(failedConditions);
 
-    private EvaluationResult GetOrCreateEvaluationResult(IEvaluatorNode evaluator)
+    private EvaluationResult GetOrCreateEvaluationResult(Expression node, IEvaluatorNode evaluator)
         => !_evaluationResults.TryGetValue(evaluator, out var result)
             ? _evaluationResults[evaluator] = new EvaluationResult(evaluator)
             : result;
@@ -160,10 +139,16 @@ public class EvaluationResult : IDescribable
     }
 
     public void Accept()
-        => Status = EvaluatorStatus.Accepted;
+    {
+        Debug.Assert(Status == EvaluatorStatus.Unknown, $"Should mutable status be allowed? {Status} -> Accepted");
+        Status = EvaluatorStatus.Accepted;
+    }
 
     public void Reject()
-        => Status = EvaluatorStatus.Rejected;
+    {
+        Debug.Assert(Status == EvaluatorStatus.Unknown, $"Should mutable status be allowed? {Status} -> Rejected");
+        Status = EvaluatorStatus.Rejected;
+    }
 
     public void Reject(ICondition[] failedConditions)
     {

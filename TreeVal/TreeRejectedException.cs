@@ -7,7 +7,8 @@ public class TreeRejectedException : Exception
 {
     public EvaluationResult[] Trace { get; }
 
-    private TreeRejectedException(EvaluationResult[] trace)
+    private TreeRejectedException(EvaluationResult[] trace, string message)
+        : base(message)
     {
         Trace = trace;
     }
@@ -32,7 +33,7 @@ public class TreeRejectedException : Exception
         //     result.Describe(description);
         // }
         
-        return new TreeRejectedException(trace);
+        return new TreeRejectedException(trace, "Something was rejected.");
     }
 
     public static TreeRejectedException ForIncompleteRead(EvaluationResult[] trace, TapeHead head)
@@ -44,12 +45,12 @@ public class TreeRejectedException : Exception
         //
         // var message = string.Join("\n\n", nodesRead.ReadToEnd());
         
-        return new TreeRejectedException(trace);
+        return new TreeRejectedException(trace, "Didn't finish reading head.");
     }
 
     // TODO should message be passable-in here?
     public static TreeRejectedException ForError(Exception error)
-        => new("TODO", error);
+        => new("Something exploded unexpectedly.", error);
     
     // TODO
     //  it would be cool if you could pass in a custom IDescription

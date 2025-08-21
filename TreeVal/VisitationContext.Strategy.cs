@@ -6,15 +6,10 @@ public partial class VisitationContext
 {
     private void EvaluateAll(IEvaluatorNode evaluator, Expression current)
     {
-        foreach (var child in evaluator.EnumerateChildren(current))
-        {
-            Evaluate(child);
+        if (evaluator.EnumerateChildren(current).Select(Evaluate).All(isAccepted => isAccepted))
+            return;
 
-            if (AcquiesceToPriorRejection(evaluator))
-            {
-                return;
-            }
-        }
+        Reject(current, evaluator);
     }
 
     private void EvaluateAny(IEvaluatorNode evaluator, Expression current)
@@ -22,32 +17,26 @@ public partial class VisitationContext
         var accepted = evaluator.EnumerateChildren(current)
             .FirstOrDefault(child =>
             {
-                var clip = StartClip();
+                var clip = BranchFromHead();
 
                 clip.Evaluate(child);
 
                 return clip.TrySpliceOnto(this);
             });
 
-        if (accepted == null)
-        {
-            Reject(evaluator); // TODO pass some explanation in here
-        }
+        if (accepted != null)
+            return;
+
+        Reject(current, evaluator); // TODO pass some explanation in here
     }
 
-    private void Apply(Action<VisitationContext, Expression> strategy, IEvaluatorNode evaluator, Expression current)
-    {
-        strategy(this, current);
-        AcquiesceToPriorRejection(evaluator);
-    }
-    
     public class EvaluationStrategy
     {
         public static EvaluationStrategy AllOf { get; } = new(context => context.EvaluateAll);
         public static EvaluationStrategy OneOf { get; } = new(context => context.EvaluateAny);
 
-        public static EvaluationStrategy From(Action<VisitationContext, Expression> strategy)
-            => new(context => (evaluator, current) => context.Apply(strategy, evaluator, current));
+        public static EvaluationStrategy From(Action<VisitationContext, Expression, IEvaluatorNode> strategy)
+            => new(context => (evaluator, current) => strategy(context, current, evaluator));
 
 
         private readonly Func<VisitationContext, Action<IEvaluatorNode, Expression>> _lookupStrategy;
