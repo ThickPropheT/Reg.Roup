@@ -32,11 +32,11 @@ public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder, IEvaluatorConditi
 
 public class ExpressionTreeEvaluator
 {
-    private readonly IEvaluatorNodeFactory _rootNode;
+    private readonly IEvaluatorNodeFactory _schema;
 
-    private ExpressionTreeEvaluator(IEvaluatorNodeFactory rootNode)
+    private ExpressionTreeEvaluator(IEvaluatorNodeFactory schema)
     {
-        _rootNode = rootNode;
+        _schema = schema;
     }
 
     public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
@@ -54,26 +54,5 @@ public class ExpressionTreeEvaluator
     }
 
     public void Evaluate(Expression expressionTree)
-    {
-        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
-        var head = new TapeHead(tape);
-
-        var context = new VisitationContext(head);
-
-        try
-        {
-            context.Evaluate(_rootNode);
-        }
-        catch (TreeRejectedException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            // TODO better error message than type name
-            throw new TreeRejectedException(nameof(ExpressionTreeEvaluator), ex);
-        }
-
-        context.AssertNoRejections();
-    }
+        => VisitationContext.EvaluateTree(expressionTree, _schema);
 }

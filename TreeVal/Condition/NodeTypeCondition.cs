@@ -4,29 +4,27 @@ namespace TreeVal.Condition;
 
 public class NodeTypeCondition : ICondition
 {
-    private readonly string _description;
-    private readonly Func<Expression, bool> _predicate;
+    private readonly Type? _type;
+    private readonly ExpressionType? _nodeType;
+
+    private readonly State _state;
 
     private Action<NodeTypeCondition>? _matchFailed;
 
     private NodeTypeCondition(ExpressionType nodeType)
     {
-        _description = $"ExpressionType: {nodeType}";
-        _predicate = node => node.NodeType == nodeType;
+        _nodeType = nodeType;
+        _state = State.ByNodeType;
     }
 
     private NodeTypeCondition(Type type, ExpressionType? nodeType = null)
     {
-        if (nodeType == null)
-        {
-            _description = $"Type: {type.FullName}";
-            _predicate = node => node.GetType().IsAssignableTo(type);
-        }
-        else
-        {
-            _description = $"Type: {type.FullName}, ExpressionType: {nodeType}";
-            _predicate = node => node.NodeType == nodeType && node.GetType().IsAssignableTo(type);
-        }
+        _type = type;
+        _nodeType = nodeType;
+
+        _state = nodeType is not null
+            ? State.ByTypeAndNodeType
+            : State.ByType;
     }
 
     public static NodeTypeCondition RejectNonMatching(ExpressionType nodeType)
@@ -41,14 +39,9 @@ public class NodeTypeCondition : ICondition
     public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
         => new(typeof(TNode), nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
 
-    public void Describe(IDescription description)
-    {
-        // TODO
-    }
-
     public bool Evaluate(Expression node)
     {
-        var doesMatch = _predicate(node);
+        var doesMatch = DoesMatch(node);
 
         if (_matchFailed == null)
         {
@@ -61,5 +54,44 @@ public class NodeTypeCondition : ICondition
         }
 
         return true;
+    }
+
+    private bool DoesMatch(Expression node)
+    {
+        switch (_state)
+        {
+            case State.ByNodeType:
+                return node.NodeType == _nodeType;
+            case State.ByType:
+                return node.GetType().IsAssignableTo(_type);
+            case State.ByTypeAndNodeType:
+                return node.NodeType == _nodeType
+                       && node.GetType().IsAssignableTo(_type);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void Describe(IDescription description)
+    {
+        switch (_state)
+        {
+            case State.ByNodeType:
+                description.EmitNodeTypeCondition((ExpressionType) _nodeType!);
+                break;
+            case State.ByType:
+            case State.ByTypeAndNodeType:
+                description.EmitNodeTypeCondition(_type!, _nodeType);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private enum State
+    {
+        ByNodeType = 0,
+        ByType,
+        ByTypeAndNodeType
     }
 }

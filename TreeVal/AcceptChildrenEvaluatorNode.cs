@@ -33,7 +33,11 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
                 // if there are children left on the tape
                 if (tape.Any())
                 {
-                    context.Reject(this); // TODO pass some explanation in here
+                    // TODO
+                    //  can this situation even happen other than by something being really broken?
+                    //  handling this case is fine, but maybe throw ex instead? 
+                    throw new SkepticalException();
+                    // context.Reject(this); // TODO pass some explanation in here
                 }
 
                 return;

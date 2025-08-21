@@ -10,7 +10,7 @@ public partial class VisitationContext
         {
             Evaluate(child);
 
-            if (TryReject(evaluator))
+            if (AcquiesceToPriorRejection(evaluator))
             {
                 return;
             }
@@ -38,7 +38,7 @@ public partial class VisitationContext
     private void Apply(Action<VisitationContext, Expression> strategy, IEvaluatorNode evaluator, Expression current)
     {
         strategy(this, current);
-        TryReject(evaluator);
+        AcquiesceToPriorRejection(evaluator);
     }
     
     public class EvaluationStrategy

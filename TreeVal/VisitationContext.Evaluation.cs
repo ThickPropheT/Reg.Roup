@@ -1,13 +1,59 @@
+using System.Linq.Expressions;
 using TreeVal.Condition;
 using TreeVal.Extensions2;
 
 namespace TreeVal;
 
+// TODO why is it called VisitationContext? could it be called something better?
 public partial class VisitationContext
 {
+    // TODO
+    //  - key by Expression & default EvaluationResult to Unread
+    //     - ^^^? maybe to allow the expression tree to be the source of truth aka key off of
+    //       the element being evaluated rather than the thing doing the evaluation and
+    //       offer evaluation metadata as the value?
+    //  - update accept/reject methods to also take Expression
+    //    - ^^^? pass in the expression to the EvaluationResult to keep the target and metadata packaged together?
     private readonly Dictionary<IEvaluatorNode, EvaluationResult> _evaluationResults = new();
 
     private bool HasRejection => _evaluationResults.Values.Any(s => s.Status == EvaluatorStatus.Rejected);
+
+    public static void EvaluateTree(Expression expressionTree, IEvaluatorNodeFactory schema)
+    {
+        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
+        var head = new TapeHead(tape);
+        
+        var context = new VisitationContext(head);
+
+        try
+        {
+            context.Evaluate(schema);
+        }
+        catch (TreeRejectedException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // TODO is wrapping ex providing value?
+            // TODO should tape be passed in here?
+            throw TreeRejectedException.ForError(ex);
+        }
+
+        var trace = context._evaluationResults.Values
+            .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
+            .ToArray();
+
+        if (trace.Last().Status == EvaluatorStatus.Rejected)
+        {
+            throw TreeRejectedException.ForTrace(trace);
+        }
+
+        if (head.CanMoveForward())
+        {
+            throw TreeRejectedException.ForIncompleteRead(trace, head);
+        }
+    }
 
     public void Evaluate(IEvaluatorNodeFactory factory)
     {
@@ -20,12 +66,12 @@ public partial class VisitationContext
 
             if (failedConditions.Any())
             {
-                Reject(evaluator, failedConditions);
+                ConditionsFailed(current, evaluator, failedConditions);
             }
         }
         catch (ConditionFailedException ex)
         {
-            Reject(evaluator, ex.Condition);
+            ConditionsFailed(current, evaluator, ex.Condition);
             return;
         }
 
@@ -33,10 +79,17 @@ public partial class VisitationContext
 
         evaluateChildren(evaluator, current);
 
-        AcceptOrReject(evaluator);
+        AcceptOrReject(current, evaluator);
     }
 
-    public void AcceptOrReject(IEvaluatorNode evaluator)
+    /// <summary>
+    /// TODO
+    ///  why does this do what it does? can we and should we provide more context
+    ///  through the Accept() & Reject() calls below? 
+    /// </summary>
+    /// <param name="node">TODO see TODOs above _evaluationResults</param>
+    /// <param name="evaluator"></param>
+    public void AcceptOrReject(Expression node, IEvaluatorNode evaluator)
     {
         var result = GetOrCreateEvaluationResult(evaluator);
 
@@ -50,7 +103,7 @@ public partial class VisitationContext
         }
     }
 
-    public bool TryReject(IEvaluatorNode evaluator)
+    public bool AcquiesceToPriorRejection(IEvaluatorNode evaluator)
     {
         if (HasRejection)
         {
@@ -64,26 +117,13 @@ public partial class VisitationContext
     public void Reject(IEvaluatorNode evaluator)
         => GetOrCreateEvaluationResult(evaluator).Reject();
 
-    public void Reject(IEvaluatorNode evaluator, params ICondition[] failedConditions)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="node">TODO see TODOs above _evaluationResults</param>
+    /// <param name="evaluator"></param>
+    public void ConditionsFailed(Expression node, IEvaluatorNode evaluator, params ICondition[] failedConditions)
         => GetOrCreateEvaluationResult(evaluator).Reject(failedConditions);
-
-    public void AssertNoRejections()
-    {
-        var trace = _evaluationResults.Values
-            .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
-            .ToArray();
-
-        if (trace.Last().Status == EvaluatorStatus.Rejected)
-        {
-            throw new TreeRejectedException(trace);
-        }
-
-        if (Head.CanMoveForward())
-        {
-            // TODO better error message than this
-            throw new TreeRejectedException("CanMoveForward");
-        }
-    }
 
     private EvaluationResult GetOrCreateEvaluationResult(IEvaluatorNode evaluator)
         => !_evaluationResults.TryGetValue(evaluator, out var result)
@@ -130,7 +170,7 @@ public class EvaluationResult : IDescribable
 
 public enum EvaluatorStatus
 {
-    Unknown = 0,
+    Unknown = 0, // TODO change this to Unread?
     Accepted,
     Rejected
 }
