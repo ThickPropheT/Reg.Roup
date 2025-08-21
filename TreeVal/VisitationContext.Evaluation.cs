@@ -60,18 +60,27 @@ public partial class VisitationContext
         var evaluator = factory.ToEvaluator();
         var current = Head.MoveForward();
 
+        // in the most ideal case, we'll want to iterate all the conditions below
+        // for the purpose of evaluating them. may as well get it out of the way
+        // and then be able to access it's length without multiple enumeration.
+        var conditions = evaluator.Conditions.ToArray();
+        var failedConditions = new List<ICondition>(conditions.Length);
+        
         try
         {
-            var failedConditions = evaluator.Conditions.Where(c => !c.Evaluate(current)).ToArray();
+            // keep failedConditions up-to-date as we evaluate
+            failedConditions.AddRange(conditions.Where(c => !c.Evaluate(current)));
 
             if (failedConditions.Any())
             {
-                ConditionsFailed(current, evaluator, failedConditions);
+                ConditionsFailed(current, evaluator, failedConditions.ToArray());
             }
         }
         catch (ConditionFailedException ex)
         {
-            ConditionsFailed(current, evaluator, ex.Condition);
+            // this one failed hard. add it to the pile
+            failedConditions.Add(ex.Condition);
+            ConditionsFailed(current, evaluator, failedConditions.ToArray());
             return;
         }
 
