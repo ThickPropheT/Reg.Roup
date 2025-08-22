@@ -24,3 +24,13 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
         IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
         => _toEvaluator(conditions.ToArray(), childLookups);
 }
+
+public class ProxyEvaluatorBuilder<TExpression> : ProxyEvaluatorBuilder, IEvaluatorBuilder<TExpression>
+    where TExpression : Expression
+{
+    public ProxyEvaluatorBuilder(
+        Func<IEnumerable<ICondition>, IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
+            toEvaluator) : base(toEvaluator)
+    {
+    }
+}

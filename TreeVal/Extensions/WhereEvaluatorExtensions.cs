@@ -25,11 +25,11 @@ public static class WhereEvaluatorExtensions
         string predicateExpression = ""
     )
     {
-        node.AddCondition(new WhereCondition(predicateExpression, n =>
+        node.AddCondition(new WhereCondition(predicateExpression, e =>
         {
-            if (n is not T t)
+            if (e is not T t)
             {
-                throw new InvalidOperationException();
+                throw UnmetPreconditionException.WrongExpressionType<T>(e);
             }
 
             return predicate(t);

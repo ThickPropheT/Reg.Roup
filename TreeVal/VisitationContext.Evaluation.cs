@@ -82,10 +82,16 @@ public partial class VisitationContext
 
         var evaluateChildren = evaluator.ChildEvaluationStrategy.GetStrategy(this);
 
-        evaluateChildren(evaluator, current);
+        var areAllAccepted = evaluateChildren(evaluator, current);
 
-        Debug.Assert(wereAnyResultsRejected == IsAnyResultRejected,
-            "Should children be able to affect rejection status on parent?");
+        // TODO this might be ok to do actually. "evaluateChildren" isn't 100% accurate. try switching back to keying result dictionary on eval result and re evaluate this asseertion
+        Debug.Assert(wereAnyResultsRejected == IsAnyResultRejected || !areAllAccepted,
+            $"Should children be able to affect rejection status on parent? {wereAnyResultsRejected} -> {IsAnyResultRejected}");
+
+        if (!areAllAccepted)
+        {
+            Reject(current, evaluator);
+        }
 
         return TryAccept(current, evaluator);
     }

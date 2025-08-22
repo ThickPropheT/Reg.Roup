@@ -6,6 +6,7 @@ namespace TreeVal;
 public class TreeRejectedException : Exception
 {
     public EvaluationResult[] Trace { get; }
+    public TapeHead? Head { get; init; }
 
     private TreeRejectedException(EvaluationResult[] trace, string message)
         : base(message)
@@ -18,7 +19,7 @@ public class TreeRejectedException : Exception
     {
     }
 
-    private TreeRejectedException(string message, Exception inner) 
+    private TreeRejectedException(string message, Exception inner)
         : base(message, inner)
     {
     }
@@ -32,7 +33,7 @@ public class TreeRejectedException : Exception
         // {
         //     result.Describe(description);
         // }
-        
+
         return new TreeRejectedException(trace, "Something was rejected.");
     }
 
@@ -44,14 +45,17 @@ public class TreeRejectedException : Exception
         //     .To(p => p.Current);
         //
         // var message = string.Join("\n\n", nodesRead.ReadToEnd());
-        
-        return new TreeRejectedException(trace, "Didn't finish reading head.");
+
+        return new TreeRejectedException(trace, "Didn't finish reading head.")
+        {
+            Head = head
+        };
     }
 
     // TODO should message be passable-in here?
     public static TreeRejectedException ForError(Exception error)
         => new("Something exploded unexpectedly.", error);
-    
+
     // TODO
     //  it would be cool if you could pass in a custom IDescription
     //  via the API at the ExpressionTreeEvaluator level

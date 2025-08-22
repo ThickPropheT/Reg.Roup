@@ -17,5 +17,14 @@ public class WhereCondition : ICondition
         => description.EmitWhereCondition(_message);
 
     public bool Evaluate(Expression node)
-        => _predicate(node);
+    {
+        try
+        {
+            return _predicate(node);
+        }
+        catch (UnmetPreconditionException upe)
+        {
+            throw new ConditionFailedException(this, upe);
+        }
+    }
 }

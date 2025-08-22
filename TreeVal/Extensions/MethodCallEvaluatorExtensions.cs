@@ -34,6 +34,7 @@ public static class MethodCallEvaluatorExtensions
         this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory>? target = null,
         Func<MethodInfo, bool>? methodPredicate = null)
         => factory
+            .IgnoreBoxing(hint: BoxingEvaluationHint.Greedy)
             .OfType<MethodCallExpression>()
             .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
             .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))

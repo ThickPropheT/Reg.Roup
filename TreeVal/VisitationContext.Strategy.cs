@@ -4,15 +4,17 @@ namespace TreeVal;
 
 public partial class VisitationContext
 {
-    private void EvaluateAll(IEvaluatorNode evaluator, Expression current)
+    private bool EvaluateAll(IEvaluatorNode evaluator, Expression current)
     {
-        if (evaluator.EnumerateChildren(current).Select(Evaluate).All(isAccepted => isAccepted))
-            return;
-
-        Reject(current, evaluator);
+        var children = evaluator.EnumerateChildren(current).ToArray();
+        var evaluated = children.Select(Evaluate).ToArray();
+        var result = evaluated.All(isAccepted => isAccepted);
+        // TODO swap back to this when you're done debugging
+        // var result = evaluator.EnumerateChildren(current).Select(Evaluate).All(isAccepted => isAccepted);
+        return result;
     }
 
-    private void EvaluateAny(IEvaluatorNode evaluator, Expression current)
+    private bool EvaluateAny(IEvaluatorNode evaluator, Expression current)
     {
         var accepted = evaluator.EnumerateChildren(current)
             .FirstOrDefault(child =>
@@ -24,10 +26,7 @@ public partial class VisitationContext
                 return clip.TrySpliceOnto(this);
             });
 
-        if (accepted != null)
-            return;
-
-        Reject(current, evaluator); // TODO pass some explanation in here
+        return accepted != null;
     }
 
     public class EvaluationStrategy
@@ -35,18 +34,18 @@ public partial class VisitationContext
         public static EvaluationStrategy AllOf { get; } = new(context => context.EvaluateAll);
         public static EvaluationStrategy OneOf { get; } = new(context => context.EvaluateAny);
 
-        public static EvaluationStrategy From(Action<VisitationContext, Expression, IEvaluatorNode> strategy)
+        public static EvaluationStrategy From(Func<VisitationContext, Expression, IEvaluatorNode, bool> strategy)
             => new(context => (evaluator, current) => strategy(context, current, evaluator));
 
 
-        private readonly Func<VisitationContext, Action<IEvaluatorNode, Expression>> _lookupStrategy;
+        private readonly Func<VisitationContext, Func<IEvaluatorNode, Expression, bool>> _lookupStrategy;
 
-        private EvaluationStrategy(Func<VisitationContext, Action<IEvaluatorNode, Expression>> lookupStrategy)
+        private EvaluationStrategy(Func<VisitationContext, Func<IEvaluatorNode, Expression, bool>> lookupStrategy)
         {
             _lookupStrategy = lookupStrategy;
         }
 
-        public Action<IEvaluatorNode, Expression> GetStrategy(VisitationContext context)
+        public Func<IEvaluatorNode, Expression, bool> GetStrategy(VisitationContext context)
             => _lookupStrategy(context);
     }
 }

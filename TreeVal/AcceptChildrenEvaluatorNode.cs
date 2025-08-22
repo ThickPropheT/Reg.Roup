@@ -17,8 +17,9 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 
-    private void EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
+    private bool EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
     {
+        // TODO note that this is a list and not a queue. removing things just cherry picks them out
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
 
@@ -35,11 +36,16 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
                 //  can this situation even happen other than by something being really broken?
                 //  handling this case is fine, but maybe throw ex instead?
                 Debug.Assert(!tape.Any(), "expected context.Head to be able to move forward. _parent has unvisited child nodes.");
-                return;
+                break;
             }
 
             current = next;
             context.Head.MoveForward();
         }
+
+        // TODO
+        //  this can 100% happen. not sure if it's a problem or not, but it probably isn't helping.
+        Debug.Assert(!tape.Any(), "_parent has unvisited child nodes.");
+        return true;
     }
 }
