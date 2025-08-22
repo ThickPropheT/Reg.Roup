@@ -6,13 +6,13 @@ namespace TreeVal.Extensions;
 public static class MethodCallEvaluatorExtensions
 {
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
             .OfType<MethodCallExpression>()
             .HavingChildren(call => [target(call)]);
 
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this VisitorNodeFactory factory,
+        this IVisitorNodeFactory factory,
         // TODO
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
@@ -31,7 +31,7 @@ public static class MethodCallEvaluatorExtensions
                     .ToArray());
 
     public static IEvaluatorBuilder MethodCallDelegate(
-        this VisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory>? target = null,
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory>? target = null,
         Func<MethodInfo, bool>? methodPredicate = null)
         => factory
             .OfType<MethodCallExpression>()

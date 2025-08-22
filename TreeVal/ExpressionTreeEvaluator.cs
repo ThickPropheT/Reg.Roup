@@ -39,7 +39,7 @@ public class ExpressionTreeEvaluator
         _schema = schema;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<VisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
+    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
     {
         var factory = new VisitorNodeFactory();
 

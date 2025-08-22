@@ -6,10 +6,10 @@ public static class AnyOneEvaluatorExtensions
 {
     private static readonly VisitorNodeFactory Factory = new();
     
-    public static IEvaluatorBuilder AnyOne(this VisitorNodeFactory factory)
+    public static IEvaluatorBuilder AnyOne(this IVisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
-    public static IEvaluatorConditionBuilder AcceptChildren(this VisitorNodeFactory _, Expression parent)
+    public static IEvaluatorConditionBuilder AcceptChildren(this IVisitorNodeFactory _, Expression parent)
         => new ProxyEvaluatorBuilder((conditions, _) => new AcceptChildrenEvaluatorNode(conditions, parent));
 
     public static IEvaluatorConditionBuilder<TNode> AcceptChildren<TNode>(this IEvaluatorBuilder<TNode> builder)

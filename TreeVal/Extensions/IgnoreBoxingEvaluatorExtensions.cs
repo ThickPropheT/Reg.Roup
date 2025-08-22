@@ -4,6 +4,9 @@ namespace TreeVal.Extensions;
 
 public static class IgnoreBoxingEvaluatorExtensions
 {
+    public static IVisitorNodeFactory IgnoreBoxing(this IVisitorNodeFactory factory)
+        => throw new NotImplementedException("this was broken by splitting specialized builder methods out to extensions");
+    
     // TODO
     //  modify this to take a child IVisitorNode, rather than doing this chaining thing.
     //  i think there's in the chaining logic that's returning new VisitorNode and orphaning
