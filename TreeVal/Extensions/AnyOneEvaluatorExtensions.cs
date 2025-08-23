@@ -4,8 +4,8 @@ namespace TreeVal.Extensions;
 
 public static class AnyOneEvaluatorExtensions
 {
-    private static readonly VisitorNodeFactory Factory = new();
-    
+    private static readonly DefaultVisitorNodeFactory Factory = new();
+
     public static IEvaluatorBuilder AnyOne(this IVisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
