@@ -3,44 +3,68 @@ using TreeVal.Extensions;
 
 namespace TreeVal.Tests;
 
-[TestFixtureSource(nameof(Evaluators))]
+[TestFixture]
 public class AcceptChildren
 {
-    private static readonly Expression[] InvalidExpressions =
-    [
-        Expression.Constant(1),
-        Expression.Convert(Expression.Constant(1), typeof(short))
-    ];
-
-    private static readonly Expression[] ValidExpressions =
-    [
-        Expression.Add(Expression.Constant(1), Expression.Constant(1)),
-        Expression.Subtract(Expression.Constant(1), Expression.Constant(1)),
-        Expression.Subtract(Expression.Multiply(Expression.Constant(1), Expression.Constant(1)), Expression.Constant(1))
-    ];
-
     private static readonly ExpressionTreeEvaluator[] Evaluators =
     [
-        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().HavingChild(node.AcceptChildren)),
-        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().AcceptChildren())
+        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().AcceptChildren()),
+        ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().HavingChild(node.AcceptChildren))
+        // ExpressionTreeEvaluator.Create(node => node.OfType<MethodCallExpression>().AcceptChildren())
     ];
 
-    private readonly ExpressionTreeEvaluator _evaluator;
-
-    public AcceptChildren(ExpressionTreeEvaluator evaluator)
+    [TestFixtureSource(nameof(InvalidExpressions))]
+    public class OnInvalidSchema
     {
-        _evaluator = evaluator;
+        private static readonly Expression[] InvalidExpressions =
+        [
+            Expression.Constant(1),
+            Expression.Convert(Expression.Constant(1), typeof(short))
+        ];
+
+        private readonly Expression _invalidExpression;
+
+        public OnInvalidSchema(Expression invalidExpression)
+        {
+            _invalidExpression = invalidExpression;
+        }
+
+        [TestCaseSource(typeof(AcceptChildren), nameof(Evaluators))]
+        public void Throw(ExpressionTreeEvaluator evaluator)
+        {
+            Assert.That(() => evaluator.Evaluate(_invalidExpression), Throws.TypeOf<TreeRejectedException>());
+        }
     }
 
-    [TestCaseSource(nameof(InvalidExpressions))]
-    public void ThrowsOnInvalidSchemas(Expression invalidExpression)
+    [TestFixtureSource(nameof(ValidExpressions))]
+    public class OnValidSchema
     {
-        Assert.That(() => _evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
-    }
+        private static readonly Expression[] ValidExpressions =
+        [
+            Expression.Add(Expression.Constant(1), Expression.Constant(1)),
+            Expression.Subtract(Expression.Constant(1), Expression.Constant(1)),
+            Expression.Subtract(Expression.Multiply(Expression.Constant(1), Expression.Constant(1)), Expression.Constant(1))
+            // Expression.Call(Expression.Property(null, typeof(C).GetProperty(nameof(C.Instance))!.GetMethod!), typeof(C).GetMethod(nameof(C.M))!, Expression.Constant("s"), Expression.Constant(1))
+        ];
 
-    [TestCaseSource(nameof(ValidExpressions))]
-    public void DoesNotThrowOnValidSchemas(Expression validExpression)
-    {
-        Assert.That(() => _evaluator.Evaluate(validExpression), Throws.Nothing);
+        private readonly Expression _validExpression;
+
+        public OnValidSchema(Expression validExpression)
+        {
+            _validExpression = validExpression;
+        }
+
+        [TestCaseSource(typeof(AcceptChildren), nameof(Evaluators))]
+        public void DoNotThrow(ExpressionTreeEvaluator evaluator)
+        {
+            Assert.That(() => evaluator.Evaluate(_validExpression), Throws.Nothing);
+        }
+
+        // private class C
+        // {
+        //     public static C Instance { get; } = new();
+        //     
+        //     public void M(string s, int i) { }
+        // }
     }
 }
