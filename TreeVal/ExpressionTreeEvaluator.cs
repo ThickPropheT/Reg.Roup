@@ -41,7 +41,7 @@ public class ExpressionTreeEvaluator
 
     public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
     {
-        var factory = new VisitorNodeFactory();
+        var factory = new DefaultVisitorNodeFactory();
 
         var root = buildEvaluatorTree(factory);
 
