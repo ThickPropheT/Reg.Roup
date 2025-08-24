@@ -27,4 +27,6 @@ public class WhereCondition : ICondition
             throw new ConditionFailedException(this, upe);
         }
     }
+
+    public override string ToString() => _message;
 }

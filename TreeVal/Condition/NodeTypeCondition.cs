@@ -88,6 +88,21 @@ public class NodeTypeCondition : ICondition
         }
     }
 
+    public override string ToString()
+    {
+        switch (_state)
+        {
+            case State.ByNodeType:
+                return $"node.NodeType == ExpressionType.{_nodeType}";
+            case State.ByType:
+                return $"node is {_type}";
+            case State.ByTypeAndNodeType:
+                return $"node is {_type} && node.NodeType == ExpressionType.{_nodeType}";
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     private enum State
     {
         ByNodeType = 0,
