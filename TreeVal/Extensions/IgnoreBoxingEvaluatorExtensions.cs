@@ -6,7 +6,7 @@ namespace TreeVal.Extensions;
 public enum BoxingEvaluationHint
 {
     Lazy = 0,
-    Greedy
+    Eager
 }
 
 public static class IgnoreBoxingEvaluatorExtensions
