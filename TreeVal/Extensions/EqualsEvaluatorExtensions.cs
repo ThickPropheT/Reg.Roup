@@ -23,8 +23,8 @@ public static class EqualsEvaluatorExtensions
 
     public static IEvaluatorBuilder Equals(
         this IVisitorNodeFactory _,
-        Func<Expression, string> getLeft,
-        string right,
+        Func<Expression, string?> getLeft,
+        string? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
@@ -37,8 +37,8 @@ public static class EqualsEvaluatorExtensions
 
     public static IEvaluatorBuilder Equals(
         this IVisitorNodeFactory _,
-        Func<Expression, Type> getLeft,
-        Type right,
+        Func<Expression, Type?> getLeft,
+        Type? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
@@ -65,8 +65,8 @@ public static class EqualsEvaluatorExtensions
 
     public static TBuilder Equals<TBuilder>(
         this TBuilder node,
-        Func<Expression, string> getLeft,
-        string right,
+        Func<Expression, string?> getLeft,
+        string? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
@@ -79,8 +79,8 @@ public static class EqualsEvaluatorExtensions
 
     public static TBuilder Equals<TBuilder>(
         this TBuilder node,
-        Func<Expression, Type> getLeft,
-        Type right,
+        Func<Expression, Type?> getLeft,
+        Type? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
@@ -114,8 +114,8 @@ public static class EqualsEvaluatorExtensions
     
     public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
         this IEvaluatorBuilder<TExpression> node,
-        Func<TExpression, string> getLeft,
-        string right,
+        Func<TExpression, string?> getLeft,
+        string? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
@@ -135,8 +135,8 @@ public static class EqualsEvaluatorExtensions
     
     public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
         this IEvaluatorBuilder<TExpression> node,
-        Func<TExpression, Type> getLeft,
-        Type right,
+        Func<TExpression, Type?> getLeft,
+        Type? right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
     )
