@@ -3,7 +3,7 @@ using TreeVal.Extensions;
 
 namespace TreeVal.Tests;
 
-[TestFixtureSource(nameof(Evaluators))]
+[TestFixture]
 public class AcceptChildren
 {
     private static readonly Expression[] InvalidExpressions =
@@ -25,22 +25,22 @@ public class AcceptChildren
         ExpressionTreeEvaluator.Create(node => node.OfType<BinaryExpression>().AcceptChildren())
     ];
 
-    private readonly ExpressionTreeEvaluator _evaluator;
-
-    public AcceptChildren(ExpressionTreeEvaluator evaluator)
+    [Test, Combinatorial]
+    public void ThrowsOnInvalidSchemas(
+        [ValueSource(nameof(Evaluators))] ExpressionTreeEvaluator evaluator,
+        [ValueSource(nameof(InvalidExpressions))]
+        Expression invalidExpression)
     {
-        _evaluator = evaluator;
+        Assert.That(() => evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
     }
 
-    [TestCaseSource(nameof(InvalidExpressions))]
-    public void ThrowsOnInvalidSchemas(Expression invalidExpression)
-    {
-        Assert.That(() => _evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
-    }
 
-    [TestCaseSource(nameof(ValidExpressions))]
-    public void DoesNotThrowOnValidSchemas(Expression validExpression)
+    [Test, Combinatorial]
+    public void DoesNotThrowOnValidSchemas(
+        [ValueSource(nameof(Evaluators))] ExpressionTreeEvaluator evaluator,
+        [ValueSource(nameof(ValidExpressions))]
+        Expression validExpression)
     {
-        Assert.That(() => _evaluator.Evaluate(validExpression), Throws.Nothing);
+        Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
     }
 }
