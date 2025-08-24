@@ -17,7 +17,7 @@ public static class ConversionEvaluatorExtensions
     public static IEvaluatorConditionBuilder<UnaryExpression> Cast<T>(this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
-            .Where(cast => cast.Type == typeof(T))
+            .Equals(cast => cast.Type, typeof(T))
             .HavingChild(operand);
     
     public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand, Type toType)

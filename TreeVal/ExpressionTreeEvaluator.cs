@@ -34,6 +34,8 @@ public class ExpressionTreeEvaluator
 {
     private readonly IEvaluatorNodeFactory _schema;
 
+    public string? Name { get; private set; }
+
     private ExpressionTreeEvaluator(IEvaluatorNodeFactory schema)
     {
         _schema = schema;
@@ -52,7 +54,16 @@ public class ExpressionTreeEvaluator
 
         return new ExpressionTreeEvaluator(root);
     }
+    
+    public ExpressionTreeEvaluator WithName(string name)
+    {
+        Name = name;
+        return this;
+    }
 
     public void Evaluate(Expression expressionTree)
         => VisitationContext.EvaluateTree(expressionTree, _schema);
+
+    public override string? ToString()
+        => Name ?? base.ToString();
 }
