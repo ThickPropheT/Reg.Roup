@@ -1,8 +1,12 @@
+using System.Linq.Expressions;
+
 namespace TreeVal.Extensions;
 
 // TODO test coverage
 public static class HavingChildrenEvaluatorExtensions
 {
+    private static readonly DefaultVisitorNodeFactory Factory = new();
+    
     public static IEvaluatorBuilder HavingChild(
         this IEvaluatorBuilder builder, IEvaluatorNodeFactory child)
     {
@@ -62,4 +66,9 @@ public static class HavingChildrenEvaluatorExtensions
 
         return builder;
     }
+
+    // TODO should this go here or in the accept children extensions
+    public static IEvaluatorBuilder<TNode> HavingAnyChild<TNode>(this IEvaluatorBuilder<TNode> builder)
+        where TNode : Expression
+        => builder.HavingChild(parent => Factory.AcceptChildren(parent));
 }
