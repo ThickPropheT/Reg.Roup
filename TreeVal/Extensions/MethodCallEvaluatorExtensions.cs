@@ -37,7 +37,7 @@ public static class MethodCallEvaluatorExtensions
             .HavingChild(target)
             .HavingAnyChild();
 
-    // TODO WIP: verify this accepts both static & instance
+    // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this IVisitorNodeFactory factory,
         params IEvaluatorNodeFactory[] parameters)
