@@ -53,7 +53,7 @@ public class ByName
     }
 
     [Test]
-    public void ThrowsOnValidSchemas([ValueSource(nameof(InvalidExpressions))] Expression invalidExpression)
+    public void ThrowsOnInvalidSchemas([ValueSource(nameof(InvalidExpressions))] Expression invalidExpression)
     {
         Assert.That(() => Evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
     }
