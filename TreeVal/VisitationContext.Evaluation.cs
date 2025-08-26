@@ -29,14 +29,10 @@ public partial class VisitationContext
         }
         catch (Exception ex)
         {
-            // TODO is wrapping ex providing value?
-            // TODO should tape be passed in here?
-            throw TreeRejectedException.ForError(ex);
+            throw TreeRejectedException.ForError(GetTrace(context), head, ex);
         }
 
-        var trace = context._evaluationResults.Values
-            .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
-            .ToArray();
+        var trace = GetTrace(context);
 
         if (trace.LastOrDefault()?.Status == EvaluatorStatus.Rejected)
         {
@@ -52,7 +48,15 @@ public partial class VisitationContext
     public bool Evaluate(IEvaluatorNodeFactory factory)
     {
         var evaluator = factory.ToEvaluator();
-        var current = Head.MoveForward();
+
+        var moveHead = evaluator.HeadMovementStrategy.GetStrategy(this);
+        
+        var current = moveHead(Head);
+
+        if (current == null)
+        {
+            return TryAccept(evaluator, current);
+        }
 
         // in the most ideal case, we'll want to iterate all the conditions below
         // for the purpose of evaluating them. may as well get it out of the way
@@ -67,14 +71,14 @@ public partial class VisitationContext
 
             if (failedConditions.Any())
             {
-                ConditionsFailed(current, evaluator, failedConditions.ToArray());
+                Reject(evaluator, current, failedConditions.ToArray());
             }
         }
         catch (ConditionFailedException ex)
         {
             // this one failed hard. add it to the pile
             failedConditions.Add(ex.Condition);
-            ConditionsFailed(current, evaluator, failedConditions.ToArray());
+            Reject(evaluator, current, failedConditions.ToArray());
             return false;
         }
 
@@ -90,15 +94,15 @@ public partial class VisitationContext
 
         if (!areAllAccepted)
         {
-            Reject(current, evaluator);
+            Reject(evaluator, current);
         }
 
-        return TryAccept(current, evaluator);
+        return TryAccept(evaluator, current);
     }
 
-    public bool TryAccept(Expression current, IEvaluatorNode evaluator)
+    public bool TryAccept(IEvaluatorNode evaluator, Expression? current)
     {
-        var result = GetOrCreateEvaluationResult(current, evaluator);
+        var result = GetOrCreateEvaluationResult(evaluator, current);
 
         // TODO
         //  the fact that this status check is now necessary is sort of a harbinger
@@ -110,15 +114,15 @@ public partial class VisitationContext
         return true;
     }
 
-    public void Reject(Expression current, IEvaluatorNode evaluator)
-        => GetOrCreateEvaluationResult(current, evaluator).Reject();
+    public void Reject(IEvaluatorNode evaluator, Expression current)
+        => GetOrCreateEvaluationResult(evaluator, current).Reject();
 
-    public void ConditionsFailed(Expression node, IEvaluatorNode evaluator, params ICondition[] failedConditions)
-        => GetOrCreateEvaluationResult(node, evaluator).Reject(failedConditions);
+    public void Reject(IEvaluatorNode evaluator, Expression current, params ICondition[] failedConditions)
+        => GetOrCreateEvaluationResult(evaluator, current).Reject(failedConditions);
 
-    private EvaluationResult GetOrCreateEvaluationResult(Expression node, IEvaluatorNode evaluator)
+    private EvaluationResult GetOrCreateEvaluationResult(IEvaluatorNode evaluator, Expression? current)
         => !_evaluationResults.TryGetValue(evaluator, out var result)
-            ? _evaluationResults[evaluator] = new EvaluationResult(node, evaluator)
+            ? _evaluationResults[evaluator] = new EvaluationResult(current, evaluator)
             : result;
 
     private void FastForwardStatuses(VisitationContext other)
@@ -128,16 +132,21 @@ public partial class VisitationContext
             _evaluationResults[result.Evaluator] = result;
         }
     }
+
+    private static EvaluationResult[] GetTrace(VisitationContext context)
+        => context._evaluationResults.Values
+            .TakeWhileInclusive(result => result.Status != EvaluatorStatus.Rejected)
+            .ToArray();
 }
 
 public class EvaluationResult : IDescribable
 {
-    public Expression Node { get; }
+    public Expression? Node { get; }
     public IEvaluatorNode Evaluator { get; }
     public EvaluatorStatus Status { get; private set; } = EvaluatorStatus.Unread;
     public ICondition[] FailedConditions { get; private set; } = [];
 
-    public EvaluationResult(Expression node, IEvaluatorNode evaluator)
+    public EvaluationResult(Expression? node, IEvaluatorNode evaluator)
     {
         Node = node;
         Evaluator = evaluator;

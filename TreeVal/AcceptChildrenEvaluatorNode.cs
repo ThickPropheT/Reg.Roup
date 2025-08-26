@@ -8,12 +8,14 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
     private readonly Expression _parent;
 
+    public override VisitationContext.MovementStrategy HeadMovementStrategy { get; }
     public override VisitationContext.EvaluationStrategy ChildEvaluationStrategy { get; }
 
     public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
         : base(conditions, [])
     {
         _parent = parent;
+        HeadMovementStrategy = VisitationContext.MovementStrategy.TryMoveForward;
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 

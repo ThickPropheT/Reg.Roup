@@ -9,6 +9,9 @@ public class EvaluatorNode : IEvaluatorNode
 
     public IEnumerable<ICondition> Conditions { get; }
     
+    public virtual VisitationContext.MovementStrategy HeadMovementStrategy
+        => VisitationContext.MovementStrategy.MoveForward;
+
     public virtual VisitationContext.EvaluationStrategy ChildEvaluationStrategy 
         => VisitationContext.EvaluationStrategy.AllOf;
 

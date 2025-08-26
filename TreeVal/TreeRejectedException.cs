@@ -14,14 +14,10 @@ public class TreeRejectedException : Exception
         Trace = trace;
     }
 
-    private TreeRejectedException(string message)
-        : base(message)
-    {
-    }
-
-    private TreeRejectedException(string message, Exception inner)
+    private TreeRejectedException(EvaluationResult[] trace, string message, Exception inner)
         : base(message, inner)
     {
+        Trace = trace;
     }
 
     public static TreeRejectedException ForTrace(EvaluationResult[] trace)
@@ -53,8 +49,11 @@ public class TreeRejectedException : Exception
     }
 
     // TODO should message be passable-in here?
-    public static TreeRejectedException ForError(Exception error)
-        => new("Something exploded unexpectedly.", error);
+    public static TreeRejectedException ForError(EvaluationResult[] trace, TapeHead head, Exception error)
+        => new(trace, "Something exploded unexpectedly.", error)
+        {
+            Head = head
+        };
 
     // TODO
     //  it would be cool if you could pass in a custom IDescription

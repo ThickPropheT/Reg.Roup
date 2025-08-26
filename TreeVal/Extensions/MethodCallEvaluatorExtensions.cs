@@ -5,6 +5,11 @@ namespace TreeVal.Extensions;
 
 public static class MethodCallEvaluatorExtensions
 {
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory)
+        => factory
+            .OfType<MethodCallExpression>()
+            .HavingChild(factory.AcceptChildren);
+
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
         this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
