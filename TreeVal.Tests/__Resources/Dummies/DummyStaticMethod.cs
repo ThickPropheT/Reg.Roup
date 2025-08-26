@@ -1,6 +1,6 @@
 namespace TreeVal.Tests.__Resources.Dummies;
 
-public class DummyMethod2
+public class DummyStaticMethod
 {
     public static string GetString1() => string.Empty;
     public static string GetString1(string arg) => arg;

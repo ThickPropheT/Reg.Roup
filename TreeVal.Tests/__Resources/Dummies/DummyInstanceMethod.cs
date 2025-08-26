@@ -1,8 +1,8 @@
 namespace TreeVal.Tests.__Resources.Dummies;
 
-public class DummyMethod1
+public class DummyInstanceMethod
 {
-    public static DummyMethod1 Instance { get; } = new();
+    public static DummyInstanceMethod Instance { get; } = new();
     
     public string GetString1() => string.Empty;
     public string GetString1(string arg) => arg;
