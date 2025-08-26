@@ -55,7 +55,7 @@ public partial class VisitationContext
 
         if (current == null)
         {
-            return TryAccept(evaluator, current);
+            return TryAccept(evaluator, null);
         }
 
         // in the most ideal case, we'll want to iterate all the conditions below

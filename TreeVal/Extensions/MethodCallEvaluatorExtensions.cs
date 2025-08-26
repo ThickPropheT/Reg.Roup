@@ -9,6 +9,12 @@ public static class MethodCallEvaluatorExtensions
         => factory
             .OfType<MethodCallExpression>()
             .HavingChild(factory.AcceptChildren);
+    
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, string? name)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(method => method.Method.Name, name)
+            .HavingChild(factory.AcceptChildren);
 
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
         this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
