@@ -65,6 +65,25 @@ public static class MethodCallEvaluatorExtensions
                 parameters.Length > 0
                     ? parameters
                     : [factory.AcceptChildren(call)]);
+    
+    // TODO verify this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
+            .HavingChild(call =>
+                getTarget(call)
+                    .Equals(@object => @object.Type, typeof(TOwner)))
+            .HavingChildren(call =>
+                parameters.Length > 0
+                    ? parameters
+                    : [factory.AcceptChildren(call)]);
 
     // TODO verify this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(

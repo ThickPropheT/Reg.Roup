@@ -35,6 +35,8 @@ public class ByTarget
     [
         ExpressionTreeEvaluator.Create(node =>
             node.MethodCall(_ => node.ReadProperty<DummyInstanceMethod>(nameof(DummyInstanceMethod.Instance)))),
+        ExpressionTreeEvaluator.Create(node =>
+            node.MethodCall<DummyInstanceMethod>(_ => node.ReadProperty<DummyInstanceMethod>(nameof(DummyInstanceMethod.Instance)))),
     ];
 
     [Test, Combinatorial]
