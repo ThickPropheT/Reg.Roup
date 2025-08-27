@@ -10,14 +10,17 @@ public class ByNameAndByTarget
     private static readonly Expression[] ValidExpressions =
     [
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1()),
-        
+
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("1")),
-        
+
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyStaticMethod.GetString1())),
-        
+
         ExpressionTree.FromBody(() =>
-            new DummyInstanceMethod().GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
-        
+            new DummyInstanceMethod().GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2")),
+
         ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
     ];
 

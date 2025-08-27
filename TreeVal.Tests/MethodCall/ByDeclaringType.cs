@@ -12,21 +12,32 @@ public class ByDeclaringType
         ExpressionTree.FromBody(() => DummyMethod.GetString2()),
         ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1()),
-        
+
         ExpressionTree.FromBody(() => DummyMethod.GetString2("1")),
         ExpressionTree.FromBody(() => new DummyMethod().GetString1("1")),
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1("1")),
-        
+
         ExpressionTree.FromBody(() => DummyMethod.GetString2(DummyMethod.GetString2())),
         ExpressionTree.FromBody(() => new DummyMethod().GetString1(DummyMethod.GetString2())),
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1(DummyMethod.GetString2())),
-        
+
         ExpressionTree.FromBody(() =>
-            DummyMethod.GetString2(DummyMethod.Instance == new DummyMethod() ? "1" : "2")),
+            DummyMethod.GetString2(
+                DummyMethod.Instance == new DummyMethod()
+                    ? "1"
+                    : "2")),
+
         ExpressionTree.FromBody(() =>
-            new DummyMethod().GetString1(DummyMethod.Instance == new DummyMethod() ? "1" : "2")),
+            new DummyMethod().GetString1(
+                DummyMethod.Instance == new DummyMethod()
+                    ? "1"
+                    : "2")),
+
         ExpressionTree.FromBody(() =>
-            DummyMethod.Instance.GetString1(DummyMethod.Instance == new DummyMethod() ? "1" : "2")),
+            DummyMethod.Instance.GetString1(
+                DummyMethod.Instance == new DummyMethod()
+                    ? "1"
+                    : "2")),
     ];
 
     private static readonly Expression[] InvalidExpressions =

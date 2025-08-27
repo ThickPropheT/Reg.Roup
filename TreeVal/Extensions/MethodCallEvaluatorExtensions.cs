@@ -17,6 +17,13 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .Equals(call => call.Method.Name, name)
             .HavingAnyChild();
+    
+    // TODO verify this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(this IVisitorNodeFactory factory)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
+            .HavingAnyChild();
 
     // this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
@@ -26,18 +33,8 @@ public static class MethodCallEvaluatorExtensions
             .Where(call => !call.Method.IsStatic)
             .HavingChild(target)
             .HavingAnyChild();
-
-    // this accepts only instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.Name, name)
-            .Where(call => !call.Method.IsStatic)
-            .HavingChild(target)
-            .HavingAnyChild();
-
-    // this accepts both static & instance
+    
+    // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this IVisitorNodeFactory factory,
         params IEvaluatorNodeFactory[] parameters)
@@ -48,6 +45,16 @@ public static class MethodCallEvaluatorExtensions
                 parameters.Length > 0
                     ? parameters
                     : [factory.AcceptChildren(call)]);
+
+    // this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.Name, name)
+            .Where(call => !call.Method.IsStatic)
+            .HavingChild(target)
+            .HavingAnyChild();
 
     // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(

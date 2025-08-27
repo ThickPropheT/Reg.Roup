@@ -22,11 +22,22 @@ public class Any
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1(DummyStaticMethod.GetString1())),
 
         ExpressionTree.FromBody(() =>
-            DummyStaticMethod.GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
+            DummyStaticMethod.GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2")),
+
         ExpressionTree.FromBody(() =>
-            new DummyInstanceMethod().GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
+            new DummyInstanceMethod().GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2")),
+
         ExpressionTree.FromBody(() =>
-            DummyInstanceMethod.Instance.GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
+            DummyInstanceMethod.Instance.GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2")),
     ];
 
     private static readonly Expression[] InvalidExpressions =
@@ -40,18 +51,26 @@ public class Any
         ExpressionTree.FromBody<Func<string>>(() => new DummyInstanceMethod().GetString1),
     ];
 
-    private static readonly ExpressionTreeEvaluator Evaluator =
-        ExpressionTreeEvaluator.Create(node => node.MethodCall());
+    private static readonly ExpressionTreeEvaluator[] Evaluators =
+    [
+        ExpressionTreeEvaluator.Create(node => node.MethodCall())
+    ];
 
     [Test]
-    public void DoesNotThrowOnValidSchemas([ValueSource(nameof(ValidExpressions))] Expression validExpression)
+    public void DoesNotThrowOnValidSchemas(
+        [ValueSource(nameof(Evaluators))] ExpressionTreeEvaluator evaluator,
+        [ValueSource(nameof(ValidExpressions))]
+        Expression validExpression)
     {
-        Assert.That(() => Evaluator.Evaluate(validExpression), Throws.Nothing);
+        Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
     }
 
     [Test]
-    public void ThrowsOnInvalidSchemas([ValueSource(nameof(InvalidExpressions))] Expression invalidExpression)
+    public void ThrowsOnInvalidSchemas(
+        [ValueSource(nameof(Evaluators))] ExpressionTreeEvaluator evaluator,
+        [ValueSource(nameof(InvalidExpressions))]
+        Expression invalidExpression)
     {
-        Assert.That(() => Evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
+        Assert.That(() => evaluator.Evaluate(invalidExpression), Throws.TypeOf<TreeRejectedException>());
     }
 }
