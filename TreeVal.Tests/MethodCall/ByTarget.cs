@@ -9,14 +9,16 @@ public class ByTarget
 {
     private static readonly Expression[] ValidExpressions =
     [
-        ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1()),
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1()),
         
-        ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1("1")),
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("1")),
         
-        ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1(DummyStaticMethod.GetString1())),
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyStaticMethod.GetString1())),
         
         ExpressionTree.FromBody(() =>
-            DummyInstanceMethod.Instance.GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
+            new DummyInstanceMethod().GetString1(DummyInstanceMethod.Instance == new DummyInstanceMethod() ? "1" : "2")),
+        
+        ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
     ];
 
     private static readonly Expression[] InvalidExpressions =
@@ -33,10 +35,7 @@ public class ByTarget
 
     private static readonly ExpressionTreeEvaluator[] Evaluators =
     [
-        ExpressionTreeEvaluator.Create(node =>
-            node.MethodCall(_ => node.ReadProperty<DummyInstanceMethod>(nameof(DummyInstanceMethod.Instance)))),
-        ExpressionTreeEvaluator.Create(node =>
-            node.MethodCall<DummyInstanceMethod>(_ => node.ReadProperty<DummyInstanceMethod>(nameof(DummyInstanceMethod.Instance)))),
+        ExpressionTreeEvaluator.Create(node => node.MethodCall(_ => node.New())),
     ];
 
     [Test, Combinatorial]
