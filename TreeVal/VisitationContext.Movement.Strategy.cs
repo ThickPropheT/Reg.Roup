@@ -4,7 +4,7 @@ namespace TreeVal;
 
 public partial class VisitationContext
 {
-    private Expression? MoveForwardOrFail(TapeHead head)
+    private Expression MoveForwardOrFail(TapeHead head)
         => head.MoveForward();
 
     private Expression? TryMoveForward(TapeHead head)
@@ -16,7 +16,14 @@ public partial class VisitationContext
     {
         public static MovementStrategy MoveForward { get; } = new(context => context.MoveForwardOrFail);
         public static MovementStrategy TryMoveForward { get; } = new(context => context.TryMoveForward);
+        
+        public static MovementStrategy From(Func<VisitationContext, TapeHead, Expression?> strategy)
+            => new(context => head => strategy(context, head));
 
+        // TODO
+        //  this doesn't technically even need to have TapeHead passed in.
+        //  it can be accessed via VisitationContext. dunno if that's
+        //  a good idea or a bad idea :shrug:
         private readonly Func<VisitationContext, Func<TapeHead, Expression?>> _lookupStrategy;
 
         private MovementStrategy(Func<VisitationContext, Func<TapeHead, Expression?>> lookupStrategy)

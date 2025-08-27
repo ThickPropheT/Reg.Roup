@@ -15,39 +15,62 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
         : base(conditions, [])
     {
         _parent = parent;
-        HeadMovementStrategy = VisitationContext.MovementStrategy.TryMoveForward;
+        HeadMovementStrategy = VisitationContext.MovementStrategy.From(MoveHead);
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 
-    private bool EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
+    private Expression? MoveHead(VisitationContext _, TapeHead head)
     {
-        // TODO note that this is a list and not a queue. removing things just cherry picks them out
         var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
+
+        // there weren't any children, actually.
+        if (!tape.Any())
+        {
+            return null;
+        }
+
+        // TODO should we just pass this in like all the other methods around here?
+        var current = head.Read();
+
+        // - if current != _parent, then some number of children of _parent
+        //     have already been processed by another evaluator.
+        // - if current == _parent, then no children of _parent have been
+        //     evaluated yet.
+        if (current == _parent)
+        {
+            // no need to check to see if we can move forward.
+            // if we're here, then tape is not empty and therefore,
+            // _parent has children left on head's tape.
+            current = head.MoveForward();
+        }
 
         while (tape.Contains(current))
         {
             tape.Remove(current);
 
-            var next = context.Head.PeekForward();
+            current = head.PeekForward();
 
-            // if can't move forward
-            if (next == null)
+            // if the head has run out of tape, bail out. 
+            if (current == null)
             {
                 // TODO
-                //  can this situation even happen other than by something being really broken?
-                //  handling this case is fine, but maybe throw ex instead?
-                Debug.Assert(!tape.Any(), "expected context.Head to be able to move forward. _parent has unvisited child nodes.");
+                //  should we just let this kind of error be thrown by the head itself?
+                Debug.Assert(!tape.Any(),
+                    "expected context.Head to be able to move forward. _parent has unvisited child nodes.");
                 break;
             }
 
-            current = next;
-            context.Head.MoveForward();
+            // otherwise, move forward.
+            head.MoveForward();
         }
 
-        // TODO
-        //  this can 100% happen. not sure if it's a problem or not, but it probably isn't helping.
         Debug.Assert(!tape.Any(), "_parent has unvisited child nodes.");
-        return true;
+        return current;
+    }
+
+    private bool EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
+    {
+        throw new SkepticalException("Should we even be here rn?");
     }
 }
