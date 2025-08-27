@@ -44,7 +44,7 @@ public class ByName
     ];
 
     private static readonly ExpressionTreeEvaluator Evaluator =
-        ExpressionTreeEvaluator.Create(node => node.MethodCall(nameof(DummyInstanceMethod.GetString1)));
+        ExpressionTreeEvaluator.Create(node => node.MethodCall(nameof(DummyMethod.GetString1)));
 
     [Test]
     public void DoesNotThrowOnValidSchemas([ValueSource(nameof(ValidExpressions))] Expression validExpression)

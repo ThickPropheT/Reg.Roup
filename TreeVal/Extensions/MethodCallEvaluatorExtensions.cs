@@ -27,7 +27,7 @@ public static class MethodCallEvaluatorExtensions
             .HavingChild(target)
             .HavingAnyChild();
 
-    // TODO verify this accepts only instance
+    // this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
         this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
