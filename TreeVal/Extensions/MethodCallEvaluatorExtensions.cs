@@ -56,6 +56,23 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IVisitorNodeFactory factory, Type ownerType, string? name)
+        => factory
+            .MethodCallBase(ownerType, name)
+            .HavingAnyChild();
+
+    // this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory, string? name)
+        => factory
+            .MethodCallBase(typeof(TOwner), name)
+            .HavingAnyChild();
+    
+    
+    
+
+    // this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
         this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorConditionBuilder[]> getParameters)
         => factory
             .OfType<MethodCallExpression>()
