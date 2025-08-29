@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace TreeVal.Extensions;
 
@@ -40,20 +41,14 @@ public static class MethodCallEvaluatorExtensions
         => factory
             .OfType<MethodCallExpression>()
             .HavingChildren(call =>
-                (!call.Method.IsStatic
-                    ? new[]
-                    {
-                        factory
-                            .AnyOne()
-                            // TODO may be yagni since I don't think this is even possible
-                            .Is(e => e.Type, call.Method.DeclaringType)
-                            .HavingAnyChild()
-                    }
-                    : [])
-                .Concat(
+            {
+                var target = MethodCallTarget(factory, call);
+
+                return target.Concat(
                     parameters.Length > 0
                         ? parameters
-                        : [factory.AcceptChildren(call)]));
+                        : [factory.AcceptChildren(call)]);
+            });
 
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
@@ -62,17 +57,7 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .HavingChildren(call =>
             {
-                var target = !call.Method.IsStatic
-                    ? new[]
-                    {
-                        factory
-                            .AnyOne()
-                            // TODO may be yagni since I don't think this is even possible
-                            .Is(e => e.Type, call.Method.DeclaringType)
-                            .HavingAnyChild()
-                    }
-                    : [];
-
+                var target = MethodCallTarget(factory, call);
                 var parameters = getParameters(call);
 
                 return target.Concat(
@@ -80,6 +65,40 @@ public static class MethodCallEvaluatorExtensions
                         ? parameters
                         : [factory.AcceptChildren(call)]);
             });
+
+    private static IEvaluatorBuilder[] MethodCallTarget(IVisitorNodeFactory factory, MethodCallExpression call)
+    {
+        if (!call.Method.IsStatic)
+        {
+            return
+            [
+                factory
+                    .AnyOne()
+                    // TODO may be yagni since I don't think this is even possible
+                    .Is(e => e.Type, call.Method.DeclaringType)
+                    .HavingAnyChild()
+            ];
+        }
+
+        if (call.Method.IsDefined(typeof(ExtensionAttribute), true))
+        {
+            // TODO
+            //  writing & reading to this variable that's tantamount to global
+            //  may be problematic. keep your wits about you
+            ParameterInfo[]? callMethodParameters = null;
+
+            return
+            [
+                factory
+                    .AnyOne()
+                    .Where(_ => (callMethodParameters = call.Method.GetParameters()).Length > 0)
+                    .Is(e => e.Type, () => callMethodParameters?[0].ParameterType)
+                    .HavingAnyChild()
+            ];
+        }
+
+        return [];
+    }
 
     // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(

@@ -6,6 +6,7 @@ namespace TreeVal.Tests.MethodCall;
 
 // TODO it'd be cool to find a way to display the comments below in the test results
 // accept: any method call with arg[0] resolving to string
+[TestFixture]
 public class ByParameters
 {
     private static readonly Expression[] ValidExpressions =
@@ -18,6 +19,8 @@ public class ByParameters
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1("3")),
         // accept: target: instance of any type via ctor, arg[0]: constant
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("4")),
+        // accept: extension method target: instance of any type via ctor, arg[0]: constant
+        ExpressionTree.FromBody(() => new object().GetString3("5")),
 
         // accept: target: static, arg[0]: result of method call
         ExpressionTree.FromBody(() => DummyMethod.GetString2(DummyMethod.GetString2())),
@@ -27,6 +30,8 @@ public class ByParameters
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1(DummyMethod.GetString2())),
         // accept: target: instance of any type via ctor, arg[0]: result of method call
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyMethod.GetString2())),
+        // accept: extension method target: instance of any type via ctor, arg[0]: result of method call
+        ExpressionTree.FromBody(() => new object().GetString3(DummyMethod.GetString2())),
 
         // accept: target: static, arg[0]: result of ternary
         ExpressionTree.FromBody(() =>
@@ -56,13 +61,12 @@ public class ByParameters
                     ? "1"
                     : "2")),
         
-        // TODO determine whether extension methods are ok
-        // accept: target: instance of any type via ctor, arg[0]: result of ternary
-        // ExpressionTree.FromBody(() =>
-        //     new object().GetString3(
-        //         DummyMethod.Instance == new DummyMethod()
-        //             ? "1"
-        //             : "2")),
+        // accept: extension method target: instance of any type via ctor, arg[0]: result of ternary
+        ExpressionTree.FromBody(() =>
+            new object().GetString3(
+                DummyMethod.Instance == new DummyMethod()
+                    ? "1"
+                    : "2")),
     ];
     
     private static readonly Expression[] InvalidExpressions =
