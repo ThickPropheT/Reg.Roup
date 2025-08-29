@@ -55,6 +55,14 @@ public class ByParameters
                 DummyMethod.Instance == new DummyMethod()
                     ? "1"
                     : "2")),
+        
+        // TODO determine whether extension methods are ok
+        // accept: target: instance of any type via ctor, arg[0]: result of ternary
+        // ExpressionTree.FromBody(() =>
+        //     new object().GetString3(
+        //         DummyMethod.Instance == new DummyMethod()
+        //             ? "1"
+        //             : "2")),
     ];
     
     private static readonly Expression[] InvalidExpressions =
