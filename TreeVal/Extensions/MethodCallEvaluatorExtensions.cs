@@ -17,8 +17,8 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .Equals(call => call.Method.Name, name)
             .HavingAnyChild();
-    
-    // TODO verify this accepts both static & instance
+
+    // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(this IVisitorNodeFactory factory)
         => factory
             .OfType<MethodCallExpression>()
@@ -33,11 +33,57 @@ public static class MethodCallEvaluatorExtensions
             .Where(call => !call.Method.IsStatic)
             .HavingChild(target)
             .HavingAnyChild();
-    
+
+    // this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .OfType<MethodCallExpression>()
+            .HavingChildren(call =>
+                (!call.Method.IsStatic
+                    ? new[]
+                    {
+                        factory
+                            .AnyOne()
+                            // TODO may be yagni since I don't think this is even possible
+                            .Is(e => e.Type, call.Method.DeclaringType)
+                            .HavingAnyChild()
+                    }
+                    : [])
+                .Concat(
+                    parameters.Length > 0
+                        ? parameters
+                        : [factory.AcceptChildren(call)]));
+
+    // this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorConditionBuilder[]> getParameters)
+        => factory
+            .OfType<MethodCallExpression>()
+            .HavingChildren(call =>
+            {
+                var target = !call.Method.IsStatic
+                    ? new[]
+                    {
+                        factory
+                            .AnyOne()
+                            // TODO may be yagni since I don't think this is even possible
+                            .Is(e => e.Type, call.Method.DeclaringType)
+                            .HavingAnyChild()
+                    }
+                    : [];
+
+                var parameters = getParameters(call);
+
+                return target.Concat(
+                    parameters.Length > 0
+                        ? parameters
+                        : [factory.AcceptChildren(call)]);
+            });
+
     // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        params IEvaluatorNodeFactory[] parameters)
+        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
         => factory
             .OfType<MethodCallExpression>()
             .Equals(call => call.Method.DeclaringType, typeof(TOwner))
@@ -72,7 +118,7 @@ public static class MethodCallEvaluatorExtensions
                 parameters.Length > 0
                     ? parameters
                     : [factory.AcceptChildren(call)]);
-    
+
     // TODO verify this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this IVisitorNodeFactory factory,
@@ -112,7 +158,7 @@ public static class MethodCallEvaluatorExtensions
                 parameters.Length > 0
                     ? parameters
                     : [factory.AcceptChildren(call)]);
-    
+
     // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
         this IVisitorNodeFactory factory,

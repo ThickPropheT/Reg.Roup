@@ -67,7 +67,13 @@ public static class HavingChildrenEvaluatorExtensions
         return builder;
     }
 
-    // TODO should this go here or in the accept children extensions
+    // TODO should these go here or in the accept children extensions
+    public static IEvaluatorBuilder HavingAnyChild(this IEvaluatorBuilder builder)
+    {
+        builder.AddChildren(parent => [Factory.AcceptChildren(parent)]);
+        return builder;
+    }
+    
     public static IEvaluatorBuilder<TNode> HavingAnyChild<TNode>(this IEvaluatorBuilder<TNode> builder)
         where TNode : Expression
         => builder.HavingChild(parent => Factory.AcceptChildren(parent));
