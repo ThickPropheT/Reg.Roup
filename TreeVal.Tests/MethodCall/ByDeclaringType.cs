@@ -55,6 +55,7 @@ public class ByDeclaringType
     private static readonly ExpressionTreeEvaluator[] Evaluators =
     [
         ExpressionTreeEvaluator.Create(node => node.MethodCall<DummyMethod>()),
+        ExpressionTreeEvaluator.Create(node => node.MethodCall(typeof(DummyMethod))),
     ];
 
     [Test, Combinatorial]
@@ -63,6 +64,15 @@ public class ByDeclaringType
         [ValueSource(nameof(ValidExpressions))]
         Expression validExpression)
     {
+        Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
+    }
+
+    [Test]
+    public void DoesNotThrowOnExtensionMethodSchema()
+    {
+        var validExpression = ExpressionTree.FromBody(() => new object().GetString3("0"));
+        var evaluator = ExpressionTreeEvaluator.Create(node => node.MethodCall(typeof(DummyExtensionMethod)));
+            
         Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
     }
 

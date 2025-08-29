@@ -19,11 +19,15 @@ public static class MethodCallEvaluatorExtensions
             .Equals(call => call.Method.Name, name)
             .HavingAnyChild();
 
-    // this accepts both static & instance
+    // this accepts both static & instance, but not extension
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(this IVisitorNodeFactory factory)
+        => factory.MethodCall(typeof(TOwner));
+    
+    // this accepts both static, instance, & extension
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Type ownerType)
         => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
+            .Equals(call => call.Method.DeclaringType, ownerType)
             .HavingAnyChild();
 
     // this accepts only instance
