@@ -4,49 +4,74 @@ using TreeVal.Tests.__Resources.Dummies;
 
 namespace TreeVal.Tests.MethodCall;
 
+// TODO it'd be cool to find a way to display the comments below in the test results
+// accept: any method call with arg[0] resolving to string
 public class ByParameters
 {
     private static readonly Expression[] ValidExpressions =
     [
+        // accept: target: static, arg[0]: constant
         ExpressionTree.FromBody(() => DummyMethod.GetString2("1")),
+        // accept: target: instance via ctor, arg[0]: constant
         ExpressionTree.FromBody(() => new DummyMethod().GetString1("2")),
+        // accept: target: instance via property access, arg[0]: constant
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1("3")),
+        // accept: target: instance of any type via ctor, arg[0]: constant
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("4")),
 
+        // accept: target: static, arg[0]: result of method call
         ExpressionTree.FromBody(() => DummyMethod.GetString2(DummyMethod.GetString2())),
+        // accept: target: instance via ctor, arg[0]: result of method call
         ExpressionTree.FromBody(() => new DummyMethod().GetString1(DummyMethod.GetString2())),
+        // accept: target: instance via property access, arg[0]: result of method call
         ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1(DummyMethod.GetString2())),
+        // accept: target: instance of any type via ctor, arg[0]: result of method call
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyMethod.GetString2())),
 
+        // accept: target: static, arg[0]: result of ternary
         ExpressionTree.FromBody(() =>
             DummyMethod.GetString2(
                 DummyMethod.Instance == new DummyMethod()
                     ? "1"
                     : "2")),
 
+        // accept: target: instance via ctor, arg[0]: result of ternary
         ExpressionTree.FromBody(() =>
             new DummyMethod().GetString1(
                 DummyMethod.Instance == new DummyMethod()
                     ? "1"
                     : "2")),
 
+        // accept: target: instance via property access, arg[0]: result of ternary
         ExpressionTree.FromBody(() =>
             DummyMethod.Instance.GetString1(
                 DummyMethod.Instance == new DummyMethod()
                     ? "1"
                     : "2")),
+        
+        // accept: target: instance of any type via ctor, arg[0]: result of ternary
+        ExpressionTree.FromBody(() =>
+            new DummyInstanceMethod().GetString1(
+                DummyMethod.Instance == new DummyMethod()
+                    ? "1"
+                    : "2")),
     ];
-
+    
     private static readonly Expression[] InvalidExpressions =
     [
-        // TODO
-        // ExpressionTree.FromBody(() => 1),
-        // ExpressionTree.FromBody(() => DummyProperty.Instance),
-        // ExpressionTree.FromBody(() => DummyProperty.Instance.String),
-        // ExpressionTree.FromBody(() => new DummyProperty()),
-        // ExpressionTree.FromBody(() => new DummyProperty().String),
-        // ExpressionTree.FromBody<Func<string>>(() => DummyMethod.Instance.GetString1),
-        // ExpressionTree.FromBody<Func<string>>(() => new DummyMethod().GetString1),
-        // ExpressionTree.FromBody(() => DummyStaticMethod.GetString2()),
+        // reject: severely wrong type
+        ExpressionTree.FromBody(() => 1),
+        // reject: method call delegate
+        ExpressionTree.FromBody(() => DummyProperty.Instance.String),
+        
+        // reject: target: static, arg[0]: constant
+        ExpressionTree.FromBody(() => DummyMethod.GetString2()),
+        // reject: target: instance via ctor, arg[0]: constant
+        ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
+        // reject: target: instance via property access, arg[0]: constant
+        ExpressionTree.FromBody(() => DummyMethod.Instance.GetString1()),
+        // reject: target: instance of any type via ctor, arg[0]: constant
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1()),
     ];
 
     private static readonly ExpressionTreeEvaluator[] Evaluators =
@@ -58,9 +83,6 @@ public class ByParameters
             ))
             .WithName("params"),
 
-        ExpressionTreeEvaluator.Create(node => node.MethodCall([]))
-            .WithName("empty params"),
-
         ExpressionTreeEvaluator.Create(node => node.MethodCall(_ =>
             [
                 node.AnyOne()
@@ -68,9 +90,13 @@ public class ByParameters
                     .HavingAnyChild()
             ]))
             .WithName("lambda"),
-
-        ExpressionTreeEvaluator.Create(node => node.MethodCall(_ => []))
-            .WithName("empty lambda"),
+        
+        // TODO why did i think these were a good idea?
+        // ExpressionTreeEvaluator.Create(node => node.MethodCall([]))
+        //     .WithName("empty params"),
+        
+        // ExpressionTreeEvaluator.Create(node => node.MethodCall(_ => []))
+        //     .WithName("empty lambda"),
     ];
 
     [Test, Combinatorial]
