@@ -12,22 +12,34 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .HavingAnyChild();
 
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(this IVisitorNodeFactory factory,
+        string? name)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.Name, name);
+
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, string? name)
         => factory
+            .MethodCallBase(name)
+            .HavingAnyChild();
+
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
+        this IVisitorNodeFactory factory, Type ownerType)
+        => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.Name, name)
+            .Equals(call => call.Method.DeclaringType, ownerType);
+
+    // this accepts both static, instance, & extension
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Type ownerType)
+        => factory
+            .MethodCallBase(ownerType)
             .HavingAnyChild();
 
     // this accepts both static & instance, but not extension
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(this IVisitorNodeFactory factory)
-        => factory.MethodCall(typeof(TOwner));
-    
-    // this accepts both static, instance, & extension
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Type ownerType)
         => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType)
+            .MethodCallBase(typeof(TOwner))
             .HavingAnyChild();
 
     // this accepts only instance
@@ -46,13 +58,20 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .HavingChildren(call =>
             {
-                var target = MethodCallTarget(factory, call);
+                var target = DefaultMethodCallTarget(factory, call);
 
                 return target.Concat(
                     parameters.Length > 0
                         ? parameters
                         : [factory.AcceptChildren(call)]);
             });
+
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
+        this IVisitorNodeFactory factory, Type ownerType, string? name)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.DeclaringType, ownerType)
+            .Equals(call => call.Method.Name, name);
 
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
@@ -61,7 +80,7 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .HavingChildren(call =>
             {
-                var target = MethodCallTarget(factory, call);
+                var target = DefaultMethodCallTarget(factory, call);
                 var parameters = getParameters(call);
 
                 return target.Concat(
@@ -70,10 +89,110 @@ public static class MethodCallEvaluatorExtensions
                         : [factory.AcceptChildren(call)]);
             });
 
+    // TODO verify this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner))
+            .HavingChildren(call =>
+                parameters.Length > 0
+                    ? parameters
+                    : [factory.AcceptChildren(call)]);
+
+    // this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        => factory
+            .MethodCallBase(name)
+            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
+            .HavingChild(target)
+            .HavingAnyChild();
+
+    // TODO verify this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        string? name,
+        params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner), name)
+            .HavingChildren(call =>
+                parameters.Length > 0
+                    ? parameters
+                    : [factory.AcceptChildren(call)]);
+
+    // TODO verify this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner))
+            .HavingChild(call =>
+                getTarget(call)
+                    .Equals(@object => @object.Type, typeof(TOwner)))
+            .HavingChildren(call =>
+                parameters.Length > 0
+                    ? parameters
+                    : [factory.AcceptChildren(call)]);
+
+    // TODO verify this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        string? name,
+        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        params IEvaluatorNodeFactory[] parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner), name)
+            .HavingChild(call =>
+                getTarget(call)
+                    .Equals(@object => @object.Type, typeof(TOwner)))
+            .HavingChildren(call =>
+                parameters.Length > 0
+                    ? parameters
+                    : [factory.AcceptChildren(call)]);
+
+    // TODO verify this accepts both static & instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        string? name,
+        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner), name)
+            .HavingChildren(parameters);
+
+    // TODO verify this accepts only instance
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
+        this IVisitorNodeFactory factory,
+        // TODO
+        //  reify this to allow passing in things like `Name.Any()`
+        //  add name validation
+        string? name,
+        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
+        => factory
+            .MethodCallBase(typeof(TOwner), name)
+            .HavingChild(call =>
+                getTarget(call)
+                    .Equals(@object => @object.Type, typeof(TOwner)))
+            .HavingChildren(parameters);
+
+
     private static bool IsExtensionMethod(MethodInfo method)
         => method.IsDefined(typeof(ExtensionAttribute), true);
 
-    private static IEvaluatorBuilder[] MethodCallTarget(IVisitorNodeFactory factory, MethodCallExpression call)
+    private static IEvaluatorBuilder[] DefaultMethodCallTarget(IVisitorNodeFactory factory, MethodCallExpression call)
     {
         if (!call.Method.IsStatic)
         {
@@ -106,169 +225,4 @@ public static class MethodCallEvaluatorExtensions
 
         return [];
     }
-
-    // TODO verify this accepts both static & instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .HavingChildren(call =>
-                parameters.Length > 0
-                    ? parameters
-                    : [factory.AcceptChildren(call)]);
-
-    // this accepts only instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.Name, name)
-            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
-            .HavingChild(target)
-            .HavingAnyChild();
-
-    // TODO verify this accepts both static & instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        // TODO
-        //  reify this to allow passing in things like `Name.Any()`
-        //  add name validation
-        string? name,
-        params IEvaluatorNodeFactory[] parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .Equals(call => call.Method.Name, name)
-            .HavingChildren(call =>
-                parameters.Length > 0
-                    ? parameters
-                    : [factory.AcceptChildren(call)]);
-
-    // TODO verify this accepts only instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        // TODO
-        //  reify this to allow passing in things like `Name.Any()`
-        //  add name validation
-        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
-        params IEvaluatorNodeFactory[] parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .HavingChild(call =>
-                getTarget(call)
-                    .Equals(@object => @object.Type, typeof(TOwner)))
-            .HavingChildren(call =>
-                parameters.Length > 0
-                    ? parameters
-                    : [factory.AcceptChildren(call)]);
-
-    // TODO verify this accepts only instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        // TODO
-        //  reify this to allow passing in things like `Name.Any()`
-        //  add name validation
-        string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
-        params IEvaluatorNodeFactory[] parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .Equals(call => call.Method.Name, name)
-            .HavingChild(call =>
-                getTarget(call)
-                    .Equals(@object => @object.Type, typeof(TOwner)))
-            .HavingChildren(call =>
-                parameters.Length > 0
-                    ? parameters
-                    : [factory.AcceptChildren(call)]);
-
-    // TODO verify this accepts both static & instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        // TODO
-        //  reify this to allow passing in things like `Name.Any()`
-        //  add name validation
-        string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .Equals(call => call.Method.Name, name)
-            .HavingChildren(parameters);
-
-    // TODO verify this accepts only instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory,
-        // TODO
-        //  reify this to allow passing in things like `Name.Any()`
-        //  add name validation
-        string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, typeof(TOwner))
-            .Equals(call => call.Method.Name, name)
-            .HavingChild(call =>
-                getTarget(call)
-                    .Equals(@object => @object.Type, typeof(TOwner)))
-            .HavingChildren(parameters);
-
-    // TODO consider moving the below to their own file
-    public static IEvaluatorBuilder MethodCallDelegate(
-        this IVisitorNodeFactory factory,
-        Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
-        Func<MethodInfo, bool>? where = null)
-        => factory
-            .IgnoreBoxing(hint: BoxingEvaluationHint.Eager)
-            .OfType<MethodCallExpression>()
-            .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
-            .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
-            .HavingChildren(call =>
-                [
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value is MethodInfo)
-                        .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
-
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Equals(constant => constant.Type, typeof(Type)),
-
-                    getTarget?.Invoke(call) ?? factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value == null)
-                ]
-            );
-
-    public static IEvaluatorBuilder MethodCallDelegate(
-        this IVisitorNodeFactory factory,
-        string? name,
-        Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
-        Func<MethodInfo, bool>? where = null)
-        => factory
-            .IgnoreBoxing(hint: BoxingEvaluationHint.Eager)
-            .OfType<MethodCallExpression>()
-            .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
-            .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
-            .HavingChildren(call =>
-                [
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value is MethodInfo)
-                        .Equals(constant => ((MethodInfo) constant.Value!).Name, name)
-                        .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
-
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Equals(constant => constant.Type, typeof(Type)),
-
-                    getTarget?.Invoke(call) ?? factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value == null)
-                ]
-            );
 }
