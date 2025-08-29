@@ -50,25 +50,25 @@ public class RecordedExpressionTree
 
                             node.Cast(node.Constant(value: null)),
 
-                            node.Debug(e => { }),
+                            node.Debug(e => { })
 
-                            node
-                                .IgnoreBoxing() // TODO i don't think this is working right
-                                .MethodCall<IParse>(
-                                    name: nameof(IParse.With),
-                                    node.OneOf(
-                                        node.Debug(e => { }),
-
-                                        node
-                                            .IgnoreBoxing()
-                                            .MethodCallDelegate(target: node.AcceptChildren),
-
-                                        node.Lambda(
-                                            parameters: [node.Parameter<string>()],
-                                            body: node.MethodCall(node.AcceptChildren)
-                                        )
-                                    )
-                                )
+                            // node
+                            //     .IgnoreBoxing() // TODO i don't think this is working right
+                            //     .MethodCall<IParse>(
+                            //         name: nameof(IParse.With),
+                            //         node.OneOf(
+                            //             node.Debug(e => { }),
+                            //
+                            //             node
+                            //                 .IgnoreBoxing()
+                            //                 .MethodCallDelegate(getTarget: node.AcceptChildren),
+                            //
+                            //             node.Lambda(
+                            //                 parameters: [node.Parameter<string>()],
+                            //                 body: node.MethodCall(node.AcceptChildren)
+                            //             )
+                            //         )
+                            //     )
                         )
                     )
             )
