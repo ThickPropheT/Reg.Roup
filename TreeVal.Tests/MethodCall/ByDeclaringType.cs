@@ -70,10 +70,10 @@ public class ByDeclaringType
     [Test]
     public void DoesNotThrowOnExtensionMethodSchema()
     {
-        var validExpression = ExpressionTree.FromBody(() => new object().GetString3("0"));
+        var extensionMethodExpression = ExpressionTree.FromBody(() => new object().GetString3("0"));
         var evaluator = ExpressionTreeEvaluator.Create(node => node.MethodCall(typeof(DummyExtensionMethod)));
             
-        Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
+        Assert.That(() => evaluator.Evaluate(extensionMethodExpression), Throws.Nothing);
     }
 
     [Test, Combinatorial]
