@@ -12,14 +12,17 @@ public class Any
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1()),
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1()),
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1()),
+        ExpressionTree.FromBody(() => new object().GetString3()),
 
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1("1")),
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("1")),
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1("1")),
+        ExpressionTree.FromBody(() => new object().GetString3("1")),
 
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1(DummyStaticMethod.GetString1())),
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyStaticMethod.GetString1())),
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1(DummyStaticMethod.GetString1())),
+        ExpressionTree.FromBody(() => new object().GetString3(DummyStaticMethod.GetString1())),
 
         ExpressionTree.FromBody(() =>
             DummyStaticMethod.GetString1(
@@ -35,6 +38,12 @@ public class Any
 
         ExpressionTree.FromBody(() =>
             DummyInstanceMethod.Instance.GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2")),
+        
+        ExpressionTree.FromBody(() =>
+            new object().GetString3(
                 DummyInstanceMethod.Instance == new DummyInstanceMethod()
                     ? "1"
                     : "2")),

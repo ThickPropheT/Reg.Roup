@@ -12,23 +12,11 @@ public static class MethodCallEvaluatorExtensions
             .OfType<MethodCallExpression>()
             .HavingAnyChild();
 
-    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(this IVisitorNodeFactory factory,
-        string? name)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.Name, name);
-
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, string? name)
         => factory
             .MethodCallBase(name)
             .HavingAnyChild();
-
-    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
-        this IVisitorNodeFactory factory, Type ownerType)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType);
 
     // this accepts both static, instance, & extension
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IVisitorNodeFactory factory, Type ownerType)
@@ -65,13 +53,6 @@ public static class MethodCallEvaluatorExtensions
                         ? parameters
                         : [factory.AcceptChildren(call)]);
             });
-
-    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
-        this IVisitorNodeFactory factory, Type ownerType, string? name)
-        => factory
-            .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType)
-            .Equals(call => call.Method.Name, name);
 
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
@@ -188,6 +169,24 @@ public static class MethodCallEvaluatorExtensions
                     .Equals(@object => @object.Type, typeof(TOwner)))
             .HavingChildren(parameters);
 
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
+        this IVisitorNodeFactory factory, string? name)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.Name, name);
+    
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
+        this IVisitorNodeFactory factory, Type ownerType)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.DeclaringType, ownerType);
+
+    private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
+        this IVisitorNodeFactory factory, Type ownerType, string? name)
+        => factory
+            .OfType<MethodCallExpression>()
+            .Equals(call => call.Method.DeclaringType, ownerType)
+            .Equals(call => call.Method.Name, name);
 
     private static bool IsExtensionMethod(MethodInfo method)
         => method.IsDefined(typeof(ExtensionAttribute), true);
