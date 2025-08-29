@@ -16,10 +16,12 @@ public class ByName
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1("1")),
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("1")),
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1("1")),
+        ExpressionTree.FromBody(() => new object().GetString1("1", null)),
 
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1(DummyStaticMethod.GetString1())),
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyStaticMethod.GetString1())),
         ExpressionTree.FromBody(() => DummyInstanceMethod.Instance.GetString1(DummyStaticMethod.GetString1())),
+        ExpressionTree.FromBody(() => new object().GetString1(DummyStaticMethod.GetString1(), null)),
 
         ExpressionTree.FromBody(() =>
             DummyStaticMethod.GetString1(
@@ -37,7 +39,14 @@ public class ByName
             DummyInstanceMethod.Instance.GetString1(
                 DummyInstanceMethod.Instance == new DummyInstanceMethod()
                     ? "1"
-                    : "2"))
+                    : "2")),
+
+        ExpressionTree.FromBody(() =>
+            new object().GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2",
+                null)),
     ];
 
     private static readonly Expression[] InvalidExpressions =
