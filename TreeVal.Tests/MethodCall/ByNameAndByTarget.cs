@@ -4,28 +4,45 @@ using TreeVal.Tests.__Resources.Dummies;
 
 namespace TreeVal.Tests.MethodCall;
 
+// accept: method calls to methods named "GetString1" with target: instance via ctor
 [TestFixture]
 public class ByNameAndByTarget
 {
     private static readonly Expression[] ValidExpressions =
     [
+        // accept: target: instance via ctor, arg[0]: n/a
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1()),
-
+        // accept: target: instance via ctor, arg[0]: constant
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("1")),
-
+        // accept: target: instance via ctor, arg[0]: result of method call
         ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1(DummyStaticMethod.GetString1())),
-
+        // accept: extension method target: instance via ctor, arg[0]: constant
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString1("2", null)),
+        
+        // accept: target: instance of any type via ctor, arg[0]: n/a
+        ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
+        // accept: extension method target: instance of any type via ctor, arg[0]: result of method call
+        ExpressionTree.FromBody(() => new object().GetString1(DummyMethod.GetString2(), null)),
+        
+        // accept: target: instance via ctor, arg[0]: result of ternary
         ExpressionTree.FromBody(() =>
             new DummyInstanceMethod().GetString1(
                 DummyInstanceMethod.Instance == new DummyInstanceMethod()
                     ? "1"
                     : "2")),
-
-        ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
+        
+        // accept: extension method target: instance via ctor, arg[0]: result of ternary
+        ExpressionTree.FromBody(() =>
+            new DummyInstanceMethod().GetString1(
+                DummyInstanceMethod.Instance == new DummyInstanceMethod()
+                    ? "1"
+                    : "2",
+                null)),
     ];
 
     private static readonly Expression[] InvalidExpressions =
     [
+        // reject: severely wrong type
         ExpressionTree.FromBody(() => 1),
         ExpressionTree.FromBody(() => DummyProperty.Instance),
         ExpressionTree.FromBody(() => DummyProperty.Instance.String),
@@ -33,6 +50,7 @@ public class ByNameAndByTarget
         ExpressionTree.FromBody(() => new DummyProperty().String),
         ExpressionTree.FromBody<Func<string>>(() => DummyInstanceMethod.Instance.GetString1),
         ExpressionTree.FromBody<Func<string>>(() => new DummyInstanceMethod().GetString1),
+        // reject: target: static, arg[0]: n/a
         ExpressionTree.FromBody(() => DummyStaticMethod.GetString1()),
     ];
 

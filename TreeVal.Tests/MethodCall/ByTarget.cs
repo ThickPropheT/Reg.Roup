@@ -22,6 +22,8 @@ public class ByTarget
                     : "2")),
 
         ExpressionTree.FromBody(() => new DummyMethod().GetString1()),
+        
+        ExpressionTree.FromBody(() => new DummyInstanceMethod().GetString3("2")),
     ];
 
     private static readonly Expression[] InvalidExpressions =

@@ -31,7 +31,7 @@ public static class MethodCallEvaluatorExtensions
         this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
             .OfType<MethodCallExpression>()
-            .Where(call => !call.Method.IsStatic)
+            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
             .HavingChild(target)
             .HavingAnyChild();
 
@@ -66,6 +66,9 @@ public static class MethodCallEvaluatorExtensions
                         : [factory.AcceptChildren(call)]);
             });
 
+    private static bool IsExtensionMethod(MethodInfo method)
+        => method.IsDefined(typeof(ExtensionAttribute), true);
+
     private static IEvaluatorBuilder[] MethodCallTarget(IVisitorNodeFactory factory, MethodCallExpression call)
     {
         if (!call.Method.IsStatic)
@@ -80,10 +83,10 @@ public static class MethodCallEvaluatorExtensions
             ];
         }
 
-        if (call.Method.IsDefined(typeof(ExtensionAttribute), true))
+        if (IsExtensionMethod(call.Method))
         {
             // TODO
-            //  writing & reading to this variable that's tantamount to global
+            //  writing to & reading from this variable that's tantamount to global
             //  may be problematic. keep your wits about you
             ParameterInfo[]? callMethodParameters = null;
 
@@ -117,7 +120,7 @@ public static class MethodCallEvaluatorExtensions
         => factory
             .OfType<MethodCallExpression>()
             .Equals(call => call.Method.Name, name)
-            .Where(call => !call.Method.IsStatic)
+            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
             .HavingChild(target)
             .HavingAnyChild();
 
