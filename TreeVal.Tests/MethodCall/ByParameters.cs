@@ -90,7 +90,7 @@ public class ByParameters
     [
         ExpressionTreeEvaluator.Create(node => node.MethodCall(
                 node.AnyOne()
-                    .Equals(e => e.Type, typeof(string))
+                    .Equals(typeof(string), e => e.Type)
                     .HavingAnyChild()
             ))
             .WithName("params"),
@@ -98,7 +98,7 @@ public class ByParameters
         ExpressionTreeEvaluator.Create(node => node.MethodCall(_ =>
             [
                 node.AnyOne()
-                    .Equals(e => e.Type, typeof(string))
+                    .Equals(typeof(string), e => e.Type)
                     .HavingAnyChild()
             ]))
             .WithName("lambda"),

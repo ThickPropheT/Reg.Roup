@@ -23,7 +23,7 @@ public static class MethodCallDelegateEvaluatorExtensions
 
                     factory
                         .OfType<ConstantExpression>()
-                        .Equals(constant => constant.Type, typeof(Type)),
+                        .Equals(typeof(Type), constant => constant.Type),
 
                     getTarget?.Invoke(call) ?? factory
                         .OfType<ConstantExpression>()
@@ -46,12 +46,12 @@ public static class MethodCallDelegateEvaluatorExtensions
                     factory
                         .OfType<ConstantExpression>()
                         .Where(constant => constant.Value is MethodInfo)
-                        .Equals(constant => ((MethodInfo) constant.Value!).Name, name)
+                        .Equals(name, constant => ((MethodInfo) constant.Value!).Name)
                         .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
 
                     factory
                         .OfType<ConstantExpression>()
-                        .Equals(constant => constant.Type, typeof(Type)),
+                        .Equals(typeof(Type), constant => constant.Type),
 
                     getTarget?.Invoke(call) ?? factory
                         .OfType<ConstantExpression>()

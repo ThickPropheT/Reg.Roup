@@ -8,22 +8,22 @@ public static class MemberAccessEvaluatorExtensions
     public static IEvaluatorBuilder<MemberExpression> ReadProperty<TOwner>(this IVisitorNodeFactory factory)
         => factory
             .OfType<MemberExpression>()
-            .Equals(member => member.Type, typeof(TOwner))
+            .Equals(typeof(TOwner), member => member.Type)
             .Where(member => member.Member is PropertyInfo);
 
     public static IEvaluatorBuilder<MemberExpression> ReadProperty<TOwner>(this IVisitorNodeFactory factory,
         string? name)
         => factory
             .OfType<MemberExpression>()
-            .Equals(member => member.Type, typeof(TOwner))
+            .Equals(typeof(TOwner), member => member.Type)
             .Where(member => member.Member is PropertyInfo)
-            .Equals(member => member.Member.Name, name);
+            .Equals(name, member => member.Member.Name);
 
     public static IEvaluatorBuilder<MemberExpression> ReadProperty<TOwner>(this IVisitorNodeFactory factory,
         Expression<Func<TOwner, object>> property)
         => factory
             .OfType<MemberExpression>()
-            .Equals(member => member.Type, typeof(TOwner))
-            .Equals(member => member.Member.GetType(), typeof(PropertyInfo))
+            .Equals(typeof(TOwner), member => member.Type)
+            .Equals(typeof(PropertyInfo), member => member.Member.GetType())
             .Where(member => property.Body is MemberExpression m && member.Member.Name == m.Member.Name);
 }

@@ -8,19 +8,22 @@ public static class ConversionEvaluatorExtensions
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .AcceptChildren();
-    
-    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
+
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(
+        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .HavingChild(operand);
-    
-    public static IEvaluatorConditionBuilder<UnaryExpression> Cast<T>(this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
+
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast<T>(
+        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
-            .Equals(cast => cast.Type, typeof(T))
+            .Equals(typeof(T), cast => cast.Type)
             .HavingChild(operand);
-    
-    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand, Type toType)
+
+    public static IEvaluatorConditionBuilder<UnaryExpression> Cast(
+        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)

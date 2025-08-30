@@ -11,19 +11,19 @@ public static class ConstantEvaluatorExtensions
         this IVisitorNodeFactory factory, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
-            .Equals(constant => constant.Value, value);
+            .Equals(value, constant => constant.Value);
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant(this IVisitorNodeFactory factory, EType type)
         => factory
             .OfType<ConstantExpression>()
-            .Equals(constant => constant.Type, type);
+            .Equals(type, constant => constant.Type);
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant(
         this IVisitorNodeFactory factory, EType type, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
-            .Equals(constant => constant.Type, type)
-            .Equals(constant => constant.Value, value);
+            .Equals(type, constant => constant.Type)
+            .Equals(value, constant => constant.Value);
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant<T>(this IVisitorNodeFactory factory)
     {
@@ -31,7 +31,7 @@ public static class ConstantEvaluatorExtensions
 
         return factory
             .OfType<ConstantExpression>()
-            .Equals(constant => constant.Type, type);
+            .Equals(type, constant => constant.Type);
     }
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant<T>(
@@ -42,7 +42,7 @@ public static class ConstantEvaluatorExtensions
 
         return factory
             .OfType<ConstantExpression>()
-            .Equals(constant => constant.Type, type)
-            .Equals(constant => constant.Value, value);
+            .Equals(type, constant => constant.Type)
+            .Equals(value, constant => constant.Value);
     }
 }

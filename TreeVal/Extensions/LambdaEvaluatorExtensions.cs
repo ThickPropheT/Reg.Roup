@@ -13,11 +13,11 @@ public static class LambdaEvaluatorExtensions
     public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IVisitorNodeFactory factory)
         => factory
             .OfType<ParameterExpression>()
-            .Equals(parameter => parameter.Type, typeof(T));
+            .Equals(typeof(T), parameter => parameter.Type);
 
     public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IVisitorNodeFactory factory, string? name)
         => factory
             .OfType<ParameterExpression>()
-            .Equals(parameter => parameter.Type, typeof(T))
-            .Equals(parameter => parameter.Name, name);
+            .Equals(typeof(T), parameter => parameter.Type)
+            .Equals(name, parameter => parameter.Name);
 }

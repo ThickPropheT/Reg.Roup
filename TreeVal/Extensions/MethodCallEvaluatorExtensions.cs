@@ -166,7 +166,7 @@ public static class MethodCallEvaluatorExtensions
             .MethodCallBase(typeof(TOwner), name)
             .HavingChild(call =>
                 getTarget(call)
-                    .Equals(@object => @object.Type, typeof(TOwner)))
+                    .Equals(typeof(TOwner), @object => @object.Type))
             .HavingChildren(call =>
                 parameters.Length > 0
                     ? parameters
@@ -197,7 +197,7 @@ public static class MethodCallEvaluatorExtensions
             .MethodCallBase(typeof(TOwner), name)
             .HavingChild(call =>
                 getTarget(call)
-                    .Equals(@object => @object.Type, typeof(TOwner)))
+                    .Equals(typeof(TOwner), @object => @object.Type))
             .HavingChildren(parameters);
 
 
@@ -205,26 +205,26 @@ public static class MethodCallEvaluatorExtensions
         this IVisitorNodeFactory factory, string? name)
         => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.Name, name);
+            .Equals(name, call => call.Method.Name);
 
     private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
         this IVisitorNodeFactory factory, Type ownerType)
         => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType);
+            .Equals(ownerType, call => call.Method.DeclaringType);
 
     private static IEvaluatorBuilder<MethodCallExpression> MethodCallBase(
         this IVisitorNodeFactory factory, Type ownerType, string? name)
         => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType)
-            .Equals(call => call.Method.Name, name);
+            .Equals(ownerType, call => call.Method.DeclaringType)
+            .Equals(name, call => call.Method.Name);
 
     private static IEvaluatorBuilder<MethodCallExpression> InstanceMethodCallBase(
         this IVisitorNodeFactory factory, Type ownerType, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
         => factory
             .OfType<MethodCallExpression>()
-            .Equals(call => call.Method.DeclaringType, ownerType)
+            .Equals(ownerType, call => call.Method.DeclaringType)
             .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
             .HavingChild(target);
 
