@@ -113,4 +113,10 @@ public class ByDeclaringTypeAndByName
 
         Assert.That(() => evaluator.Evaluate(invalidStaticMethodExpression), Throws.TypeOf<TreeRejectedException>());
     }
+    
+    [Test]
+    public void ThrowsOnInvalidExtensionMethodSchema()
+    {
+        throw new NotImplementedException();
+    }
 }
