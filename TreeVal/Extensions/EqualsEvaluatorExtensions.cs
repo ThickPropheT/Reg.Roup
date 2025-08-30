@@ -9,7 +9,7 @@ public static class EqualsEvaluatorExtensions
 {
     public static IEvaluatorBuilder Equals<T>(
         this IVisitorNodeFactory _,
-        Func<Expression, T> getLeft,
+        Func<Expression, object?> getLeft,
         T right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
@@ -51,7 +51,7 @@ public static class EqualsEvaluatorExtensions
 
     public static TBuilder Equals<TBuilder, T>(
         this TBuilder node,
-        Func<Expression, T> getLeft,
+        Func<Expression, object?> getLeft,
         T right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
@@ -93,7 +93,7 @@ public static class EqualsEvaluatorExtensions
 
     public static IEvaluatorBuilder<TExpression> Equals<TExpression, T>(
         this IEvaluatorBuilder<TExpression> node,
-        Func<TExpression, T> getLeft,
+        Func<TExpression, object?> getLeft,
         T right,
         [CallerArgumentExpression(nameof(getLeft))]
         string getLeftExpression = ""
@@ -111,7 +111,7 @@ public static class EqualsEvaluatorExtensions
 
         return node;
     }
-    
+
     public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
         this IEvaluatorBuilder<TExpression> node,
         Func<TExpression, string?> getLeft,
@@ -132,7 +132,7 @@ public static class EqualsEvaluatorExtensions
 
         return node;
     }
-    
+
     public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
         this IEvaluatorBuilder<TExpression> node,
         Func<TExpression, Type?> getLeft,
@@ -150,6 +150,28 @@ public static class EqualsEvaluatorExtensions
 
             return getLeft(t) == right;
         }));
+
+        return node;
+    }
+
+    public static IEvaluatorBuilder<TExpression> Equals<TExpression, T>(
+        this IEvaluatorBuilder<TExpression> node,
+        Func<TExpression, object?> getLeft,
+        EValue<T>? right,
+        [CallerArgumentExpression(nameof(getLeft))]
+        string getLeftExpression = ""
+    )
+    {
+        node.AddCondition(new WhereCondition(
+            $"{right} == null || EValue.AreEqual({getLeftExpression}, {right})", e =>
+            {
+                if (e is not TExpression t)
+                {
+                    throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
+                }
+
+                return right == null || EValue.AreEqual(right, getLeft(t));
+            }));
 
         return node;
     }
