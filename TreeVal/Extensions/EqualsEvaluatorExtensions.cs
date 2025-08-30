@@ -91,6 +91,20 @@ public static class EqualsEvaluatorExtensions
         return node;
     }
 
+    public static TBuilder Equals<TBuilder>(
+        this TBuilder node,
+        Func<Expression, Type?> getLeft,
+        EType right,
+        [CallerArgumentExpression(nameof(getLeft))]
+        string getLeftExpression = ""
+    )
+        where TBuilder : IEvaluatorConditionBuilder
+    {
+        node.AddCondition(new WhereCondition(
+            $"EType.AreEqual({getLeftExpression}, {right})", e => EType.AreEqual(right, getLeft(e))));
+        return node;
+    }
+
     public static IEvaluatorBuilder<TExpression> Equals<TExpression, T>(
         this IEvaluatorBuilder<TExpression> node,
         Func<TExpression, object?> getLeft,

@@ -29,9 +29,6 @@ public class EValue
     public static EValue<T?> EqualTo<T>(T? value) => EValue<T?>.EqualTo(value);
     public static EValue<T?> ReferenceEqualTo<T>(T? value) => EValue<T?>.ReferenceEqualTo(value);
 
-    public static bool AreEqual(object? other, EValue value)
-        => value.Equals(other);
-
     public static bool AreEqual(EValue value, object? other)
         => value.Equals(other);
 
@@ -43,13 +40,10 @@ public class EValue
         // if other is the value this wraps
         if (ReferenceEquals(other, Inner)) return true;
         // if other is a different value wrapper
-        if (other is EValue otherWrapper) return Equals(otherWrapper);
+        if (other is EValue otherWrapper) return IsEqualTo(otherWrapper.Inner, Inner);
         // if other is a value this doesn't wrap
         return IsEqualTo(other, Inner);
     }
-
-    protected bool Equals(EValue other)
-        => IsEqualTo(other.Inner, Inner);
 
     public override int GetHashCode()
         => Inner != null ? Inner.GetHashCode() : 0;
