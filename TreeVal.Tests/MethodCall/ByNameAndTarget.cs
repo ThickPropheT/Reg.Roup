@@ -6,7 +6,7 @@ namespace TreeVal.Tests.MethodCall;
 
 // accept: method calls to methods named "GetString1" with target: instance via ctor
 [TestFixture]
-public class ByNameAndByTarget
+public class ByNameAndTarget
 {
     private static readonly Expression[] ValidExpressions =
     [
