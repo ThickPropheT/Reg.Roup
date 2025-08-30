@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
@@ -29,6 +30,8 @@ public static class WhereEvaluatorExtensions
         {
             if (e is not T t)
             {
+                Debug.Assert(false,
+                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
                 throw UnmetPreconditionException.WrongExpressionType<T>(e);
             }
 

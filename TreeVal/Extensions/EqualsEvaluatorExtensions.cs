@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
@@ -115,6 +116,8 @@ public static class EqualsEvaluatorExtensions
         {
             if (e is not TExpression t)
             {
+                Debug.Assert(false,
+                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
                 throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
             }
 
@@ -136,6 +139,8 @@ public static class EqualsEvaluatorExtensions
         {
             if (e is not TExpression t)
             {
+                Debug.Assert(false,
+                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
                 throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
             }
 
@@ -156,6 +161,8 @@ public static class EqualsEvaluatorExtensions
         {
             if (e is not TExpression t)
             {
+                Debug.Assert(false,
+                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
                 throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
             }
 
@@ -177,6 +184,8 @@ public static class EqualsEvaluatorExtensions
             {
                 if (e is not TExpression t)
                 {
+                    Debug.Assert(false,
+                        "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
                     throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
                 }
 

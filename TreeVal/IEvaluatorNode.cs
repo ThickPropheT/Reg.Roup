@@ -7,7 +7,7 @@ public interface IEvaluatorNode
 {
     IEnumerable<ICondition> Conditions { get; }
     VisitationContext.MovementStrategy HeadMovementStrategy { get; }
-    VisitationContext.EvaluationStrategy ChildEvaluationStrategy { get; }
-    
+    VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; }
+
     IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression current);
 }

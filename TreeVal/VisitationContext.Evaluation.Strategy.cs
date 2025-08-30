@@ -1,32 +1,47 @@
 using System.Linq.Expressions;
+using TreeVal.Condition;
 
 namespace TreeVal;
 
 public partial class VisitationContext
 {
-    private bool EvaluateAll(IEvaluatorNode evaluator, Expression current)
+    private void EvaluateAll(IEvaluatorNode evaluator, Expression current, Evaluation evaluation)
     {
-        var children = evaluator.EnumerateChildren(current).ToArray();
-        var evaluated = children.Select(Evaluate).ToArray();
-        var result = evaluated.All(isAccepted => isAccepted);
-        // TODO swap back to this when you're done debugging
-        // var result = evaluator.EnumerateChildren(current).Select(Evaluate).All(isAccepted => isAccepted);
-        return result;
+        var rejected = evaluator.EnumerateChildren(current)
+            .Select(c =>
+            {
+                var childEvaluation = new Evaluation();
+                Evaluate(c, childEvaluation);
+                return childEvaluation;
+            })
+            .FirstOrDefault(childEvaluation => childEvaluation.CurrentStatus == Evaluation.Status.Rejected);
+
+        if (rejected == null)
+            return;
+
+        evaluation.Reject();
     }
 
-    private bool EvaluateAny(IEvaluatorNode evaluator, Expression current)
+    private void EvaluateAny(IEvaluatorNode evaluator, Expression current, Evaluation evaluation)
     {
-        var accepted = evaluator.EnumerateChildren(current)
-            .FirstOrDefault(child =>
+        var (accepted, _) = evaluator
+            .EnumerateChildren(current)
+            .Select(child =>
             {
                 var clip = BranchFromHead();
+                var childEvaluation = new Evaluation();
+                clip.Evaluate(child, childEvaluation);
+                return (clip, childEvaluation);
+            })
+            .FirstOrDefault(result => result.childEvaluation.CurrentStatus != Evaluation.Status.Rejected);
 
-                clip.Evaluate(child);
+        if (accepted != null)
+        {
+            accepted.SpliceOnto(this);
+            return;
+        }
 
-                return clip.TrySpliceOnto(this);
-            });
-
-        return accepted != null;
+        evaluation.Reject();
     }
 
     public class EvaluationStrategy
@@ -34,13 +49,15 @@ public partial class VisitationContext
         public static EvaluationStrategy AllOf { get; } = new(context => context.EvaluateAll);
         public static EvaluationStrategy OneOf { get; } = new(context => context.EvaluateAny);
 
-        public static EvaluationStrategy From(Func<VisitationContext, Expression, IEvaluatorNode, bool> strategy)
-            => new(context => (evaluator, current) => strategy(context, current, evaluator));
+        // TODO this isn't used anymore. should it be removed?
+        public static EvaluationStrategy From(Action<VisitationContext, Expression, IEvaluatorNode> strategy)
+            => new(context => (evaluator, current, evaluation) => strategy(context, current, evaluator));
 
 
-        private readonly Func<VisitationContext, Func<IEvaluatorNode, Expression, bool>> _lookupStrategy;
+        private readonly Func<VisitationContext, Action<IEvaluatorNode, Expression, Evaluation>> _lookupStrategy;
 
-        private EvaluationStrategy(Func<VisitationContext, Func<IEvaluatorNode, Expression, bool>> lookupStrategy)
+        private EvaluationStrategy(
+            Func<VisitationContext, Action<IEvaluatorNode, Expression, Evaluation>> lookupStrategy)
         {
             _lookupStrategy = lookupStrategy;
         }
@@ -50,7 +67,7 @@ public partial class VisitationContext
         //  it's own "Do Strategy" method. i think i had it this way originally, b/c
         //  the Evaluate* methods above were responsible for accepting/rejecting things
         //  themselves, rather than having the ValidationContext be responsible for it.
-        public Func<IEvaluatorNode, Expression, bool> GetStrategy(VisitationContext context)
+        public Action<IEvaluatorNode, Expression, Evaluation> GetStrategy(VisitationContext context)
             => _lookupStrategy(context);
     }
 }

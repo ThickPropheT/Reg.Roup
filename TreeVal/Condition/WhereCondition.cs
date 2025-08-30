@@ -16,11 +16,12 @@ public class WhereCondition : ICondition
     public void Describe(IDescription description)
         => description.EmitWhereCondition(_message);
 
-    public bool Evaluate(Expression node)
+    public void Evaluate(Expression node, Evaluation evaluation)
     {
         try
         {
-            return _predicate(node);
+            if (!_predicate(node)) 
+                evaluation.Reject();
         }
         catch (UnmetPreconditionException upe)
         {

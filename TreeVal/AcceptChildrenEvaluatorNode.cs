@@ -8,15 +8,11 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
     private readonly Expression _parent;
 
-    public override VisitationContext.MovementStrategy HeadMovementStrategy { get; }
-    public override VisitationContext.EvaluationStrategy ChildEvaluationStrategy { get; }
-
     public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
         : base(conditions, [])
     {
         _parent = parent;
         HeadMovementStrategy = VisitationContext.MovementStrategy.From(MoveHead);
-        ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.From(EvaluateChildren);
     }
 
     private Expression? MoveHead(VisitationContext _, TapeHead head)
@@ -67,10 +63,5 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 
         Debug.Assert(!tape.Any(), "_parent has unvisited child nodes.");
         return current;
-    }
-
-    private bool EvaluateChildren(VisitationContext context, Expression current, IEvaluatorNode _)
-    {
-        throw new SkepticalException("Should we even be here rn?");
     }
 }

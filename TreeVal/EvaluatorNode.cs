@@ -8,12 +8,9 @@ public class EvaluatorNode : IEvaluatorNode
     private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
 
     public IEnumerable<ICondition> Conditions { get; }
-    
-    public virtual VisitationContext.MovementStrategy HeadMovementStrategy
-        => VisitationContext.MovementStrategy.MoveForward;
 
-    public virtual VisitationContext.EvaluationStrategy ChildEvaluationStrategy 
-        => VisitationContext.EvaluationStrategy.AllOf;
+    public VisitationContext.MovementStrategy HeadMovementStrategy { get; protected init; }
+    public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; protected init; }
 
     public EvaluatorNode(
         IEnumerable<ICondition> conditions,
@@ -21,6 +18,9 @@ public class EvaluatorNode : IEvaluatorNode
     {
         Conditions = conditions;
         _childLookups = childLookups;
+
+        HeadMovementStrategy = VisitationContext.MovementStrategy.MoveForward;
+        ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.AllOf;
     }
 
     public virtual IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression current)

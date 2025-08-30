@@ -4,11 +4,6 @@ public partial class VisitationContext
 {
     public Clip BranchFromHead() => new(Head, Head.CreateClip().From(p => p.Current).To(p => p.Last));
 
-    private void FastForward(Clip clip)
-    {
-        FastForwardStatuses(clip);
-    }
-
     public class Clip : VisitationContext
     {
         private readonly TapeHead _head;
@@ -21,17 +16,9 @@ public partial class VisitationContext
             _clip = clip;
         }
 
-        public bool TrySpliceOnto(VisitationContext end)
+        public void SpliceOnto(VisitationContext end)
         {
-            if (IsAnyResultRejected)
-            {
-                return false;
-            }
-
             _clip.SpliceOnto(_head);
-            end.FastForward(this);
-
-            return true;
         }
     }
 }

@@ -34,26 +34,25 @@ public class NodeTypeCondition : ICondition
         => new(typeof(TNode), nodeType);
 
     public static NodeTypeCondition AssertMatching(ExpressionType nodeType)
-        => new(nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
+        => new(nodeType) { _matchFailed = condition => throw new ConditionFailedException(condition) };
 
     public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
-        => new(typeof(TNode), nodeType) {_matchFailed = condition => throw new ConditionFailedException(condition)};
+        => new(typeof(TNode), nodeType) { _matchFailed = condition => throw new ConditionFailedException(condition) };
 
-    public bool Evaluate(Expression node)
+    public void Evaluate(Expression node, Evaluation evaluation)
     {
         var doesMatch = DoesMatch(node);
 
         if (_matchFailed == null)
         {
-            return doesMatch;
+            if (!doesMatch)
+                evaluation.Reject();
+
+            return;
         }
 
         if (!doesMatch)
-        {
             _matchFailed(this);
-        }
-
-        return true;
     }
 
     private bool DoesMatch(Expression node)

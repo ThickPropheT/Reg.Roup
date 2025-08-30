@@ -5,52 +5,34 @@ namespace TreeVal;
 
 public class TreeRejectedException : Exception
 {
-    public EvaluationResult[] Trace { get; }
     public TapeHead? Head { get; init; }
 
-    private TreeRejectedException(EvaluationResult[] trace, string message)
+    private TreeRejectedException(string message)
         : base(message)
     {
-        Trace = trace;
     }
 
-    private TreeRejectedException(EvaluationResult[] trace, string message, Exception inner)
+    private TreeRejectedException(string message, Exception inner)
         : base(message, inner)
     {
-        Trace = trace;
     }
 
-    public static TreeRejectedException ForTrace(EvaluationResult[] trace)
+    public static TreeRejectedException ForTrace()
     {
-        // TODO figure out exactly what to do with the trace
-        // var description = new Description();
-        //
-        // foreach (var result in trace)
-        // {
-        //     result.Describe(description);
-        // }
-
-        return new TreeRejectedException(trace, "Something was rejected.");
+        return new TreeRejectedException("Something was rejected.");
     }
 
-    public static TreeRejectedException ForIncompleteRead(EvaluationResult[] trace, TapeHead head)
+    public static TreeRejectedException ForIncompleteRead(TapeHead head)
     {
-        // TODO figure out exactly what to do with the trace & head
-        // var nodesRead = head.CreateClip()
-        //     .From(p => p.First)
-        //     .To(p => p.Current);
-        //
-        // var message = string.Join("\n\n", nodesRead.ReadToEnd());
-
-        return new TreeRejectedException(trace, "Didn't finish reading head.")
+        return new TreeRejectedException("Didn't finish reading head.")
         {
             Head = head
         };
     }
 
     // TODO should message be passable-in here?
-    public static TreeRejectedException ForError(EvaluationResult[] trace, TapeHead head, Exception error)
-        => new(trace, "Something exploded unexpectedly.", error)
+    public static TreeRejectedException ForError(TapeHead head, Exception error)
+        => new("Something exploded unexpectedly.", error)
         {
             Head = head
         };
@@ -60,7 +42,7 @@ public class TreeRejectedException : Exception
     //  via the API at the ExpressionTreeEvaluator level
     private class Description : IDescription
     {
-        public void EmitResult(EvaluatorStatus status, IEvaluatorNode evaluator, ICondition[] failedConditions)
+        public void EmitResult(Evaluation.Status status, IEvaluatorNode evaluator, ICondition[] failedConditions)
         {
             throw new NotImplementedException();
         }
