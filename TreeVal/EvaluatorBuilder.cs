@@ -3,7 +3,7 @@ using TreeVal.Condition;
 
 namespace TreeVal;
 
-public class EvaluatorBuilder : IEvaluatorBuilder
+public class EvaluatorBuilder : IEvaluatorBuilder<Expression>
 {
     private readonly List<ICondition> _conditions = new(1);
     private readonly List<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);

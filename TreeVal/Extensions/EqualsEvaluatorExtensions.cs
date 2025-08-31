@@ -7,7 +7,7 @@ namespace TreeVal.Extensions;
 // TODO try to de-dupe some of these method bodies
 public static class EqualsEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Equals<T>(
+    public static IEvaluatorBuilder<Expression> Equals<T>(
         this IVisitorNodeFactory _,
         T left,
         Func<Expression, object?> getRight,
@@ -21,7 +21,7 @@ public static class EqualsEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder Equals(
+    public static IEvaluatorBuilder<Expression> Equals(
         this IVisitorNodeFactory _,
         string? left,
         Func<Expression, string?> getRight,
@@ -35,7 +35,7 @@ public static class EqualsEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder Equals(
+    public static IEvaluatorBuilder<Expression> Equals(
         this IVisitorNodeFactory _,
         Type? left,
         Func<Expression, Type?> getRight,
@@ -49,54 +49,52 @@ public static class EqualsEvaluatorExtensions
         return builder;
     }
 
-    public static TBuilder Equals<TBuilder, T>(
-        this TBuilder node,
+    public static IEvaluatorBuilder<Expression> Equals<T>(
+        this IEvaluatorBuilder<Expression> node,
         T left,
         Func<Expression, object?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
         string getRightExpression = ""
     )
-        where TBuilder : IEvaluatorConditionBuilder
     {
         node.AddCondition(
             new WhereCondition($"Equals({left}, {getRightExpression})", e => Equals(left, getRight(e))));
         return node;
     }
 
-    public static TBuilder Equals<TBuilder>(
-        this TBuilder node,
+    public static IEvaluatorBuilder<Expression> Equals(
+        this IEvaluatorBuilder<Expression> node,
         string? left,
         Func<Expression, string?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
         string getRightExpression = ""
     )
-        where TBuilder : IEvaluatorConditionBuilder
     {
         node.AddCondition(
             new WhereCondition($"\"{left}\" == {getRightExpression}", e => left == getRight(e)));
         return node;
     }
 
-    public static TBuilder Equals<TBuilder>(
-        this TBuilder node,
+    public static IEvaluatorBuilder<Expression> Equals(
+        this IEvaluatorBuilder<Expression> node,
         Type? left,
         Func<Expression, Type?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
-        string getRightExpression = "")
-        where TBuilder : IEvaluatorConditionBuilder
+        string getRightExpression = ""
+    )
     {
         node.AddCondition(
             new WhereCondition($"typeof({left}) == {getRightExpression}", e => left == getRight(e)));
         return node;
     }
 
-    public static TBuilder Equals<TBuilder>(
-        this TBuilder node,
+    public static IEvaluatorBuilder<Expression> Equals(
+        this IEvaluatorBuilder<Expression> node,
         EType left,
         Func<Expression, Type?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
-        string getRightExpression = "")
-        where TBuilder : IEvaluatorConditionBuilder
+        string getRightExpression = ""
+    )
     {
         node.AddCondition(new WhereCondition(
             $"EType.AreEqual({left}, {getRightExpression})", e => EType.AreEqual(left, getRight(e))));

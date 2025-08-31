@@ -6,10 +6,10 @@ namespace TreeVal;
 // TODO try to come up with a better name
 public interface IVisitorNodeFactory
 {
-    IEvaluatorBuilder Where(
+    IEvaluatorBuilder<Expression> Where(
         Func<Expression, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "");
 
-    IEvaluatorBuilder OfType(ExpressionType nodeType);
+    IEvaluatorBuilder<Expression> OfType(ExpressionType nodeType);
 
     IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
         where TExpression : Expression;

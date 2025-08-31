@@ -6,11 +6,11 @@ namespace TreeVal;
 
 public class DefaultVisitorNodeFactory : IVisitorNodeFactory
 {
-    public IEvaluatorBuilder Where(
+    public IEvaluatorBuilder<Expression> Where(
         Func<Expression, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "")
         => new EvaluatorBuilder().Where(predicate, predicateExpression);
 
-    public IEvaluatorBuilder OfType(ExpressionType nodeType)
+    public IEvaluatorBuilder<Expression> OfType(ExpressionType nodeType)
         => new TypalEvaluatorBuilder(nodeType);
 
     public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)

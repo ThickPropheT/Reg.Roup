@@ -6,7 +6,7 @@ public static class AnyOneEvaluatorExtensions
 {
     private static readonly DefaultVisitorNodeFactory Factory = new();
 
-    public static IEvaluatorBuilder AnyOne(this IVisitorNodeFactory factory)
+    public static IEvaluatorBuilder<Expression> AnyOne(this IVisitorNodeFactory factory)
         => factory.OfType<Expression>();
 
     public static IEvaluatorConditionBuilder AcceptChildren(this IVisitorNodeFactory _, Expression parent)

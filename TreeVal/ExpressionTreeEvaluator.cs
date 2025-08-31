@@ -13,16 +13,11 @@ public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
     void AddCondition(ICondition condition);
 }
 
-public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
-{
-    void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
-}
-
 public interface IEvaluatorConditionBuilder<TExpression> : IEvaluatorConditionBuilder
 {
 }
 
-public interface IEvaluatorBuilder<TExpression> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TExpression>
+public interface IEvaluatorBuilder<TExpression> : IEvaluatorConditionBuilder<TExpression>
 {
     void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
 }
@@ -51,7 +46,7 @@ public class ExpressionTreeEvaluator
 
         return new ExpressionTreeEvaluator(root);
     }
-    
+
     public ExpressionTreeEvaluator WithName(string name)
     {
         Name = name;

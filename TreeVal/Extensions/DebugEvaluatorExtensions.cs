@@ -4,8 +4,8 @@ namespace TreeVal.Extensions;
 
 public static class DebugEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Debug(this IVisitorNodeFactory factory, Action<Expression> observe,
-        bool? @break = null)
+    public static IEvaluatorBuilder<Expression> Debug(
+        this IVisitorNodeFactory factory, Action<Expression> observe, bool? @break = null)
         => factory.Where(e =>
         {
             observe(e);
@@ -13,8 +13,8 @@ public static class DebugEvaluatorExtensions
             return success;
         });
 
-    public static TBuilder Debug<TBuilder>(this TBuilder factory, Action<Expression> observe, bool? @break = null)
-        where TBuilder : IEvaluatorConditionBuilder
+    public static IEvaluatorBuilder<Expression> Debug(
+        this IEvaluatorBuilder<Expression> factory, Action<Expression> observe, bool? @break = null)
         => factory.Where(e =>
         {
             observe(e);

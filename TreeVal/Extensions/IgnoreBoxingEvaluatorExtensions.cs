@@ -30,11 +30,11 @@ public static class IgnoreBoxingEvaluatorExtensions
             _hint = hint;
         }
 
-        public IEvaluatorBuilder Where(Func<Expression, bool> predicate, string predicateExpression = "")
+        public IEvaluatorBuilder<Expression> Where(Func<Expression, bool> predicate, string predicateExpression = "")
             => new ProxyEvaluatorBuilder((conditions, childLookups) =>
                 IgnoreBoxing(conditions, childLookups, _source.Where(predicate, predicateExpression)));
 
-        public IEvaluatorBuilder OfType(ExpressionType nodeType)
+        public IEvaluatorBuilder<Expression> OfType(ExpressionType nodeType)
             => new ProxyEvaluatorBuilder((conditions, childLookups) =>
                 IgnoreBoxing(conditions, childLookups, _source.OfType(nodeType)));
 
@@ -71,8 +71,8 @@ public static class IgnoreBoxingEvaluatorExtensions
             return builder;
         }
 
-        private OneOfEvaluatorNode IgnoreBoxing(IEnumerable<ICondition> conditions,
-            IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder candidate)
+        private OneOfEvaluatorNode IgnoreBoxing<TExpression>(IEnumerable<ICondition> conditions,
+            IEnumerable<Func<TExpression, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder<TExpression> candidate)
         {
             foreach (var condition in conditions)
             {

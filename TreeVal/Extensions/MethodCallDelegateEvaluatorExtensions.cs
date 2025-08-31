@@ -5,7 +5,7 @@ namespace TreeVal.Extensions;
 
 public static class MethodCallDelegateEvaluatorExtensions
 {
-    public static IEvaluatorBuilder MethodCallDelegate(
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCallDelegate(
         this IVisitorNodeFactory factory,
         Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
         Func<MethodInfo, bool>? where = null)
@@ -31,7 +31,7 @@ public static class MethodCallDelegateEvaluatorExtensions
                 ]
             );
 
-    public static IEvaluatorBuilder MethodCallDelegate(
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCallDelegate(
         this IVisitorNodeFactory factory,
         string? name,
         Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
