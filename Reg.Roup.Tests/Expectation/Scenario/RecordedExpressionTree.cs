@@ -48,7 +48,7 @@ public class RecordedExpressionTree
                         _ => node.OneOf(
                             node.Constant(),
 
-                            node.Cast(node.Constant(value: null)),
+                            // node.Cast(node.Constant(eValue: null)),
 
                             node.Debug(e => { })
 
