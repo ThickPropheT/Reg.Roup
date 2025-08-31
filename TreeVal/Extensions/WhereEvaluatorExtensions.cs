@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
@@ -19,25 +18,15 @@ public static class WhereEvaluatorExtensions
         return node;
     }
 
-    public static IEvaluatorBuilder<T> Where<T>(
-        this IEvaluatorBuilder<T> node,
-        Func<T, bool> predicate,
+    public static IEvaluatorBuilder<TExpression> Where<TExpression>(
+        this IEvaluatorBuilder<TExpression> node,
+        Func<TExpression, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""
     )
+        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition(predicateExpression, e =>
-        {
-            if (e is not T t)
-            {
-                Debug.Assert(false,
-                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
-                throw UnmetPreconditionException.WrongExpressionType<T>(e);
-            }
-
-            return predicate(t);
-        }));
-
+        node.AddCondition(new WhereCondition<TExpression>(predicateExpression, predicate));
         return node;
     }
 }

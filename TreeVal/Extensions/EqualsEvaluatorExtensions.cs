@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
@@ -111,18 +110,10 @@ public static class EqualsEvaluatorExtensions
         [CallerArgumentExpression(nameof(getRight))]
         string getRightExpression = ""
     )
+        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition($"Equals({left}, {getRightExpression})", e =>
-        {
-            if (e is not TExpression t)
-            {
-                Debug.Assert(false,
-                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
-                throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
-            }
-
-            return Equals(left, getRight(t));
-        }));
+        node.AddCondition(new WhereCondition<TExpression>(
+            $"Equals({left}, {getRightExpression})", t => Equals(left, getRight(t))));
 
         return node;
     }
@@ -134,18 +125,10 @@ public static class EqualsEvaluatorExtensions
         [CallerArgumentExpression(nameof(getRight))]
         string getRightExpression = ""
     )
+        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition($"\"{left}\" == {getRightExpression}", e =>
-        {
-            if (e is not TExpression t)
-            {
-                Debug.Assert(false,
-                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
-                throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
-            }
-
-            return left == getRight(t);
-        }));
+        node.AddCondition(new WhereCondition<TExpression>(
+            $"\"{left}\" == {getRightExpression}", t => left == getRight(t)));
 
         return node;
     }
@@ -155,19 +138,12 @@ public static class EqualsEvaluatorExtensions
         Type? left,
         Func<TExpression, Type?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
-        string getRightExpression = "")
+        string getRightExpression = ""
+    )
+        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition($"typeof({left}) == {getRightExpression}", e =>
-        {
-            if (e is not TExpression t)
-            {
-                Debug.Assert(false,
-                    "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
-                throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
-            }
-
-            return left == getRight(t);
-        }));
+        node.AddCondition(new WhereCondition<TExpression>(
+            $"typeof({left}) == {getRightExpression}", t => left == getRight(t)));
 
         return node;
     }
@@ -177,20 +153,13 @@ public static class EqualsEvaluatorExtensions
         EValue<T>? left
         , Func<TExpression, object?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
-        string getRightExpression = "")
+        string getRightExpression = ""
+    )
+        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition(
-            $"{left} == null || EValue.AreEqual({left}, {getRightExpression})", e =>
-            {
-                if (e is not TExpression t)
-                {
-                    Debug.Assert(false,
-                        "Would this be better off handled at the NodeTypeConditionLevel? It can already do that...");
-                    throw UnmetPreconditionException.WrongExpressionType<TExpression>(e);
-                }
-
-                return left == null || EValue.AreEqual(left, getRight(t));
-            }));
+        node.AddCondition(new WhereCondition<TExpression>(
+            $"{left} == null || EValue.AreEqual({left}, {getRightExpression})",
+            t => left == null || EValue.AreEqual(left, getRight(t))));
 
         return node;
     }
