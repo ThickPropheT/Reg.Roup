@@ -7,14 +7,7 @@ public static class HavingChildrenEvaluatorExtensions
 {
     private static readonly DefaultVisitorNodeFactory Factory = new();
 
-    public static IEvaluatorBuilder<Expression> HavingChild(
-        this IEvaluatorBuilder<Expression> builder, IEvaluatorNodeFactory child)
-    {
-        builder.AddChildren(_ => [child]);
-        return builder;
-    }
-
-    public static IEvaluatorBuilder<Expression> HavingChildren(
+    public static IEvaluatorBuilder<Expression> HavingChildren<TExpression>(
         this IEvaluatorBuilder<Expression> builder, params IEvaluatorNodeFactory[] children)
     {
         builder.AddChildren(_ => children);
@@ -50,12 +43,6 @@ public static class HavingChildrenEvaluatorExtensions
     }
 
     // TODO should these go here or in the accept children extensions
-    public static IEvaluatorBuilder<Expression> HavingAnyChild(this IEvaluatorBuilder<Expression> builder)
-    {
-        builder.AddChildren(parent => [Factory.AcceptChildren(parent)]);
-        return builder;
-    }
-
     public static IEvaluatorBuilder<TNode> HavingAnyChild<TNode>(this IEvaluatorBuilder<TNode> builder)
         where TNode : Expression
         => builder.HavingChild(parent => Factory.AcceptChildren(parent));

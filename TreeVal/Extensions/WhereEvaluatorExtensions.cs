@@ -6,8 +6,8 @@ namespace TreeVal.Extensions;
 
 public static class WhereEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<Expression> Where(
-        this IEvaluatorBuilder<Expression> node,
+    public static IEvaluatorBuilder<TExpression> Where<TExpression>(
+        this IEvaluatorBuilder<TExpression> node,
         Func<Expression, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""

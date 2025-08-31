@@ -4,14 +4,6 @@ namespace TreeVal.Extensions;
 
 public static class WhenEvaluatorExtensions
 {
-    public static WhenEvaluatorBuilder<IEvaluatorBuilder<Expression>, T> When<T>(
-        this IEvaluatorBuilder<Expression> builder, T? target)
-        => new(builder, () => target);
-
-    public static WhenEvaluatorBuilder<IEvaluatorBuilder<Expression>, T> When<T>(
-        this IEvaluatorBuilder<Expression> builder, Func<T?> getTarget)
-        => new(builder, getTarget);
-
     public static WhenEvaluatorBuilder<IEvaluatorBuilder<TExpression>, T> When<TExpression, T>(
         this IEvaluatorBuilder<TExpression> builder, T? target
     )

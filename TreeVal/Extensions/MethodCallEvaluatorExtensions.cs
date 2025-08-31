@@ -232,7 +232,8 @@ public static class MethodCallEvaluatorExtensions
     private static bool IsExtensionMethod(MethodInfo method)
         => method.IsDefined(typeof(ExtensionAttribute), true);
 
-    private static IEvaluatorBuilder<Expression>[] DefaultMethodCallTarget(IVisitorNodeFactory factory, MethodCallExpression call)
+    private static IEvaluatorBuilder<Expression>[] DefaultMethodCallTarget(
+        IVisitorNodeFactory factory, MethodCallExpression call)
     {
         if (!call.Method.IsStatic)
         {

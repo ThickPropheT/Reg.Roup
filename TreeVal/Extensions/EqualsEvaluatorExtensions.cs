@@ -49,8 +49,8 @@ public static class EqualsEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder<Expression> Equals<T>(
-        this IEvaluatorBuilder<Expression> node,
+    public static IEvaluatorBuilder<TExpression> Equals<TExpression, T>(
+        this IEvaluatorBuilder<TExpression> node,
         T left,
         Func<Expression, object?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
@@ -62,8 +62,8 @@ public static class EqualsEvaluatorExtensions
         return node;
     }
 
-    public static IEvaluatorBuilder<Expression> Equals(
-        this IEvaluatorBuilder<Expression> node,
+    public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
+        this IEvaluatorBuilder<TExpression> node,
         string? left,
         Func<Expression, string?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
@@ -75,8 +75,8 @@ public static class EqualsEvaluatorExtensions
         return node;
     }
 
-    public static IEvaluatorBuilder<Expression> Equals(
-        this IEvaluatorBuilder<Expression> node,
+    public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
+        this IEvaluatorBuilder<TExpression> node,
         Type? left,
         Func<Expression, Type?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
@@ -88,8 +88,8 @@ public static class EqualsEvaluatorExtensions
         return node;
     }
 
-    public static IEvaluatorBuilder<Expression> Equals(
-        this IEvaluatorBuilder<Expression> node,
+    public static IEvaluatorBuilder<TExpression> Equals<TExpression>(
+        this IEvaluatorBuilder<TExpression> node,
         EType left,
         Func<Expression, Type?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
