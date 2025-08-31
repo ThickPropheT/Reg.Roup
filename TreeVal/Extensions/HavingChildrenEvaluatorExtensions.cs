@@ -6,7 +6,7 @@ namespace TreeVal.Extensions;
 public static class HavingChildrenEvaluatorExtensions
 {
     private static readonly DefaultVisitorNodeFactory Factory = new();
-    
+
     public static IEvaluatorBuilder HavingChild(
         this IEvaluatorBuilder builder, IEvaluatorNodeFactory child)
     {
@@ -38,32 +38,14 @@ public static class HavingChildrenEvaluatorExtensions
     public static IEvaluatorBuilder<TNode> HavingChild<TNode>(
         this IEvaluatorBuilder<TNode> builder, Func<TNode, IEvaluatorNodeFactory> getChild)
     {
-        builder.AddChildren(node =>
-        {
-            if (node is not TNode n)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return [getChild(n)];
-        });
-
+        builder.AddChildren(node => [getChild(node)]);
         return builder;
     }
 
     public static IEvaluatorBuilder<TNode> HavingChildren<TNode>(
         this IEvaluatorBuilder<TNode> builder, Func<TNode, IEnumerable<IEvaluatorNodeFactory>> getChildren)
     {
-        builder.AddChildren(node =>
-        {
-            if (node is not TNode n)
-            {
-                throw new InvalidOperationException();
-            }
-
-            return getChildren(n);
-        });
-
+        builder.AddChildren(node => getChildren(node));
         return builder;
     }
 
@@ -73,7 +55,7 @@ public static class HavingChildrenEvaluatorExtensions
         builder.AddChildren(parent => [Factory.AcceptChildren(parent)]);
         return builder;
     }
-    
+
     public static IEvaluatorBuilder<TNode> HavingAnyChild<TNode>(this IEvaluatorBuilder<TNode> builder)
         where TNode : Expression
         => builder.HavingChild(parent => Factory.AcceptChildren(parent));

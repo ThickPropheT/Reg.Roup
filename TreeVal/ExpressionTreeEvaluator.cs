@@ -18,16 +18,13 @@ public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
     void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
 }
 
-public interface IEvaluatorConditionBuilder<TNode> : IEvaluatorNodeFactory
+public interface IEvaluatorConditionBuilder<TExpression> : IEvaluatorConditionBuilder
 {
 }
 
-public interface IEvaluatorBuilder<TNode> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TNode>
+public interface IEvaluatorBuilder<TExpression> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TExpression>
 {
-    // TODO
-    //  can this be merged into IEvaluatorBuilder above,
-    //  replacing usages of IEvaluatorBuilder w/ IEvaluatorBuilder<Expression>?
-    //  perhaps these two could/should just be concrete implementations now?
+    void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
 }
 
 public class ExpressionTreeEvaluator

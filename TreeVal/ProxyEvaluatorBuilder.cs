@@ -33,4 +33,7 @@ public class ProxyEvaluatorBuilder<TExpression> : ProxyEvaluatorBuilder, IEvalua
             toEvaluator) : base(toEvaluator)
     {
     }
+
+    public void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren) 
+        => base.AddChildren(e => getChildren((TExpression) e));
 }

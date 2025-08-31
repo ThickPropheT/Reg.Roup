@@ -14,14 +14,17 @@ public class TypalEvaluatorBuilder : EvaluatorBuilder
     }
 }
 
-public class TypalEvaluatorBuilder<TNode> : EvaluatorBuilder, IEvaluatorBuilder<TNode>
-    where TNode : Expression
+public class TypalEvaluatorBuilder<TExpression> : EvaluatorBuilder, IEvaluatorBuilder<TExpression>
+    where TExpression : Expression
 {
     public ExpressionType? NodeType { get; }
 
     public TypalEvaluatorBuilder(ExpressionType? nodeType)
     {
         NodeType = nodeType;
-        AddCondition(NodeTypeCondition.AssertMatching<TNode>(nodeType));
+        AddCondition(NodeTypeCondition.AssertMatching<TExpression>(nodeType));
     }
+
+    public void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+        => base.AddChildren(e => getChildren((TExpression) e));
 }

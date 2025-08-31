@@ -114,7 +114,6 @@ public static class EqualsEvaluatorExtensions
     {
         node.AddCondition(new WhereCondition<TExpression>(
             $"Equals({left}, {getRightExpression})", t => Equals(left, getRight(t))));
-
         return node;
     }
 
@@ -129,7 +128,6 @@ public static class EqualsEvaluatorExtensions
     {
         node.AddCondition(new WhereCondition<TExpression>(
             $"\"{left}\" == {getRightExpression}", t => left == getRight(t)));
-
         return node;
     }
 
@@ -144,23 +142,20 @@ public static class EqualsEvaluatorExtensions
     {
         node.AddCondition(new WhereCondition<TExpression>(
             $"typeof({left}) == {getRightExpression}", t => left == getRight(t)));
-
         return node;
     }
 
     public static IEvaluatorBuilder<TExpression> Equals<TExpression, T>(
         this IEvaluatorBuilder<TExpression> node,
-        EValue<T>? left
-        , Func<TExpression, object?> getRight,
+        EValue<T> left,
+        Func<TExpression, object?> getRight,
         [CallerArgumentExpression(nameof(getRight))]
         string getRightExpression = ""
     )
         where TExpression : Expression
     {
         node.AddCondition(new WhereCondition<TExpression>(
-            $"{left} == null || EValue.AreEqual({left}, {getRightExpression})",
-            t => left == null || EValue.AreEqual(left, getRight(t))));
-
+            $"EValue.AreEqual({left}, {getRightExpression})", t => EValue.AreEqual(left, getRight(t))));
         return node;
     }
 }
