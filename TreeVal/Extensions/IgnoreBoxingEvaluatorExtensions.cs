@@ -71,8 +71,11 @@ public static class IgnoreBoxingEvaluatorExtensions
             return builder;
         }
 
-        private OneOfEvaluatorNode IgnoreBoxing<TExpression>(IEnumerable<ICondition> conditions,
-            IEnumerable<Func<TExpression, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder<TExpression> candidate)
+        private OneOfEvaluatorNode IgnoreBoxing<TExpression>(
+            IEnumerable<ICondition<Expression>> conditions,
+            IEnumerable<Func<TExpression, IEnumerable<IEvaluatorNodeFactory>>> childLookups,
+            IEvaluatorBuilder<TExpression> candidate)
+            where TExpression : Expression
         {
             foreach (var condition in conditions)
             {

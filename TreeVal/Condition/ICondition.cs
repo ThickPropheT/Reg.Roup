@@ -1,8 +1,6 @@
-using System.Linq.Expressions;
-
 namespace TreeVal.Condition;
 
-public interface ICondition : IDescribable
+public interface ICondition<in TNode> : IDescribable
 {
-    void Evaluate(Expression node, Evaluation evaluation);
+    void Evaluate(TNode node, Evaluation evaluation);
 }

@@ -6,13 +6,13 @@ namespace TreeVal;
 public class ProxyEvaluatorBuilder : EvaluatorBuilder
 {
     private readonly Func<
-            IEnumerable<ICondition>,
+            IEnumerable<ICondition<Expression>>,
             IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
         _toEvaluator;
 
     public ProxyEvaluatorBuilder(
         Func<
-                IEnumerable<ICondition>,
+                IEnumerable<ICondition<Expression>>,
                 IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
             toEvaluator)
     {
@@ -20,7 +20,7 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
     }
 
     protected override EvaluatorNode ToEvaluatorImpl(
-        IEnumerable<ICondition> conditions,
+        IEnumerable<ICondition<Expression>> conditions,
         IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
         => _toEvaluator(conditions.ToArray(), childLookups);
 }
@@ -29,7 +29,7 @@ public class ProxyEvaluatorBuilder<TExpression> : ProxyEvaluatorBuilder, IEvalua
     where TExpression : Expression
 {
     public ProxyEvaluatorBuilder(
-        Func<IEnumerable<ICondition>, IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
+        Func<IEnumerable<ICondition<Expression>>, IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
             toEvaluator) : base(toEvaluator)
     {
     }

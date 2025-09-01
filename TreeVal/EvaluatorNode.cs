@@ -7,13 +7,13 @@ public class EvaluatorNode : IEvaluatorNode
 {
     private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
 
-    public IEnumerable<ICondition> Conditions { get; }
+    public IEnumerable<ICondition<Expression>> Conditions { get; }
 
     public VisitationContext.MovementStrategy HeadMovementStrategy { get; protected init; }
     public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; protected init; }
 
     public EvaluatorNode(
-        IEnumerable<ICondition> conditions,
+        IEnumerable<ICondition<Expression>> conditions,
         IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
     {
         Conditions = conditions;

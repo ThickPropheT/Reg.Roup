@@ -10,7 +10,7 @@ public interface IEvaluatorNodeFactory
 
 public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
 {
-    void AddCondition(ICondition condition);
+    void AddCondition(ICondition<Expression> condition);
 }
 
 public interface IEvaluatorConditionBuilder<TExpression> : IEvaluatorConditionBuilder

@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace TreeVal.Condition;
 
-public class WhereCondition : ICondition
+public class WhereCondition : ICondition<Expression>
 {
     private readonly string _message;
     private readonly Func<Expression, bool> _predicate;
@@ -27,7 +27,7 @@ public class WhereCondition : ICondition
     public override string ToString() => _message;
 }
 
-public class WhereCondition<TExpression> : ICondition
+public class WhereCondition<TExpression> : ICondition<Expression>
     where TExpression : Expression
 {
     private readonly string _message;

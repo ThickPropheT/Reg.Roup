@@ -7,7 +7,7 @@ public class OneOfEvaluatorNode : EvaluatorNode
 {
     private readonly IEvaluatorNodeFactory[] _options;
 
-    public OneOfEvaluatorNode(IEnumerable<ICondition> conditions, IEvaluatorNodeFactory[] options)
+    public OneOfEvaluatorNode(IEnumerable<ICondition<Expression>> conditions, IEvaluatorNodeFactory[] options)
         : base(conditions, [])
     {
         _options = options;

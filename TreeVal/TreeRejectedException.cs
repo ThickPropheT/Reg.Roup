@@ -1,6 +1,3 @@
-using System.Linq.Expressions;
-using TreeVal.Condition;
-
 namespace TreeVal;
 
 public class TreeRejectedException : Exception
@@ -36,30 +33,4 @@ public class TreeRejectedException : Exception
         {
             Head = head
         };
-
-    // TODO
-    //  it would be cool if you could pass in a custom IDescription
-    //  via the API at the ExpressionTreeEvaluator level
-    private class Description : IDescription
-    {
-        public void EmitResult(Evaluation.Status status, IEvaluatorNode evaluator, ICondition[] failedConditions)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EmitNodeTypeCondition(ExpressionType nodeType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EmitNodeTypeCondition(Type type, ExpressionType? nodeType = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EmitWhereCondition(string message)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

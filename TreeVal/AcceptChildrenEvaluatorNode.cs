@@ -8,7 +8,7 @@ public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
     private readonly Expression _parent;
 
-    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
+    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition<Expression>> conditions, Expression parent)
         : base(conditions, [])
     {
         _parent = parent;

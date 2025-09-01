@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace TreeVal.Condition;
 
-public class NodeTypeCondition : ICondition
+public class NodeTypeCondition : ICondition<Expression>
 {
     private readonly Type? _type;
     private readonly ExpressionType? _nodeType;

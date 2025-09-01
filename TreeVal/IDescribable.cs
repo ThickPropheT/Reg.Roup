@@ -5,7 +5,7 @@ namespace TreeVal;
 
 public interface IDescription
 {
-    void EmitResult(Evaluation.Status status, IEvaluatorNode evaluator, ICondition[] failedConditions);
+    void EmitResult(Evaluation.Status status, IEvaluatorNode evaluator, ICondition<Expression>[] failedConditions);
     void EmitNodeTypeCondition(ExpressionType nodeType);
     void EmitNodeTypeCondition(Type type, ExpressionType? nodeType = null);
     void EmitWhereCondition(string message);

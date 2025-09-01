@@ -5,7 +5,7 @@ namespace TreeVal;
 
 public interface IEvaluatorNode
 {
-    IEnumerable<ICondition> Conditions { get; }
+    IEnumerable<ICondition<Expression>> Conditions { get; }
     VisitationContext.MovementStrategy HeadMovementStrategy { get; }
     VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; }
 
