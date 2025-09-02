@@ -31,9 +31,6 @@ public static class WithEvaluatorExtensions
             _node = new Node<T>(t);
         }
 
-        public void AddChildren(Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
-            => base.AddChildren(e => getChildren((T) e.Value));
-
         protected override NodeEvaluator ToEvaluatorImpl(IEnumerable<ICondition> conditions,
             IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
             => new(conditions, childLookups)

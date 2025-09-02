@@ -8,7 +8,4 @@ public class TypalEvaluatorBuilder<T> : EvaluatorBuilder, IEvaluatorBuilder<T>
     {
         AddCondition(NodeTypeCondition.AssertMatching<T>());
     }
-
-    public void AddChildren(Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
-        => base.AddChildren(e => getChildren((T) e.Value));
 }

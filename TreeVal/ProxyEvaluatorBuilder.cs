@@ -41,7 +41,4 @@ public class ProxyEvaluatorBuilder<T> : ProxyEvaluatorBuilder, IEvaluatorBuilder
         : base(toEvaluator)
     {
     }
-
-    public void AddChildren(Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
-        => base.AddChildren(e => getChildren((T) e.Value));
 }
