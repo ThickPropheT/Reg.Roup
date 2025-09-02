@@ -1,23 +1,24 @@
 using System.Diagnostics;
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
 
 public class AcceptChildrenEvaluatorNode : EvaluatorNode
 {
-    private readonly Expression _parent;
+    private readonly Node _parent;
+    private readonly IVisitationRecorder _recorder;
 
-    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Expression parent)
+    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Node parent, IVisitationRecorder recorder)
         : base(conditions, [])
     {
         _parent = parent;
+        _recorder = recorder;
         HeadMovementStrategy = VisitationContext.MovementStrategy.From(MoveHead);
     }
 
-    private Expression? MoveHead(VisitationContext _, TapeHead head)
+    private Node? MoveHead(VisitationContext _, TapeHead head)
     {
-        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(_parent).ToList();
+        var tape = _recorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
 
         // there weren't any children, actually.

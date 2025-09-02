@@ -1,13 +1,11 @@
-using System.Linq.Expressions;
-
 namespace TreeVal.Condition;
 
 public class WhereCondition : ICondition
 {
     private readonly string _message;
-    private readonly Func<Expression, bool> _predicate;
+    private readonly Func<Node, bool> _predicate;
 
-    public WhereCondition(string message, Func<Expression, bool> predicate)
+    public WhereCondition(string message, Func<Node, bool> predicate)
     {
         _message = message;
         _predicate = predicate;
@@ -16,7 +14,7 @@ public class WhereCondition : ICondition
     public void Describe(IDescription description)
         => description.EmitWhereCondition(_message);
 
-    public void Evaluate(Expression node, Evaluation evaluation)
+    public void Evaluate(Node node, Evaluation evaluation)
     {
         if (_predicate(node))
             return;
@@ -27,13 +25,12 @@ public class WhereCondition : ICondition
     public override string ToString() => _message;
 }
 
-public class WhereCondition<TExpression> : ICondition
-    where TExpression : Expression
+public class WhereCondition<T> : ICondition
 {
     private readonly string _message;
-    private readonly Func<TExpression, bool> _predicate;
+    private readonly Func<T, bool> _predicate;
 
-    public WhereCondition(string message, Func<TExpression, bool> predicate)
+    public WhereCondition(string message, Func<T, bool> predicate)
     {
         _message = message;
         _predicate = predicate;
@@ -42,9 +39,9 @@ public class WhereCondition<TExpression> : ICondition
     public void Describe(IDescription description)
         => description.EmitWhereCondition(_message);
 
-    public void Evaluate(Expression node, Evaluation evaluation)
+    public void Evaluate(Node node, Evaluation evaluation)
     {
-        if (node is not TExpression t)
+        if (node.Value is not T t)
         {
             throw new ConditionFailedException(this);
         }
@@ -54,4 +51,6 @@ public class WhereCondition<TExpression> : ICondition
 
         evaluation.Reject();
     }
+
+    public override string ToString() => _message;
 }

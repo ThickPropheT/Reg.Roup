@@ -1,11 +1,10 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
 
 public class EvaluatorNode : IEvaluatorNode
 {
-    private readonly IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
+    private readonly IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
 
     public IEnumerable<ICondition> Conditions { get; }
 
@@ -14,7 +13,7 @@ public class EvaluatorNode : IEvaluatorNode
 
     public EvaluatorNode(
         IEnumerable<ICondition> conditions,
-        IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
     {
         Conditions = conditions;
         _childLookups = childLookups;
@@ -23,6 +22,6 @@ public class EvaluatorNode : IEvaluatorNode
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.AllOf;
     }
 
-    public virtual IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression current)
+    public virtual IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Node current)
         => _childLookups.SelectMany(lookup => lookup(current));
 }

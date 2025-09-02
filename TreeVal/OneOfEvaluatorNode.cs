@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
@@ -14,5 +13,5 @@ public class OneOfEvaluatorNode : EvaluatorNode
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.OneOf;
     }
 
-    public override IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression _) => _options;
+    public override IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Node _) => _options;
 }

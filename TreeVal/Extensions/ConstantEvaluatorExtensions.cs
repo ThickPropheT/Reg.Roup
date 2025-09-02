@@ -8,10 +8,11 @@ public static class ConstantEvaluatorExtensions
         => factory.OfType<ConstantExpression>();
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant(
-        this IVisitorNodeFactory factory, EValue<object?>? eValue)
+        this IVisitorNodeFactory factory, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
-            .When(eValue).IsNotNull()
+            .When(value).IsNotNull()
+            // ReSharper disable once VariableHidesOuterVariable
             .Then((node, value) =>
                 node.Equals(value, constant => constant.Value));
 
@@ -21,11 +22,12 @@ public static class ConstantEvaluatorExtensions
             .Equals(type, constant => constant.Type);
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant(
-        this IVisitorNodeFactory factory, EType type, EValue<object?>? eValue)
+        this IVisitorNodeFactory factory, EType type, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type)
-            .When(eValue).IsNotNull()
+            .When(value).IsNotNull()
+            // ReSharper disable once VariableHidesOuterVariable
             .Then((node, value) =>
                 node.Equals(value, constant => constant.Value));
 
@@ -39,15 +41,16 @@ public static class ConstantEvaluatorExtensions
     }
 
     public static IEvaluatorConditionBuilder<ConstantExpression> Constant<T>(
-        this IVisitorNodeFactory factory, EValue<T?>? eValue)
+        this IVisitorNodeFactory factory, EValue<T?>? value)
     {
         EType type = typeof(T);
-        eValue ??= EValue<T>.Null();
+        value ??= EValue<T>.Null();
 
         return factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type)
-            .When(eValue).IsNotNull()
+            .When(value).IsNotNull()
+            // ReSharper disable once VariableHidesOuterVariable
             .Then((node, value) =>
                 node.Equals(value, constant => constant.Value));
     }

@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
@@ -9,5 +8,5 @@ public interface IEvaluatorNode
     VisitationContext.MovementStrategy HeadMovementStrategy { get; }
     VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; }
 
-    IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Expression current);
+    IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Node current);
 }

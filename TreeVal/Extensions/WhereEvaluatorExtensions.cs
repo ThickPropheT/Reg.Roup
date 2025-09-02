@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
 
@@ -6,28 +5,26 @@ namespace TreeVal.Extensions;
 
 public static class WhereEvaluatorExtensions
 {
-    public static TBuilder Where<TBuilder>(
-        this TBuilder node,
-        Func<Expression, bool> predicate,
+    public static IEvaluatorBuilder Where(
+        this IEvaluatorBuilder builder,
+        Func<Node, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""
     )
-        where TBuilder : IEvaluatorConditionBuilder
     {
-        node.AddCondition(new WhereCondition(predicateExpression, predicate));
-        return node;
+        builder.AddCondition(new WhereCondition(predicateExpression, predicate));
+        return builder;
     }
 
-    public static IEvaluatorBuilder<TExpression> Where<TExpression>(
-        this IEvaluatorBuilder<TExpression> node,
-        Func<TExpression, bool> predicate,
+    public static IEvaluatorBuilder<T> Where<T>(
+        this IEvaluatorBuilder<T> builder,
+        Func<T, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""
     )
-        where TExpression : Expression
     {
-        node.AddCondition(new WhereCondition<TExpression>(predicateExpression, predicate));
-        return node;
+        builder.AddCondition(new WhereCondition<T>(predicateExpression, predicate));
+        return builder;
     }
 }
 

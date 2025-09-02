@@ -1,45 +1,23 @@
-using System.Linq.Expressions;
-
 namespace TreeVal.Condition;
 
 public class NodeTypeCondition : ICondition
 {
-    private readonly Type? _type;
-    private readonly ExpressionType? _nodeType;
-
-    private readonly State _state;
+    private readonly Type _type;
 
     private Action<NodeTypeCondition>? _matchFailed;
 
-    private NodeTypeCondition(ExpressionType nodeType)
-    {
-        _nodeType = nodeType;
-        _state = State.ByNodeType;
-    }
-
-    private NodeTypeCondition(Type type, ExpressionType? nodeType = null)
+    private NodeTypeCondition(Type type)
     {
         _type = type;
-        _nodeType = nodeType;
-
-        _state = nodeType is not null
-            ? State.ByTypeAndNodeType
-            : State.ByType;
     }
 
-    public static NodeTypeCondition RejectNonMatching(ExpressionType nodeType)
-        => new(nodeType);
+    public static NodeTypeCondition RejectNonMatching<T>()
+        => new(typeof(T));
 
-    public static NodeTypeCondition RejectNonMatching<TNode>(ExpressionType? nodeType = null)
-        => new(typeof(TNode), nodeType);
+    public static NodeTypeCondition AssertMatching<T>()
+        => new(typeof(T)) { _matchFailed = condition => throw new ConditionFailedException(condition) };
 
-    public static NodeTypeCondition AssertMatching(ExpressionType nodeType)
-        => new(nodeType) { _matchFailed = condition => throw new ConditionFailedException(condition) };
-
-    public static NodeTypeCondition AssertMatching<TNode>(ExpressionType? nodeType = null)
-        => new(typeof(TNode), nodeType) { _matchFailed = condition => throw new ConditionFailedException(condition) };
-
-    public void Evaluate(Expression node, Evaluation evaluation)
+    public void Evaluate(Node node, Evaluation evaluation)
     {
         var doesMatch = DoesMatch(node);
 
@@ -51,61 +29,18 @@ public class NodeTypeCondition : ICondition
             return;
         }
 
-        if (!doesMatch)
-            _matchFailed(this);
+        if (doesMatch)
+            return;
+
+        _matchFailed(this);
     }
 
-    private bool DoesMatch(Expression node)
-    {
-        switch (_state)
-        {
-            case State.ByNodeType:
-                return node.NodeType == _nodeType;
-            case State.ByType:
-                return node.GetType().IsAssignableTo(_type);
-            case State.ByTypeAndNodeType:
-                return node.NodeType == _nodeType
-                       && node.GetType().IsAssignableTo(_type);
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+    private bool DoesMatch(Node node)
+        => node.Value.GetType().IsAssignableTo(_type);
 
-    public void Describe(IDescription description)
-    {
-        switch (_state)
-        {
-            case State.ByNodeType:
-                description.EmitNodeTypeCondition((ExpressionType) _nodeType!);
-                break;
-            case State.ByType:
-            case State.ByTypeAndNodeType:
-                description.EmitNodeTypeCondition(_type!, _nodeType);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+    public virtual void Describe(IDescription description)
+        => description.EmitNodeTypeCondition(_type);
 
     public override string ToString()
-    {
-        switch (_state)
-        {
-            case State.ByNodeType:
-                return $"node.NodeType == ExpressionType.{_nodeType}";
-            case State.ByType:
-                return $"node is {_type}";
-            case State.ByTypeAndNodeType:
-                return $"node is {_type} && node.NodeType == ExpressionType.{_nodeType}";
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    private enum State
-    {
-        ByNodeType = 0,
-        ByType,
-        ByTypeAndNodeType
-    }
+        => $"node is {_type}";
 }

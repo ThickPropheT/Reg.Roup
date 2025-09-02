@@ -3,30 +3,6 @@ using TreeVal.Condition;
 
 namespace TreeVal;
 
-public interface IEvaluatorNodeFactory
-{
-    IEvaluatorNode ToEvaluator();
-}
-
-public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
-{
-    void AddCondition(ICondition condition);
-}
-
-public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
-{
-    void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
-}
-
-public interface IEvaluatorConditionBuilder<TExpression> : IEvaluatorConditionBuilder
-{
-}
-
-public interface IEvaluatorBuilder<TExpression> : IEvaluatorBuilder, IEvaluatorConditionBuilder<TExpression>
-{
-    void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren);
-}
-
 public class ExpressionTreeEvaluator
 {
     private readonly IEvaluatorNodeFactory _schema;
@@ -59,7 +35,15 @@ public class ExpressionTreeEvaluator
     }
 
     public void Evaluate(Expression expressionTree)
-        => VisitationContext.EvaluateTree(expressionTree, _schema);
+    {
+        var tape = LinearExpressionTreeRecorder
+            .RecordVisitationOf(expressionTree)
+            .ToArray<Node>();
+        
+        var head = new TapeHead(tape);
+        
+        VisitationContext.EvaluateTree(head, _schema);
+    }
 
     public override string? ToString()
         => Name ?? base.ToString();

@@ -48,9 +48,9 @@ public class RecordedExpressionTree
                         _ => node.OneOf(
                             node.Constant(),
 
-                            node.Cast(node.Constant(value: null)),
+                            node.Cast(node.Constant(value: null))
 
-                            node.Debug(e => { })
+                            // node.Debug(e => { })
 
                             // node
                             //     .IgnoreBoxing() // TODO i don't think this is working right

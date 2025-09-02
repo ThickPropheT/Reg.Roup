@@ -1,40 +1,40 @@
-using System.Linq.Expressions;
+using TreeVal.Condition;
 
 namespace TreeVal;
 
 public class TapeHead
 {
-    private readonly Expression[] _tape;
+    private readonly Node[] _tape;
     private int _currentIndex;
 
     private int _currentOrFirst => _currentIndex >= 0
         ? _currentIndex
         : 0;
-    
+
     private int _length => _tape.Length;
 
-    public TapeHead(Expression[] tape)
+    public TapeHead(Node[] tape)
     {
         _tape = tape;
         _currentIndex = -1;
     }
 
-    private TapeHead(Expression[] tape, int currentIndex)
+    private TapeHead(Node[] tape, int currentIndex)
     {
         _tape = tape;
         _currentIndex = currentIndex;
     }
 
-    public Expression Read()
+    public Node Read()
         => _tape[_currentIndex];
 
-    public IEnumerable<Expression> ReadToEnd()
+    public IEnumerable<Node> ReadToEnd()
         => _tape.Take(new Range(_currentOrFirst, _tape.Length - 1));
 
     public bool CanMoveForward()
         => _currentIndex < _tape.Length - 1;
 
-    public Expression MoveForward()
+    public Node MoveForward()
     {
         if (!CanMoveForward())
         {
@@ -46,7 +46,7 @@ public class TapeHead
         return Read();
     }
 
-    public Expression? PeekForward()
+    public Node? PeekForward()
         => CanMoveForward()
             ? _tape[_currentIndex + 1]
             : null;
@@ -54,7 +54,7 @@ public class TapeHead
     public bool CanMoveBackward()
         => _currentIndex > 0;
 
-    public Expression MoveBackward()
+    public Node MoveBackward()
     {
         if (!CanMoveBackward())
         {
@@ -66,7 +66,7 @@ public class TapeHead
         return Read();
     }
 
-    public Expression? PeekBackward()
+    public Node? PeekBackward()
         => CanMoveBackward()
             ? _tape[_currentIndex - 1]
             : null;
@@ -77,7 +77,7 @@ public class TapeHead
 
     public class Clip : TapeHead
     {
-        private Clip(Expression[] tape)
+        private Clip(Node[] tape)
             : base(tape)
         {
         }
@@ -85,13 +85,10 @@ public class TapeHead
         public static Clip Create(TapeHead current, int fromIndex, int toIndex)
         {
             var source = current._tape.ToArray();
-            // var sourceIndex = current._currentIndex;
-            // var destinationLength = source.Length - sourceIndex;
             var destinationLength = toIndex + 1 - fromIndex;
-            var destination = new Expression[destinationLength];
+            var destination = new Node[destinationLength];
 
             Array.Copy(source, fromIndex, destination, 0, destinationLength);
-            // Array.Copy(source, sourceIndex, destination, 0, destinationLength);
 
             return new Clip(destination);
         }

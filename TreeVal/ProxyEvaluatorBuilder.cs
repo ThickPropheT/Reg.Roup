@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
@@ -7,13 +6,13 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
 {
     private readonly Func<
             IEnumerable<ICondition>,
-            IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
+            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
         _toEvaluator;
 
     public ProxyEvaluatorBuilder(
         Func<
                 IEnumerable<ICondition>,
-                IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
+                IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
             toEvaluator)
     {
         _toEvaluator = toEvaluator;
@@ -21,19 +20,18 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
 
     protected override EvaluatorNode ToEvaluatorImpl(
         IEnumerable<ICondition> conditions,
-        IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
         => _toEvaluator(conditions.ToArray(), childLookups);
 }
 
-public class ProxyEvaluatorBuilder<TExpression> : ProxyEvaluatorBuilder, IEvaluatorBuilder<TExpression>
-    where TExpression : Expression
+public class ProxyEvaluatorBuilder<T> : ProxyEvaluatorBuilder, IEvaluatorBuilder<T>
 {
     public ProxyEvaluatorBuilder(
-        Func<IEnumerable<ICondition>, IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
+        Func<IEnumerable<ICondition>, IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>>, EvaluatorNode>
             toEvaluator) : base(toEvaluator)
     {
     }
 
-    public void AddChildren(Func<TExpression, IEnumerable<IEvaluatorNodeFactory>> getChildren) 
-        => base.AddChildren(e => getChildren((TExpression) e));
+    public void AddChildren(Func<T, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+        => base.AddChildren(e => getChildren((T) e.Value));
 }

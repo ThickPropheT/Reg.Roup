@@ -9,14 +9,11 @@ public enum BoxingEvaluationHint
     Eager
 }
 
+// TODO test all the not implemented and commented out stuff in here
 public static class IgnoreBoxingEvaluatorExtensions
 {
-    // TODO
-    //  modify this to take a child IVisitorNode, rather than doing this chaining thing.
-    //  i think there's in the chaining logic that's returning new VisitorNode and orphaning
-    //  the ignore boxing part
-    public static IVisitorNodeFactory IgnoreBoxing(this IVisitorNodeFactory factory,
-        BoxingEvaluationHint hint = BoxingEvaluationHint.Lazy)
+    public static IVisitorNodeFactory IgnoreBoxing(
+        this IVisitorNodeFactory factory, BoxingEvaluationHint hint = BoxingEvaluationHint.Lazy)
         => new IgnoreBoxingEvaluatorBuilder(factory, hint);
 
     private class IgnoreBoxingEvaluatorBuilder : IVisitorNodeFactory
@@ -30,18 +27,26 @@ public static class IgnoreBoxingEvaluatorExtensions
             _hint = hint;
         }
 
-        public IEvaluatorBuilder Where(Func<Expression, bool> predicate, string predicateExpression = "")
+        public IEvaluatorBuilder Where(Func<Node, bool> predicate, string predicateExpression = "")
             => new ProxyEvaluatorBuilder((conditions, childLookups) =>
                 IgnoreBoxing(conditions, childLookups, _source.Where(predicate, predicateExpression)));
 
-        public IEvaluatorBuilder OfType(ExpressionType nodeType)
-            => new ProxyEvaluatorBuilder((conditions, childLookups) =>
-                IgnoreBoxing(conditions, childLookups, _source.OfType(nodeType)));
+        public IEvaluatorBuilder<T> OfType<T>()
+        {
+            throw new NotImplementedException();
+        }
 
-        public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
-            where TExpression : Expression
-            => new ProxyEvaluatorBuilder<TExpression>((conditions, childLookups) =>
-                IgnoreBoxing(conditions, childLookups, _source.OfType<TExpression>(nodeType)));
+        // TODO
+        //  these were moved to extensions class.
+        //  how can i override that implementation here? 
+        // public IEvaluatorBuilder OfType(ExpressionType nodeType)
+        //     => new ProxyEvaluatorBuilder((conditions, childLookups) =>
+        //         IgnoreBoxing(conditions, childLookups, _source.OfType(nodeType)));
+        //
+        // public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
+        //     where TExpression : Expression
+        //     => new ProxyEvaluatorBuilder<TExpression>((conditions, childLookups) =>
+        //         IgnoreBoxing(conditions, childLookups, _source.OfType<TExpression>(nodeType)));
 
         public IEvaluatorConditionBuilder OneOf(IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2,
             params IEvaluatorNodeFactory[] options)
@@ -72,7 +77,7 @@ public static class IgnoreBoxingEvaluatorExtensions
         }
 
         private OneOfEvaluatorNode IgnoreBoxing(IEnumerable<ICondition> conditions,
-            IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder candidate)
+            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder candidate)
         {
             foreach (var condition in conditions)
             {

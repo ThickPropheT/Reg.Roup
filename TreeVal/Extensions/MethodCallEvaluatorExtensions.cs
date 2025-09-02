@@ -160,7 +160,7 @@ public static class MethodCallEvaluatorExtensions
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        Func<MethodCallExpression, IEvaluatorBuilder<Expression>> getTarget,
         params IEvaluatorNodeFactory[] parameters)
         => factory
             .MethodCallBase(typeof(TOwner), name)
@@ -191,7 +191,7 @@ public static class MethodCallEvaluatorExtensions
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder> getTarget,
+        Func<MethodCallExpression, IEvaluatorBuilder<Expression>> getTarget,
         Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
         => factory
             .MethodCallBase(typeof(TOwner), name)

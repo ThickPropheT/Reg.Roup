@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
@@ -6,11 +5,8 @@ namespace TreeVal;
 // TODO why is it called VisitationContext? could it be called something better?
 public partial class VisitationContext
 {
-    public static void EvaluateTree(Expression expressionTree, IEvaluatorNodeFactory schema)
+    public static void EvaluateTree(TapeHead head, IEvaluatorNodeFactory schema)
     {
-        var tape = LinearExpressionTreeRecorder.RecordVisitationOf(expressionTree).ToArray();
-        var head = new TapeHead(tape);
-
         var context = new VisitationContext(head);
 
         var evaluation = new Evaluation();

@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace TreeVal.Extensions;
 
 // TODO test coverage
@@ -21,29 +19,29 @@ public static class HavingChildrenEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder<TNode> HavingChild<TNode>(
-        this IEvaluatorBuilder<TNode> builder, IEvaluatorNodeFactory child)
+    public static IEvaluatorBuilder<T> HavingChild<T>(
+        this IEvaluatorBuilder<T> builder, IEvaluatorNodeFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
-    public static IEvaluatorBuilder<TNode> HavingChildren<TNode>(
-        this IEvaluatorBuilder<TNode> node, params IEvaluatorNodeFactory[] children)
+    public static IEvaluatorBuilder<T> HavingChildren<T>(
+        this IEvaluatorBuilder<T> node, params IEvaluatorNodeFactory[] children)
     {
         node.AddChildren(_ => children);
         return node;
     }
 
-    public static IEvaluatorBuilder<TNode> HavingChild<TNode>(
-        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEvaluatorNodeFactory> getChild)
+    public static IEvaluatorBuilder<T> HavingChild<T>(
+        this IEvaluatorBuilder<T> builder, Func<T, IEvaluatorNodeFactory> getChild)
     {
         builder.AddChildren(node => [getChild(node)]);
         return builder;
     }
 
-    public static IEvaluatorBuilder<TNode> HavingChildren<TNode>(
-        this IEvaluatorBuilder<TNode> builder, Func<TNode, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+    public static IEvaluatorBuilder<T> HavingChildren<T>(
+        this IEvaluatorBuilder<T> builder, Func<T, IEnumerable<IEvaluatorNodeFactory>> getChildren)
     {
         builder.AddChildren(node => getChildren(node));
         return builder;
@@ -56,7 +54,6 @@ public static class HavingChildrenEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder<TNode> HavingAnyChild<TNode>(this IEvaluatorBuilder<TNode> builder)
-        where TNode : Expression
+    public static IEvaluatorBuilder<T> HavingAnyChild<T>(this IEvaluatorBuilder<T> builder)
         => builder.HavingChild(parent => Factory.AcceptChildren(parent));
 }

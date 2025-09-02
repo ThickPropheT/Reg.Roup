@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using TreeVal.Condition;
 
 namespace TreeVal;
@@ -6,12 +5,12 @@ namespace TreeVal;
 public class EvaluatorBuilder : IEvaluatorBuilder
 {
     private readonly List<ICondition> _conditions = new(1);
-    private readonly List<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);
+    private readonly List<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> _childLookups = new(1);
 
     public void AddCondition(ICondition condition)
         => _conditions.Add(condition);
 
-    public void AddChildren(Func<Expression, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+    public void AddChildren(Func<Node, IEnumerable<IEvaluatorNodeFactory>> getChildren)
         => _childLookups.Add(getChildren);
 
     public IEvaluatorNode ToEvaluator()
@@ -19,6 +18,6 @@ public class EvaluatorBuilder : IEvaluatorBuilder
 
     protected virtual EvaluatorNode ToEvaluatorImpl(
         IEnumerable<ICondition> conditions,
-        IEnumerable<Func<Expression, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
         => new(conditions.ToArray(), childLookups);
 }

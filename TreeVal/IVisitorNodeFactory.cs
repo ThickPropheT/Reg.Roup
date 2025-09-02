@@ -1,5 +1,5 @@
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using TreeVal.Condition;
 
 namespace TreeVal;
 
@@ -7,12 +7,9 @@ namespace TreeVal;
 public interface IVisitorNodeFactory
 {
     IEvaluatorBuilder Where(
-        Func<Expression, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "");
+        Func<Node, bool> predicate, [CallerArgumentExpression(nameof(predicate))] string predicateExpression = "");
 
-    IEvaluatorBuilder OfType(ExpressionType nodeType);
-
-    IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
-        where TExpression : Expression;
+    IEvaluatorBuilder<T> OfType<T>();
 
     IEvaluatorConditionBuilder OneOf(
         IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2, params IEvaluatorNodeFactory[] options);
