@@ -1,20 +1,21 @@
 using System.Linq.Expressions;
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
 public class ExpressionTreeEvaluator
 {
-    private readonly IEvaluatorNodeFactory _schema;
+    private readonly INodeEvaluatorFactory _schema;
 
     public string? Name { get; private set; }
 
-    private ExpressionTreeEvaluator(IEvaluatorNodeFactory schema)
+    private ExpressionTreeEvaluator(INodeEvaluatorFactory schema)
     {
         _schema = schema;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, IEvaluatorNodeFactory> buildEvaluatorTree)
+    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, INodeEvaluatorFactory> buildEvaluatorTree)
     {
         var factory = new DefaultVisitorNodeFactory();
 

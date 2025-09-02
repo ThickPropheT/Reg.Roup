@@ -7,7 +7,7 @@ public static class MethodCallDelegateEvaluatorExtensions
 {
     public static IEvaluatorBuilder MethodCallDelegate(
         this IVisitorNodeFactory factory,
-        Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
+        Func<MethodCallExpression, INodeEvaluatorFactory>? getTarget = null,
         Func<MethodInfo, bool>? where = null
     )
         => factory
@@ -35,7 +35,7 @@ public static class MethodCallDelegateEvaluatorExtensions
     public static IEvaluatorBuilder MethodCallDelegate(
         this IVisitorNodeFactory factory,
         string? name,
-        Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
+        Func<MethodCallExpression, INodeEvaluatorFactory>? getTarget = null,
         Func<MethodInfo, bool>? where = null
     )
         => factory

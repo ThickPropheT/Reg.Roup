@@ -1,6 +1,6 @@
 using TreeVal.Condition;
 
-namespace TreeVal;
+namespace TreeVal.Media;
 
 public class TapeHead
 {

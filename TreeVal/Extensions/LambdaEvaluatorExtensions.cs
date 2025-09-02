@@ -5,13 +5,13 @@ namespace TreeVal.Extensions;
 public static class LambdaEvaluatorExtensions
 {
     public static IEvaluatorBuilder<LambdaExpression> Lambda(
-        this IVisitorNodeFactory factory, IEvaluatorNodeFactory body)
+        this IVisitorNodeFactory factory, INodeEvaluatorFactory body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChild(body);
 
     public static IEvaluatorBuilder<LambdaExpression> Lambda(
-        this IVisitorNodeFactory factory, IEvaluatorNodeFactory[] parameters, IEvaluatorNodeFactory body)
+        this IVisitorNodeFactory factory, INodeEvaluatorFactory[] parameters, INodeEvaluatorFactory body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChildren(new[] { body }.Concat(parameters).ToArray());

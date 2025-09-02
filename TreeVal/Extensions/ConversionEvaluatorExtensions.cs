@@ -10,20 +10,20 @@ public static class ConversionEvaluatorExtensions
             .AcceptChildren();
 
     public static IEvaluatorConditionBuilder<UnaryExpression> Cast(
-        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
+        this IVisitorNodeFactory factory, INodeEvaluatorFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .HavingChild(operand);
 
     public static IEvaluatorConditionBuilder<UnaryExpression> Cast<T>(
-        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand)
+        this IVisitorNodeFactory factory, INodeEvaluatorFactory operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Equals(typeof(T), cast => cast.Type)
             .HavingChild(operand);
 
     public static IEvaluatorConditionBuilder<UnaryExpression> Cast(
-        this IVisitorNodeFactory factory, IEvaluatorNodeFactory operand, Type toType)
+        this IVisitorNodeFactory factory, INodeEvaluatorFactory operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)

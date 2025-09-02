@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal.Extensions;
 
@@ -48,13 +49,13 @@ public static class IgnoreBoxingEvaluatorExtensions
         //     => new ProxyEvaluatorBuilder<TExpression>((conditions, childLookups) =>
         //         IgnoreBoxing(conditions, childLookups, _source.OfType<TExpression>(nodeType)));
 
-        public IEvaluatorConditionBuilder OneOf(IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2,
-            params IEvaluatorNodeFactory[] options)
+        public IEvaluatorConditionBuilder OneOf(INodeEvaluatorFactory option1, INodeEvaluatorFactory option2,
+            params INodeEvaluatorFactory[] options)
         {
             throw new SkepticalException("This has never been actuated and probably doesn't work correctly.");
 
             var builder = new ProxyEvaluatorBuilder((conditions, _) =>
-                new OneOfEvaluatorNode(conditions, new[]
+                new OneOfNodeEvaluator(conditions, new[]
                 {
                     option1,
                     _source
@@ -76,9 +77,9 @@ public static class IgnoreBoxingEvaluatorExtensions
             return builder;
         }
 
-        private OneOfEvaluatorNode IgnoreBoxing(
+        private OneOfNodeEvaluator IgnoreBoxing(
             IEnumerable<ICondition> conditions,
-            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups,
+            IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups,
             IEvaluatorBuilder candidate
         )
         {
@@ -96,7 +97,7 @@ public static class IgnoreBoxingEvaluatorExtensions
                 .OfType<UnaryExpression>(ExpressionType.Convert)
                 .HavingChild(candidate);
 
-            return new OneOfEvaluatorNode([],
+            return new OneOfNodeEvaluator([],
                 _hint == BoxingEvaluationHint.Lazy
                     ? [candidate, boxed]
                     : [boxed, candidate]);

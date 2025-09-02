@@ -1,4 +1,4 @@
-namespace TreeVal.Condition;
+namespace TreeVal.Media;
 
 public class Node : IEquatable<Node>
 {

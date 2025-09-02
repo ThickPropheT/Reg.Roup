@@ -1,3 +1,5 @@
+using TreeVal.Media;
+
 namespace TreeVal;
 
 public partial class VisitationContext

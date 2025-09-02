@@ -1,14 +1,15 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
-public interface IEvaluatorNodeFactory
+public interface INodeEvaluatorFactory
 {
-    IEvaluatorNode ToEvaluator();
+    INodeEvaluator ToEvaluator();
 }
 
 
-public interface IEvaluatorConditionBuilder : IEvaluatorNodeFactory
+public interface IEvaluatorConditionBuilder : INodeEvaluatorFactory
 {
     void AddCondition(ICondition condition);
 }
@@ -20,10 +21,10 @@ public interface IEvaluatorConditionBuilder<T> : IEvaluatorConditionBuilder
 
 public interface IEvaluatorBuilder : IEvaluatorConditionBuilder
 {
-    void AddChildren(Func<Node, IEnumerable<IEvaluatorNodeFactory>> getChildren);
+    void AddChildren(Func<Node, IEnumerable<INodeEvaluatorFactory>> getChildren);
 }
 
 public interface IEvaluatorBuilder<T> : IEvaluatorBuilder, IEvaluatorConditionBuilder<T>
 {
-    void AddChildren(Func<T, IEnumerable<IEvaluatorNodeFactory>> getChildren);
+    void AddChildren(Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren);
 }

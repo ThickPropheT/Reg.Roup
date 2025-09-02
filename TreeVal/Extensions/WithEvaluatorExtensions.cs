@@ -1,4 +1,5 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal.Extensions;
 
@@ -25,16 +26,16 @@ public static class WithEvaluatorExtensions
     {
         private readonly Node<T> _node;
 
-        public WhenBuilder(T node)
+        public WhenBuilder(T t)
         {
-            _node = new Node<T>(node);
+            _node = new Node<T>(t);
         }
 
-        public void AddChildren(Func<T, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+        public void AddChildren(Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
             => base.AddChildren(e => getChildren((T) e.Value));
 
-        protected override EvaluatorNode ToEvaluatorImpl(IEnumerable<ICondition> conditions,
-            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        protected override NodeEvaluator ToEvaluatorImpl(IEnumerable<ICondition> conditions,
+            IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
             => new(conditions, childLookups)
             {
                 HeadMovementStrategy = VisitationContext.MovementStrategy.From((_, _) => _node)

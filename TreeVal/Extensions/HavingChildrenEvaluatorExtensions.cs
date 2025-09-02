@@ -6,42 +6,42 @@ public static class HavingChildrenEvaluatorExtensions
     private static readonly DefaultVisitorNodeFactory Factory = new();
 
     public static IEvaluatorBuilder HavingChild(
-        this IEvaluatorBuilder builder, IEvaluatorNodeFactory child)
+        this IEvaluatorBuilder builder, INodeEvaluatorFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
     public static IEvaluatorBuilder HavingChildren(
-        this IEvaluatorBuilder builder, params IEvaluatorNodeFactory[] children)
+        this IEvaluatorBuilder builder, params INodeEvaluatorFactory[] children)
     {
         builder.AddChildren(_ => children);
         return builder;
     }
 
     public static IEvaluatorBuilder<T> HavingChild<T>(
-        this IEvaluatorBuilder<T> builder, IEvaluatorNodeFactory child)
+        this IEvaluatorBuilder<T> builder, INodeEvaluatorFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
     public static IEvaluatorBuilder<T> HavingChildren<T>(
-        this IEvaluatorBuilder<T> node, params IEvaluatorNodeFactory[] children)
+        this IEvaluatorBuilder<T> builder, params INodeEvaluatorFactory[] children)
     {
-        node.AddChildren(_ => children);
-        return node;
+        builder.AddChildren(_ => children);
+        return builder;
     }
 
     public static IEvaluatorBuilder<T> HavingChild<T>(
-        this IEvaluatorBuilder<T> builder, Func<T, IEvaluatorNodeFactory> getChild)
+        this IEvaluatorBuilder<T> builder, Func<T, INodeEvaluatorFactory> getChild)
     {
         builder.AddChildren(node => [getChild(node)]);
         return builder;
     }
 
     public static IEvaluatorBuilder<T> HavingChildren<T>(
-        this IEvaluatorBuilder<T> builder, Func<T, IEnumerable<IEvaluatorNodeFactory>> getChildren)
+        this IEvaluatorBuilder<T> builder, Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
     {
         builder.AddChildren(node => getChildren(node));
         return builder;

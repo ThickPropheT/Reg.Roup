@@ -11,8 +11,8 @@ public class UsingIEquatableEquals
         [Test]
         public void NodesWhereValueIsEqual()
         {
-            var node0 = new Node(0);
-            var otherNode0 = new Node(0);
+            var node0 = new Media.Node(0);
+            var otherNode0 = new Media.Node(0);
 
             Assert.That(node0, Is.EqualTo(otherNode0));
         }
@@ -24,8 +24,8 @@ public class UsingIEquatableEquals
         [Test]
         public void NodesWhereValueIsDifferent()
         {
-            var node0 = new Node(0);
-            var otherNode1 = new Node(1);
+            var node0 = new Media.Node(0);
+            var otherNode1 = new Media.Node(1);
 
             Assert.That(node0, Is.Not.EqualTo(otherNode1));
         }
@@ -33,8 +33,8 @@ public class UsingIEquatableEquals
         [Test]
         public void NodesWhereValueIsDifferentType()
         {
-            var node0 = new Node(0);
-            var otherNodeString = new Node("string");
+            var node0 = new Media.Node(0);
+            var otherNodeString = new Media.Node("string");
 
             Assert.That(node0, Is.Not.EqualTo(otherNodeString));
         }

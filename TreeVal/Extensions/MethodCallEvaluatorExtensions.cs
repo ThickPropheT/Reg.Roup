@@ -32,7 +32,7 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .OfType<MethodCallExpression>()
             .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
@@ -41,7 +41,7 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
+        this IVisitorNodeFactory factory, params INodeEvaluatorFactory[] parameters)
         => factory
             .OfType<MethodCallExpression>()
             .HavingChildren(call =>
@@ -87,14 +87,14 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts both instance only
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, Type ownerType, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, Type ownerType, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .InstanceMethodCallBase(ownerType, target)
             .HavingAnyChild();
 
     // this accepts both instance only
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .InstanceMethodCallBase(typeof(TOwner), target)
             .HavingAnyChild();
@@ -102,7 +102,7 @@ public static class MethodCallEvaluatorExtensions
 
     // TODO verify this accepts both static & instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorNodeFactory factory, params IEvaluatorNodeFactory[] parameters)
+        this IVisitorNodeFactory factory, params INodeEvaluatorFactory[] parameters)
         => factory
             .MethodCallBase(typeof(TOwner))
             .HavingChildren(call =>
@@ -112,7 +112,7 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts only instance
     public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, string? name, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .MethodCallBase(name)
             .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
@@ -126,7 +126,7 @@ public static class MethodCallEvaluatorExtensions
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        params IEvaluatorNodeFactory[] parameters
+        params INodeEvaluatorFactory[] parameters
     )
         => factory
             .MethodCallBase(typeof(TOwner), name)
@@ -162,7 +162,7 @@ public static class MethodCallEvaluatorExtensions
         //  add name validation
         string? name,
         Func<MethodCallExpression, IEvaluatorBuilder<Expression>> getTarget,
-        params IEvaluatorNodeFactory[] parameters
+        params INodeEvaluatorFactory[] parameters
     )
         => factory
             .MethodCallBase(typeof(TOwner), name)
@@ -225,7 +225,7 @@ public static class MethodCallEvaluatorExtensions
             .Equals(name, call => call.Method.Name);
 
     private static IEvaluatorBuilder<MethodCallExpression> InstanceMethodCallBase(
-        this IVisitorNodeFactory factory, Type ownerType, Func<MethodCallExpression, IEvaluatorNodeFactory> target)
+        this IVisitorNodeFactory factory, Type ownerType, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .OfType<MethodCallExpression>()
             .Equals(ownerType, call => call.Method.DeclaringType)

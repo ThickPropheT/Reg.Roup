@@ -1,10 +1,11 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
 public partial class VisitationContext
 {
-    private void EvaluateAll(IEvaluatorNode evaluator, Node current, Evaluation evaluation)
+    private void EvaluateAll(INodeEvaluator evaluator, Node current, Evaluation evaluation)
     {
         var rejected = evaluator.EnumerateChildren(current)
             .Select(c =>
@@ -21,7 +22,7 @@ public partial class VisitationContext
         evaluation.Reject();
     }
 
-    private void EvaluateAny(IEvaluatorNode evaluator, Node current, Evaluation evaluation)
+    private void EvaluateAny(INodeEvaluator evaluator, Node current, Evaluation evaluation)
     {
         var (accepted, _) = evaluator
             .EnumerateChildren(current)
@@ -53,10 +54,10 @@ public partial class VisitationContext
         //     => new(context => (evaluator, current, evaluation) => strategy(context, current, evaluator));
 
 
-        private readonly Func<VisitationContext, Action<IEvaluatorNode, Node, Evaluation>> _lookupStrategy;
+        private readonly Func<VisitationContext, Action<INodeEvaluator, Node, Evaluation>> _lookupStrategy;
 
         private EvaluationStrategy(
-            Func<VisitationContext, Action<IEvaluatorNode, Node, Evaluation>> lookupStrategy)
+            Func<VisitationContext, Action<INodeEvaluator, Node, Evaluation>> lookupStrategy)
         {
             _lookupStrategy = lookupStrategy;
         }
@@ -66,7 +67,7 @@ public partial class VisitationContext
         //  it's own "Do Strategy" method. i think i had it this way originally, b/c
         //  the Evaluate* methods above were responsible for accepting/rejecting things
         //  themselves, rather than having the ValidationContext be responsible for it.
-        public Action<IEvaluatorNode, Node, Evaluation> GetStrategy(VisitationContext context)
+        public Action<INodeEvaluator, Node, Evaluation> GetStrategy(VisitationContext context)
             => _lookupStrategy(context);
     }
 }

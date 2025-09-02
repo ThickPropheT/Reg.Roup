@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
 using TreeVal.Extensions;
+using TreeVal.Media;
 
 namespace TreeVal;
 
@@ -14,7 +15,7 @@ public class DefaultVisitorNodeFactory : IVisitorNodeFactory
         => new TypalEvaluatorBuilder<T>();
 
     public IEvaluatorConditionBuilder OneOf(
-        IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2, params IEvaluatorNodeFactory[] options)
+        INodeEvaluatorFactory option1, INodeEvaluatorFactory option2, params INodeEvaluatorFactory[] options)
         => new ProxyEvaluatorBuilder((conditions, _) =>
-            new OneOfEvaluatorNode(conditions, new[] { option1, option2 }.Concat(options).ToArray()));
+            new OneOfNodeEvaluator(conditions, new[] { option1, option2 }.Concat(options).ToArray()));
 }

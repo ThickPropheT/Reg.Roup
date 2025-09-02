@@ -1,12 +1,13 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
-public interface IEvaluatorNode
+public interface INodeEvaluator
 {
     IEnumerable<ICondition> Conditions { get; }
     VisitationContext.MovementStrategy HeadMovementStrategy { get; }
     VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; }
 
-    IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Node current);
+    IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current);
 }

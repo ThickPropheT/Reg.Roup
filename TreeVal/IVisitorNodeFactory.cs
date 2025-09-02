@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
@@ -12,5 +13,5 @@ public interface IVisitorNodeFactory
     IEvaluatorBuilder<T> OfType<T>();
 
     IEvaluatorConditionBuilder OneOf(
-        IEvaluatorNodeFactory option1, IEvaluatorNodeFactory option2, params IEvaluatorNodeFactory[] options);
+        INodeEvaluatorFactory option1, INodeEvaluatorFactory option2, params INodeEvaluatorFactory[] options);
 }

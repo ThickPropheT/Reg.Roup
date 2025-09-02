@@ -11,7 +11,7 @@ public class UsingObjectEquals
         [Test]
         public void ObjectsEqualToItsValue()
         {
-            var node0 = new Node(0);
+            var node0 = new Media.Node(0);
             object value0 = 0;
 
             Assert.That(node0, Is.EqualTo(value0));
@@ -24,7 +24,7 @@ public class UsingObjectEquals
         [Test]
         public void ObjectsNotEqualToItsValue()
         {
-            var node0 = new Node(0);
+            var node0 = new Media.Node(0);
             object value1 = 1;
 
             Assert.That(node0, Is.Not.EqualTo(value1));
@@ -33,7 +33,7 @@ public class UsingObjectEquals
         [Test]
         public void ObjectsWithDifferentTypeThanItsValue()
         {
-            var node0 = new Node(0);
+            var node0 = new Media.Node(0);
             object valueString = "string";
 
             Assert.That(node0, Is.Not.EqualTo(valueString));

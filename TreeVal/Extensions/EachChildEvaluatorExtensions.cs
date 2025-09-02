@@ -5,7 +5,7 @@ public static class EachChildEvaluatorExtensions
     public static IEvaluatorBuilder<TNode> WithEachChildBeing<TNode, TChild>(
         this IEvaluatorBuilder<TNode> builder,
         Func<TNode, IEnumerable<TChild>> selectChildren,
-        Func<TChild, IEvaluatorNodeFactory> getEvaluator
+        Func<TChild, INodeEvaluatorFactory> getEvaluator
     )
     {
         builder.AddChildren(node => selectChildren(node).Select(getEvaluator));

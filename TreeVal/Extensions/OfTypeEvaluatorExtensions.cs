@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
-using TreeVal.Extensions;
 
-namespace TreeVal;
+namespace TreeVal.Extensions;
 
 public static class OfTypeEvaluatorExtensions
 {

@@ -1,11 +1,12 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
 // TODO why is it called VisitationContext? could it be called something better?
 public partial class VisitationContext
 {
-    public static void EvaluateTree(TapeHead head, IEvaluatorNodeFactory schema)
+    public static void EvaluateTree(TapeHead head, INodeEvaluatorFactory schema)
     {
         var context = new VisitationContext(head);
 
@@ -31,7 +32,7 @@ public partial class VisitationContext
             throw TreeRejectedException.ForIncompleteRead(head);
     }
 
-    public void Evaluate(IEvaluatorNodeFactory factory, Evaluation evaluation)
+    public void Evaluate(INodeEvaluatorFactory factory, Evaluation evaluation)
     {
         var evaluator = factory.ToEvaluator();
 

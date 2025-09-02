@@ -1,14 +1,15 @@
 using System.Diagnostics;
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
-public class AcceptChildrenEvaluatorNode : EvaluatorNode
+public class AcceptChildrenNodeEvaluator : NodeEvaluator
 {
     private readonly Node _parent;
     private readonly IVisitationRecorder _recorder;
 
-    public AcceptChildrenEvaluatorNode(IEnumerable<ICondition> conditions, Node parent, IVisitationRecorder recorder)
+    public AcceptChildrenNodeEvaluator(IEnumerable<ICondition> conditions, Node parent, IVisitationRecorder recorder)
         : base(conditions, [])
     {
         _parent = parent;

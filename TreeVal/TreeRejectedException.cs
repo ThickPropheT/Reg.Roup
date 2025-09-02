@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
@@ -42,7 +43,7 @@ public class TreeRejectedException : Exception
     //  via the API at the ExpressionTreeEvaluator level
     private class Description : IDescription
     {
-        public void EmitResult(Evaluation.Status status, IEvaluatorNode evaluator, ICondition[] failedConditions)
+        public void EmitResult(Evaluation.Status status, INodeEvaluator evaluator, ICondition[] failedConditions)
         {
             throw new NotImplementedException();
         }

@@ -1,19 +1,20 @@
 using TreeVal.Condition;
+using TreeVal.Media;
 
 namespace TreeVal;
 
-public class EvaluatorNode : IEvaluatorNode
+public class NodeEvaluator : INodeEvaluator
 {
-    private readonly IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> _childLookups;
+    private readonly IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> _childLookups;
 
     public IEnumerable<ICondition> Conditions { get; }
 
     public VisitationContext.MovementStrategy HeadMovementStrategy { get; init; }
     public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; init; }
 
-    public EvaluatorNode(
+    public NodeEvaluator(
         IEnumerable<ICondition> conditions,
-        IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups)
+        IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
     {
         Conditions = conditions;
         _childLookups = childLookups;
@@ -22,6 +23,6 @@ public class EvaluatorNode : IEvaluatorNode
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.AllOf;
     }
 
-    public virtual IEnumerable<IEvaluatorNodeFactory> EnumerateChildren(Node current)
+    public virtual IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current)
         => _childLookups.SelectMany(lookup => lookup(current));
 }
