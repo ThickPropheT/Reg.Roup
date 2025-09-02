@@ -47,7 +47,6 @@ public static class HavingChildrenEvaluatorExtensions
         return builder;
     }
 
-    // TODO should these go here or in the accept children extensions
     public static IEvaluatorBuilder HavingAnyChild(this IEvaluatorBuilder builder)
     {
         builder.AddChildren(parent => [Factory.AcceptChildren(parent)]);

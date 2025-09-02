@@ -3,7 +3,6 @@ using TreeVal.Condition;
 
 namespace TreeVal.Extensions;
 
-// TODO try to de-dupe some of these method bodies
 public static class EqualsEvaluatorExtensions
 {
     public static IEvaluatorBuilder Equals<T>(

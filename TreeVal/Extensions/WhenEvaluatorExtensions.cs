@@ -13,14 +13,12 @@ public static class WhenEvaluatorExtensions
         => new(builder, getTarget);
 
     public static WhenEvaluatorBuilder<IEvaluatorBuilder<TExpression>, T> When<TExpression, T>(
-        this IEvaluatorBuilder<TExpression> builder, T? target
-    )
+        this IEvaluatorBuilder<TExpression> builder, T? target)
         where TExpression : Expression
         => new(builder, () => target);
 
     public static WhenEvaluatorBuilder<IEvaluatorBuilder<TExpression>, T> When<TExpression, T>(
-        this IEvaluatorBuilder<TExpression> builder, Func<T?> getTarget
-    )
+        this IEvaluatorBuilder<TExpression> builder, Func<T?> getTarget)
         where TExpression : Expression
         => new(builder, getTarget);
 }

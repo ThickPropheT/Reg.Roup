@@ -126,7 +126,8 @@ public static class MethodCallEvaluatorExtensions
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        params IEvaluatorNodeFactory[] parameters)
+        params IEvaluatorNodeFactory[] parameters
+    )
         => factory
             .MethodCallBase(typeof(TOwner), name)
             .HavingChildren(call =>
@@ -161,7 +162,8 @@ public static class MethodCallEvaluatorExtensions
         //  add name validation
         string? name,
         Func<MethodCallExpression, IEvaluatorBuilder<Expression>> getTarget,
-        params IEvaluatorNodeFactory[] parameters)
+        params IEvaluatorNodeFactory[] parameters
+    )
         => factory
             .MethodCallBase(typeof(TOwner), name)
             .HavingChild(call =>
@@ -179,7 +181,8 @@ public static class MethodCallEvaluatorExtensions
         //  reify this to allow passing in things like `Name.Any()`
         //  add name validation
         string? name,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
+        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters
+    )
         => factory
             .MethodCallBase(typeof(TOwner), name)
             .HavingChildren(parameters);
@@ -192,7 +195,8 @@ public static class MethodCallEvaluatorExtensions
         //  add name validation
         string? name,
         Func<MethodCallExpression, IEvaluatorBuilder<Expression>> getTarget,
-        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters)
+        Func<MethodCallExpression, IEvaluatorConditionBuilder[]> parameters
+    )
         => factory
             .MethodCallBase(typeof(TOwner), name)
             .HavingChild(call =>

@@ -76,8 +76,11 @@ public static class IgnoreBoxingEvaluatorExtensions
             return builder;
         }
 
-        private OneOfEvaluatorNode IgnoreBoxing(IEnumerable<ICondition> conditions,
-            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups, IEvaluatorBuilder candidate)
+        private OneOfEvaluatorNode IgnoreBoxing(
+            IEnumerable<ICondition> conditions,
+            IEnumerable<Func<Node, IEnumerable<IEvaluatorNodeFactory>>> childLookups,
+            IEvaluatorBuilder candidate
+        )
         {
             foreach (var condition in conditions)
             {

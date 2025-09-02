@@ -8,7 +8,8 @@ public static class MethodCallDelegateEvaluatorExtensions
     public static IEvaluatorBuilder MethodCallDelegate(
         this IVisitorNodeFactory factory,
         Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
-        Func<MethodInfo, bool>? where = null)
+        Func<MethodInfo, bool>? where = null
+    )
         => factory
             .IgnoreBoxing(hint: BoxingEvaluationHint.Eager)
             .OfType<MethodCallExpression>()
@@ -35,7 +36,8 @@ public static class MethodCallDelegateEvaluatorExtensions
         this IVisitorNodeFactory factory,
         string? name,
         Func<MethodCallExpression, IEvaluatorNodeFactory>? getTarget = null,
-        Func<MethodInfo, bool>? where = null)
+        Func<MethodInfo, bool>? where = null
+    )
         => factory
             .IgnoreBoxing(hint: BoxingEvaluationHint.Eager)
             .OfType<MethodCallExpression>()
