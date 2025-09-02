@@ -1,4 +1,4 @@
-﻿namespace TreeVal;
+﻿namespace TreeVal.__Temp__;
 
 [Serializable]
 public class SkepticalException : Exception
