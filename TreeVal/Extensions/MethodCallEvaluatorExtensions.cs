@@ -248,17 +248,16 @@ public static class MethodCallEvaluatorExtensions
 
         if (IsExtensionMethod(call.Method))
         {
-            // TODO
-            //  writing to & reading from this variable that's tantamount to global
-            //  may be problematic. keep your wits about you
-            ParameterInfo[]? callMethodParameters = null;
-
             return
             [
                 factory
                     .AnyOne()
-                    .Where(_ => (callMethodParameters = call.Method.GetParameters()).Length > 0)
-                    .Is(e => e.Type, () => callMethodParameters?[0].ParameterType)
+                    .With(
+                        e => (e, parameters: call.Method.GetParameters()),
+                        (node, a) =>
+                            node
+                                .Where(_ => a.parameters.Length > 0)
+                                .Is(_ => a.e.Type, a.parameters[0].ParameterType))
                     .HavingAnyChild()
             ];
         }

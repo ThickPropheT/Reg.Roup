@@ -27,25 +27,3 @@ public static class WhereEvaluatorExtensions
         return builder;
     }
 }
-
-// public static class WithEvaluatorExtensions
-// {
-//     public static IEvaluatorBuilder<T> With<T>(
-//         this IEvaluatorBuilder node,
-//         Func<Expression, T> selector
-//     )
-//     {
-//         node.AddCondition(new WhereCondition(predicateExpression, e => predicate(selector(e))));
-//         return node;
-//     }
-//
-//     public static IEvaluatorBuilder<T> With<TExpression, T>(
-//         this IEvaluatorBuilder<TExpression> node,
-//         Func<TExpression, T> selector
-//     )
-//         where TExpression : Expression
-//     {
-//         node.AddCondition(new WhereCondition<TExpression>(predicateExpression, e => predicate(selector(e))));
-//         return node;
-//     }
-// }

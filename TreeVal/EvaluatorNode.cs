@@ -8,8 +8,8 @@ public class EvaluatorNode : IEvaluatorNode
 
     public IEnumerable<ICondition> Conditions { get; }
 
-    public VisitationContext.MovementStrategy HeadMovementStrategy { get; protected init; }
-    public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; protected init; }
+    public VisitationContext.MovementStrategy HeadMovementStrategy { get; init; }
+    public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; init; }
 
     public EvaluatorNode(
         IEnumerable<ICondition> conditions,
