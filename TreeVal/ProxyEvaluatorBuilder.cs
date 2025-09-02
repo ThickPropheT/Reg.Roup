@@ -7,13 +7,17 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
 {
     private readonly Func<
             IEnumerable<ICondition>,
-            IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>, NodeEvaluator>
+            IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
+            NodeEvaluator
+        >
         _toEvaluator;
 
     public ProxyEvaluatorBuilder(
         Func<
                 IEnumerable<ICondition>,
-                IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>, NodeEvaluator>
+                IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
+                NodeEvaluator
+            >
             toEvaluator)
     {
         _toEvaluator = toEvaluator;
@@ -28,8 +32,13 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
 public class ProxyEvaluatorBuilder<T> : ProxyEvaluatorBuilder, IEvaluatorBuilder<T>
 {
     public ProxyEvaluatorBuilder(
-        Func<IEnumerable<ICondition>, IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>, NodeEvaluator>
-            toEvaluator) : base(toEvaluator)
+        Func<
+                IEnumerable<ICondition>,
+                IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
+                NodeEvaluator
+            >
+            toEvaluator)
+        : base(toEvaluator)
     {
     }
 

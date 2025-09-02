@@ -16,14 +16,15 @@ public static class IgnoreBoxingEvaluatorExtensions
 {
     public static IVisitorNodeFactory IgnoreBoxing(
         this IVisitorNodeFactory factory, BoxingEvaluationHint hint = BoxingEvaluationHint.Lazy)
-        => new IgnoreBoxingEvaluatorBuilder(factory, hint);
+        => new _IgnoreBoxingEvaluatorBuilder(factory, hint);
 
-    private class IgnoreBoxingEvaluatorBuilder : IVisitorNodeFactory
+
+    private class _IgnoreBoxingEvaluatorBuilder : IVisitorNodeFactory
     {
         private readonly IVisitorNodeFactory _source;
         private readonly BoxingEvaluationHint _hint;
 
-        public IgnoreBoxingEvaluatorBuilder(IVisitorNodeFactory source, BoxingEvaluationHint hint)
+        public _IgnoreBoxingEvaluatorBuilder(IVisitorNodeFactory source, BoxingEvaluationHint hint)
         {
             _source = source;
             _hint = hint;
@@ -34,24 +35,11 @@ public static class IgnoreBoxingEvaluatorExtensions
                 IgnoreBoxing(conditions, childLookups, _source.Where(predicate, predicateExpression)));
 
         public IEvaluatorBuilder<T> OfType<T>()
-        {
-            throw new NotImplementedException();
-        }
+            => new ProxyEvaluatorBuilder<T>((conditions, childLookups) =>
+                IgnoreBoxing(conditions, childLookups, _source.OfType<T>()));
 
-        // TODO
-        //  these were moved to extensions class.
-        //  how can i override that implementation here? 
-        // public IEvaluatorBuilder OfType(ExpressionType nodeType)
-        //     => new ProxyEvaluatorBuilder((conditions, childLookups) =>
-        //         IgnoreBoxing(conditions, childLookups, _source.OfType(nodeType)));
-        //
-        // public IEvaluatorBuilder<TExpression> OfType<TExpression>(ExpressionType? nodeType = null)
-        //     where TExpression : Expression
-        //     => new ProxyEvaluatorBuilder<TExpression>((conditions, childLookups) =>
-        //         IgnoreBoxing(conditions, childLookups, _source.OfType<TExpression>(nodeType)));
-
-        public IEvaluatorConditionBuilder OneOf(INodeEvaluatorFactory option1, INodeEvaluatorFactory option2,
-            params INodeEvaluatorFactory[] options)
+        public IEvaluatorConditionBuilder OneOf(
+            INodeEvaluatorFactory option1, INodeEvaluatorFactory option2, params INodeEvaluatorFactory[] options)
         {
             throw new SkepticalException("This has never been actuated and probably doesn't work correctly.");
 
