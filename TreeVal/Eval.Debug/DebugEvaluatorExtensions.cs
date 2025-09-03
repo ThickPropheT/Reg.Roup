@@ -1,6 +1,3 @@
-using TreeVal.Diagnostics;
-using TreeVal.Eval.Condition;
-using TreeVal.Media;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Eval.Debug;
@@ -14,23 +11,15 @@ public static class DebugEvaluatorExtensions
         return builder;
     }
 
-
-    public static IEvaluatorBuilder<T> Debug<T>(this IEvaluatorBuilder<T> builder, Action<T, Evaluation> observe)
+    public static IEvaluatorBuilder Debug(this IEvaluatorBuilder builder, Action<object, Evaluation> observe)
     {
-        builder.AddCondition(new Observer((o, evaluation) => observe((T) o, evaluation)));
+        builder.AddCondition(new Observer(observe));
         return builder;
     }
-
-    private class Observer : ICondition
+    
+    public static IEvaluatorBuilder<T> Debug<T>(this IEvaluatorBuilder<T> builder, Action<T, Evaluation> observe)
     {
-        private readonly Action<object, Evaluation> _observe;
-
-        public Observer(Action<object, Evaluation> observe)
-        {
-            _observe = observe;
-        }
-
-        public void Evaluate(Node node, Evaluation evaluation)
-            => _observe(node.Value, evaluation);
+        builder.AddCondition(new Observer<T>(observe));
+        return builder;
     }
 }
