@@ -59,7 +59,7 @@ public partial class VisitationContext
         }
         catch (ConditionFailedException ex)
         {
-            evaluation.Reject();
+            evaluation.Reject(ex);
             return;
         }
 

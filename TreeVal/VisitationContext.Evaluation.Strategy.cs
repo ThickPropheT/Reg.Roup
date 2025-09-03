@@ -1,4 +1,5 @@
 using TreeVal.Eval;
+using TreeVal.Extensions;
 using TreeVal.Media;
 
 namespace TreeVal;
@@ -7,24 +8,28 @@ public partial class VisitationContext
 {
     private void EvaluateAll(INodeEvaluator evaluator, Node current, Evaluation evaluation)
     {
-        var rejected = evaluator.EnumerateChildren(current)
+        var evaluated = evaluator
+            .EnumerateChildren(current)
             .Select(c =>
             {
                 var childEvaluation = new Evaluation();
                 Evaluate(c, childEvaluation);
                 return childEvaluation;
             })
-            .FirstOrDefault(childEvaluation => childEvaluation.CurrentStatus == Evaluation.Status.Rejected);
+            .TakeDoWhile(result => result.CurrentStatus == Evaluation.Status.Accepted)
+            .ToArray();
+
+        var rejected = evaluated.FirstOrDefault(result => result.CurrentStatus == Evaluation.Status.Rejected);
 
         if (rejected == null)
             return;
 
-        evaluation.Reject();
+        evaluation.Reject(evaluated);
     }
 
     private void EvaluateAny(INodeEvaluator evaluator, Node current, Evaluation evaluation)
     {
-        var (accepted, _) = evaluator
+        var evaluated = evaluator
             .EnumerateChildren(current)
             .Select(child =>
             {
@@ -33,7 +38,11 @@ public partial class VisitationContext
                 clip.Evaluate(child, childEvaluation);
                 return (clip, childEvaluation);
             })
-            .FirstOrDefault(result => result.childEvaluation.CurrentStatus != Evaluation.Status.Rejected);
+            .TakeDoWhile(result => result.childEvaluation.CurrentStatus == Evaluation.Status.Rejected)
+            .ToArray();
+
+        var (accepted, _) = evaluated.FirstOrDefault(result =>
+            result.childEvaluation.CurrentStatus == Evaluation.Status.Accepted);
 
         if (accepted != null)
         {
@@ -41,18 +50,13 @@ public partial class VisitationContext
             return;
         }
 
-        evaluation.Reject();
+        evaluation.Reject(evaluated.Select(e => e.childEvaluation));
     }
 
     public class EvaluationStrategy
     {
         public static EvaluationStrategy AllOf { get; } = new(context => context.EvaluateAll);
         public static EvaluationStrategy OneOf { get; } = new(context => context.EvaluateAny);
-
-        // TODO this isn't used anymore. should it be removed?
-        // public static EvaluationStrategy From(Action<VisitationContext, Node, IEvaluatorNode> strategy)
-        //     => new(context => (evaluator, current, evaluation) => strategy(context, current, evaluator));
-
 
         private readonly Func<VisitationContext, Action<INodeEvaluator, Node, Evaluation>> _lookupStrategy;
 
@@ -61,12 +65,7 @@ public partial class VisitationContext
         {
             _lookupStrategy = lookupStrategy;
         }
-
-        // TODO
-        //  consider doing away with the indirection here and just give the strategy
-        //  it's own "Do Strategy" method. i think i had it this way originally, b/c
-        //  the Evaluate* methods above were responsible for accepting/rejecting things
-        //  themselves, rather than having the ValidationContext be responsible for it.
+        
         public Action<INodeEvaluator, Node, Evaluation> GetStrategy(VisitationContext context)
             => _lookupStrategy(context);
     }

@@ -22,7 +22,7 @@ public class WhereCondition : ICondition
         if (_predicate(node))
             return;
 
-        evaluation.Reject();
+        evaluation.Reject(this);
     }
 
     public override string ToString() => _message;
@@ -52,7 +52,7 @@ public class WhereCondition<T> : ICondition
         if (_predicate(t))
             return;
 
-        evaluation.Reject();
+        evaluation.Reject(this);
     }
 
     public override string ToString() => _message;

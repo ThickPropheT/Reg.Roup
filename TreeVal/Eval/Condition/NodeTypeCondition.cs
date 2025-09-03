@@ -27,7 +27,7 @@ public class NodeTypeCondition : ICondition
         if (_matchFailed == null)
         {
             if (!doesMatch)
-                evaluation.Reject();
+                evaluation.Reject(this);
 
             return;
         }
