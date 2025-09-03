@@ -3,7 +3,7 @@ using TreeVal.Eval;
 using TreeVal.Eval.Condition;
 using TreeVal.Media;
 
-namespace TreeVal.Diagnosticts;
+namespace TreeVal.Diagnostics;
 
 public class TreeRejectedException : Exception
 {

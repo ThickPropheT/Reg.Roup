@@ -1,4 +1,4 @@
-using TreeVal.Diagnosticts;
+using TreeVal.Diagnostics;
 using TreeVal.Media;
 
 namespace TreeVal.Eval.Condition;

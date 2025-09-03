@@ -1,4 +1,3 @@
-using TreeVal.Extensions;
 using TreeVal.Media;
 using TreeVal.Scaffolding;
 

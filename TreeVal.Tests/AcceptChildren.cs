@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using TreeVal.Diagnosticts;
+using TreeVal.Diagnostics;
 using TreeVal.Eval;
 using TreeVal.Eval.AcceptChildren;
 using TreeVal.Extensions;

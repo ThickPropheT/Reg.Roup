@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using TreeVal.Eval;
 using TreeVal.Eval.Condition;
 
-namespace TreeVal.Diagnosticts;
+namespace TreeVal.Diagnostics;
 
 public interface IDescription
 {
