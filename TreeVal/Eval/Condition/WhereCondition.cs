@@ -1,4 +1,3 @@
-using TreeVal.Diagnostics;
 using TreeVal.Media;
 
 namespace TreeVal.Eval.Condition;
@@ -14,15 +13,12 @@ public class WhereCondition : ICondition
         _predicate = predicate;
     }
 
-    public void Describe(IDescription description)
-        => description.EmitWhereCondition(_message);
-
     public void Evaluate(Node node, Evaluation evaluation)
     {
         if (_predicate(node))
             return;
 
-        evaluation.Reject(this);
+        evaluation.Reject(this, node);
     }
 
     public override string ToString() => _message;
@@ -39,20 +35,17 @@ public class WhereCondition<T> : ICondition
         _predicate = predicate;
     }
 
-    public void Describe(IDescription description)
-        => description.EmitWhereCondition(_message);
-
     public void Evaluate(Node node, Evaluation evaluation)
     {
         if (node.Value is not T t)
         {
-            throw new ConditionFailedException(this);
+            throw new ConditionFailedException(this, node);
         }
 
         if (_predicate(t))
             return;
 
-        evaluation.Reject(this);
+        evaluation.Reject(this, node);
     }
 
     public override string ToString() => _message;

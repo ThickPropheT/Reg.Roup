@@ -30,11 +30,6 @@ public static class DebugEvaluatorExtensions
             _observe = observe;
         }
 
-        public void Describe(IDescription description)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Evaluate(Node node, Evaluation evaluation)
             => _observe(node.Value, evaluation);
     }

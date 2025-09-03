@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Eval;
 using TreeVal.Expr;
 using TreeVal.Expr.Conversion;
 
@@ -20,7 +19,7 @@ public class ByOperandAndByType
         ExpressionTreeEvaluator.Create(node => node.Cast<short>(node.Constant(1))),
         ExpressionTreeEvaluator.Create(node => node.Cast(node.Constant(1), typeof(short)))
     ];
-    
+
     [TestCaseSource(nameof(Evaluators))]
     public void ThrowsOnInvalidSchemas(ExpressionTreeEvaluator evaluator)
     {

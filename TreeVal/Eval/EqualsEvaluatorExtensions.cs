@@ -32,7 +32,7 @@ public static class EqualsEvaluatorExtensions
     {
         var builder = new EvaluatorBuilder();
         builder.AddCondition(
-            new WhereCondition($"\"{left}\" == {getRightExpression}", e => left == getRight(e)));
+            new WhereCondition($"{getRightExpression} == \"{left}\"", e => left == getRight(e)));
         return builder;
     }
 
@@ -46,7 +46,7 @@ public static class EqualsEvaluatorExtensions
     {
         var builder = new EvaluatorBuilder();
         builder.AddCondition(
-            new WhereCondition($"typeof({left}) == {getRightExpression}", e => left == getRight(e)));
+            new WhereCondition($"{getRightExpression} == typeof({left})", e => left == getRight(e)));
         return builder;
     }
 
@@ -60,7 +60,7 @@ public static class EqualsEvaluatorExtensions
         where TBuilder : IEvaluatorBuilder
     {
         builder.AddCondition(
-            new WhereCondition($"typeof({left}) == {getRightExpression}", e => left == getRight(e)));
+            new WhereCondition($"{getRightExpression} == typeof({left})", e => left == getRight(e)));
         return builder;
     }
 
@@ -100,7 +100,7 @@ public static class EqualsEvaluatorExtensions
     )
     {
         builder.AddCondition(new WhereCondition<T>(
-            $"\"{left}\" == {getRightExpression}", t => left == getRight(t)));
+            $"{getRightExpression} == \"{left}\"", t => left == getRight(t)));
         return builder;
     }
 
@@ -113,7 +113,7 @@ public static class EqualsEvaluatorExtensions
     )
     {
         builder.AddCondition(new WhereCondition<TExpression>(
-            $"typeof({left}) == {getRightExpression}", t => left == getRight(t)));
+            $"{getRightExpression} == typeof({left})", t => left == getRight(t)));
         return builder;
     }
 

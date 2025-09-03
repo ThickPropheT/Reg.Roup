@@ -25,14 +25,14 @@ public partial class VisitationContext
         }
         catch (Exception ex)
         {
-            throw TreeRejectedException.ForError(head, ex);
+            throw TreeRejectedException.ForError(head, evaluation, ex);
         }
 
         if (evaluation.CurrentStatus == Evaluation.Status.Rejected)
-            throw TreeRejectedException.ForTrace();
+            throw TreeRejectedException.ForRejection(evaluation);
 
         if (head.CanMoveForward())
-            throw TreeRejectedException.ForIncompleteRead(head);
+            throw TreeRejectedException.ForIncompleteRead(head, evaluation);
     }
 
     public void Evaluate(INodeEvaluatorFactory factory, Evaluation evaluation)
@@ -59,7 +59,7 @@ public partial class VisitationContext
         }
         catch (ConditionFailedException ex)
         {
-            evaluation.Reject(ex);
+            evaluation.Reject(ex.Condition, ex.Node, ex);
             return;
         }
 

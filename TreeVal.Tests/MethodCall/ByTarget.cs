@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Eval;
 using TreeVal.Expr;
 using TreeVal.Expr.Object;
 using TreeVal.Tests.__Resources.Dummies;

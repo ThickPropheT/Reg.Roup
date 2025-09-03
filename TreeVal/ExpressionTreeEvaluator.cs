@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using TreeVal.Diagnostics;
 using TreeVal.Media;
 using TreeVal.Scaffolding;
 
@@ -42,8 +43,15 @@ public class ExpressionTreeEvaluator
             .ToArray<Node>();
         
         var head = new TapeHead(tape);
-        
-        VisitationContext.EvaluateTree(head, _schema);
+
+        try
+        {
+            VisitationContext.EvaluateTree(head, _schema);
+        }
+        catch (TreeRejectedException ex)
+        {
+            throw TreeRejectedException.Rethrow(ex);
+        }
     }
 
     public override string? ToString()

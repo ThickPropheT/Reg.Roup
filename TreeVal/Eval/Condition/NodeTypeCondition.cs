@@ -1,4 +1,3 @@
-using TreeVal.Diagnostics;
 using TreeVal.Media;
 
 namespace TreeVal.Eval.Condition;
@@ -7,7 +6,7 @@ public class NodeTypeCondition : ICondition
 {
     private readonly Type _type;
 
-    private Action<NodeTypeCondition>? _matchFailed;
+    private Action<NodeTypeCondition, Node>? _matchFailed;
 
     private NodeTypeCondition(Type type)
     {
@@ -18,7 +17,7 @@ public class NodeTypeCondition : ICondition
         => new(typeof(T));
 
     public static NodeTypeCondition AssertMatching<T>()
-        => new(typeof(T)) { _matchFailed = condition => throw new ConditionFailedException(condition) };
+        => new(typeof(T)) { _matchFailed = (condition, node) => throw new ConditionFailedException(condition, node) };
 
     public void Evaluate(Node node, Evaluation evaluation)
     {
@@ -27,7 +26,7 @@ public class NodeTypeCondition : ICondition
         if (_matchFailed == null)
         {
             if (!doesMatch)
-                evaluation.Reject(this);
+                evaluation.Reject(this, node);
 
             return;
         }
@@ -35,14 +34,11 @@ public class NodeTypeCondition : ICondition
         if (doesMatch)
             return;
 
-        _matchFailed(this);
+        _matchFailed(this, node);
     }
 
     private bool DoesMatch(Node node)
         => node.Value.GetType().IsAssignableTo(_type);
-
-    public virtual void Describe(IDescription description)
-        => description.EmitNodeTypeCondition(_type);
 
     public override string ToString()
         => $"node is {_type}";

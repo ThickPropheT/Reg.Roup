@@ -1,9 +1,8 @@
-using TreeVal.Diagnostics;
 using TreeVal.Media;
 
 namespace TreeVal.Eval.Condition;
 
-public interface ICondition : IDescribable
+public interface ICondition
 {
     void Evaluate(Node node, Evaluation evaluation);
 }
