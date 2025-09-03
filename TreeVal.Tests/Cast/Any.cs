@@ -1,4 +1,8 @@
 using System.Linq.Expressions;
+using TreeVal.Diagnosticts;
+using TreeVal.Eval;
+using TreeVal.Expr;
+using TreeVal.Expr.Conversion;
 using TreeVal.Extensions;
 
 namespace TreeVal.Tests.Cast;

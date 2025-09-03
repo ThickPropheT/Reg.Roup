@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using TreeVal.Condition;
 using TreeVal.Media;
+using TreeVal.Scaffolding;
 
 namespace TreeVal;
 
@@ -15,9 +15,9 @@ public class ExpressionTreeEvaluator
         _schema = schema;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<IVisitorNodeFactory, INodeEvaluatorFactory> buildEvaluatorTree)
+    public static ExpressionTreeEvaluator Create(Func<IEvaluatorBuilderFactory, INodeEvaluatorFactory> buildEvaluatorTree)
     {
-        var factory = new DefaultVisitorNodeFactory();
+        var factory = new DefaultEvaluatorBuilderFactory();
 
         var root = buildEvaluatorTree(factory);
 

@@ -1,5 +1,8 @@
-using TreeVal.Condition;
+using TreeVal.Diagnosticts;
+using TreeVal.Eval;
+using TreeVal.Eval.Condition;
 using TreeVal.Media;
+using TreeVal.Scaffolding;
 
 namespace TreeVal;
 

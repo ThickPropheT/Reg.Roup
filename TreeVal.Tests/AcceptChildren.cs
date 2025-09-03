@@ -1,4 +1,7 @@
 using System.Linq.Expressions;
+using TreeVal.Diagnosticts;
+using TreeVal.Eval;
+using TreeVal.Eval.AcceptChildren;
 using TreeVal.Extensions;
 
 namespace TreeVal.Tests;

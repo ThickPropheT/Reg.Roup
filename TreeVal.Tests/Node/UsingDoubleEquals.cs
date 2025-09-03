@@ -1,7 +1,5 @@
 namespace TreeVal.Tests.Node;
 
-using Condition;
-
 [TestFixture]
 public class UsingDoubleEquals
 {
