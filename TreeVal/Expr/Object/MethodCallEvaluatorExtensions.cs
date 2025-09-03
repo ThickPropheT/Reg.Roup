@@ -1,12 +1,11 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using TreeVal.Eval;
 using TreeVal.Eval.AcceptChildren;
-using TreeVal.Expr;
-using TreeVal.Extensions;
 using TreeVal.Scaffolding;
 
-namespace TreeVal.Eval.Object;
+namespace TreeVal.Expr.Object;
 
 public static class MethodCallEvaluatorExtensions
 {

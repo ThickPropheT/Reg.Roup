@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
+using TreeVal.Eval;
 using TreeVal.Scaffolding;
 
-namespace TreeVal.Eval.Object;
+namespace TreeVal.Expr.Object;
 
 // TODO
 //  refine this api and add tests.

@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using TreeVal.Eval;
 using TreeVal.Expr.Conversion;
-using TreeVal.Extensions;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Expr.Delegate;

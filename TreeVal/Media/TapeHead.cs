@@ -5,11 +5,11 @@ public class TapeHead
     private readonly Node[] _tape;
     private int _currentIndex;
 
-    private int _currentOrFirst => _currentIndex >= 0
+    private int CurrentOrFirstIndex => _currentIndex >= 0
         ? _currentIndex
         : 0;
 
-    private int _length => _tape.Length;
+    private int Length => _tape.Length;
 
     public TapeHead(Node[] tape)
     {
@@ -27,7 +27,7 @@ public class TapeHead
         => _tape[_currentIndex];
 
     public IEnumerable<Node> ReadToEnd()
-        => _tape.Take(new Range(_currentOrFirst, _tape.Length - 1));
+        => _tape.Take(new Range(CurrentOrFirstIndex, _tape.Length - 1));
 
     public bool CanMoveForward()
         => _currentIndex < _tape.Length - 1;
@@ -138,7 +138,7 @@ public class TapeHead
             {
                 First = 0,
                 Current = head._currentIndex,
-                Last = head._length - 1
+                Last = head.Length - 1
             };
     }
 }

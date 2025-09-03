@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using TreeVal.Eval;
-using TreeVal.Extensions;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Expr.Delegate;
@@ -24,7 +23,8 @@ public static class LambdaEvaluatorExtensions
             .OfType<ParameterExpression>()
             .Equals(typeof(T), parameter => parameter.Type);
 
-    public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IEvaluatorBuilderFactory factory, string? name)
+    public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IEvaluatorBuilderFactory factory,
+        string? name)
         => factory
             .OfType<ParameterExpression>()
             .Equals(typeof(T), parameter => parameter.Type)

@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
 using TreeVal.Eval;
-using TreeVal.Eval.Object;
 using TreeVal.Expr;
-using TreeVal.Extensions;
+using TreeVal.Expr.Object;
 using TreeVal.Tests.__Resources.Dummies;
 
 namespace TreeVal.Tests.MethodCall;

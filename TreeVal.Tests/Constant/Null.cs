@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using TreeVal.Diagnostics;
 using TreeVal.Eval;
 using TreeVal.Expr;
-using TreeVal.Extensions;
 using TreeVal.Primitives;
 
 namespace TreeVal.Tests.Constant;

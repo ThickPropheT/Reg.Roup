@@ -3,7 +3,7 @@ using System.Reflection;
 using TreeVal.Eval;
 using TreeVal.Scaffolding;
 
-namespace TreeVal.Extensions;
+namespace TreeVal.Expr.Object;
 
 public static class MemberAccessEvaluatorExtensions
 {

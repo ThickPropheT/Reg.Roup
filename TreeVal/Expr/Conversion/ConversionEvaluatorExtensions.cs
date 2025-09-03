@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Eval;
 using TreeVal.Eval.AcceptChildren;
-using TreeVal.Extensions;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Expr.Conversion;
