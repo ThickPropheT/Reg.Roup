@@ -42,6 +42,9 @@ public interface IDescriptionBuilder
 
     void EmitEvaluations(IConditionEvaluation[] evaluations);
     void EmitEvaluation(int index, IConditionEvaluation evaluation);
+
+    void EmitPassIcon(string suffix = " ");
+    void EmitFailIcon(string suffix = " ");
     void EmitAcceptance(ICondition expected);
     void EmitRejection(ICondition expected, Node actual, Exception? error);
 

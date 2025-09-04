@@ -218,12 +218,22 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         evaluation.Describe(this);
     }
 
+    public void EmitPassIcon(string suffix = " ")
+    {
+        Emit($"✅{suffix}");
+    }
+
+    public void EmitFailIcon(string suffix = " ")
+    {
+        Emit($"❌{suffix}");
+    }
+
     public void EmitAcceptance(ICondition expected)
     {
         if (!Options.HasFlag(EmitOptions.AcceptedConditions))
             return;
 
-        Emit("✅ ");
+        EmitPassIcon();
 
         // ReSharper disable once SuspiciousTypeConversion.Global
         if (expected is IDescribable d)
@@ -240,7 +250,8 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
     {
         EmitBlock(() =>
         {
-            EmitLine("Status: ❌,");
+            Emit("Status: ");
+            EmitFailIcon(suffix: ",\n");
             Emit("Expected: ");
 
             // ReSharper disable once SuspiciousTypeConversion.Global

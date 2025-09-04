@@ -88,11 +88,11 @@ public class TapeHead : IDescribable
                 {
                     if (i < _currentIndex)
                     {
-                        descriptionBuilder.Emit("✅ ");
+                        descriptionBuilder.EmitPassIcon();
                     }
                     else if (i == _currentIndex)
                     {
-                        descriptionBuilder.Emit("❌ ");
+                        descriptionBuilder.EmitFailIcon();
                     }
                     
                     descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
@@ -150,11 +150,11 @@ public class TapeHead : IDescribable
                     {
                         if (i < _currentIndex)
                         {
-                            descriptionBuilder.Emit("✅ ");
+                            descriptionBuilder.EmitPassIcon();
                         }
                         else if (i == _currentIndex)
                         {
-                            descriptionBuilder.Emit("❌ ");
+                            descriptionBuilder.EmitFailIcon();
                         }
                         
                         descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
