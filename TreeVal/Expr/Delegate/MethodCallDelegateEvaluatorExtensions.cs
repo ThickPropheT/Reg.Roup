@@ -23,7 +23,10 @@ public static class MethodCallDelegateEvaluatorExtensions
                     factory
                         .OfType<ConstantExpression>()
                         .Where(constant => constant.Value is MethodInfo)
-                        .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
+                        .When(where).IsNotNull()
+                        // ReSharper disable once VariableHidesOuterVariable
+                        .Then((node, where) =>
+                            node.Equals(true, constant => where((MethodInfo) constant.Value!))),
 
                     factory
                         .OfType<ConstantExpression>()
