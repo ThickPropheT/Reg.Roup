@@ -9,9 +9,9 @@ namespace TreeVal.Expr.Conversion;
 public static class IgnoreBoxingEvaluatorExtensions
 {
     public static IEvaluatorBuilderFactory IgnoreBoxing(this IEvaluatorBuilderFactory factory)
-        => new BuilderFactoryAspect(factory, evaluator => new EvaluatorDelegate(evaluator));
+        => new BuilderFactoryAspect(factory, evaluator => new IgnoreBoxingEvaluator(evaluator));
     
-    private class EvaluatorDelegate : INodeEvaluator
+    private class IgnoreBoxingEvaluator : INodeEvaluator
     {
         private readonly INodeEvaluator _target;
 
@@ -19,7 +19,7 @@ public static class IgnoreBoxingEvaluatorExtensions
         public VisitationContext.MovementStrategy HeadMovementStrategy { get; }
         public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy => _target.ChildEvaluationStrategy;
 
-        public EvaluatorDelegate(INodeEvaluator target)
+        public IgnoreBoxingEvaluator(INodeEvaluator target)
         {
             _target = target;
 
