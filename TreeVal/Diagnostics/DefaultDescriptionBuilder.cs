@@ -17,17 +17,18 @@ public enum EmitOptions
 
 public class DefaultDescriptionBuilder : IDescriptionBuilder
 {
-    private readonly EmitOptions _options;
     private readonly int _indentIncrement;
     private int _indentLevel;
 
     private bool _doNextIndent = true;
 
     private readonly StringBuilder _text = new();
+    
+    public EmitOptions Options { get; set; }
 
     public DefaultDescriptionBuilder(EmitOptions options = EmitOptions.Verbose, int indentIncrement = 2)
     {
-        _options = options;
+        Options = options;
         _indentIncrement = indentIncrement;
     }
 
@@ -134,7 +135,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
 
     public void EmitTarget(IDescribable target)
     {
-        if (!_options.HasFlag(EmitOptions.Targets))
+        if (!Options.HasFlag(EmitOptions.Targets))
             return;
 
         Emit("Target: ");
@@ -147,7 +148,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         {
             EmitLine($"Type: {node.Value.GetType()},");
 
-            if (!_options.HasFlag(EmitOptions.TargetValues))
+            if (!Options.HasFlag(EmitOptions.TargetValues))
                 return;
 
             EmitLine($"Value: {node},");
@@ -156,7 +157,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
 
     public void EmitEvaluations(IConditionEvaluation[] evaluations)
     {
-        if (!_options.HasFlag(EmitOptions.AcceptedConditions)
+        if (!Options.HasFlag(EmitOptions.AcceptedConditions)
             && evaluations.All(e => e.Status == EvaluationStatus.Accepted))
             return;
 
@@ -174,7 +175,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
 
     public void EmitEvaluation(int index, IConditionEvaluation evaluation)
     {
-        if (!_options.HasFlag(EmitOptions.AcceptedConditions)
+        if (!Options.HasFlag(EmitOptions.AcceptedConditions)
             && evaluation.Status == EvaluationStatus.Accepted)
             return;
 
@@ -184,7 +185,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
 
     public void EmitAcceptance(ICondition expected)
     {
-        if (!_options.HasFlag(EmitOptions.AcceptedConditions))
+        if (!Options.HasFlag(EmitOptions.AcceptedConditions))
             return;
 
         Emit("✅ ");

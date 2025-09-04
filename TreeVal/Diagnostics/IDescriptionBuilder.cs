@@ -14,6 +14,8 @@ public enum BracketStyle
 
 public interface IDescriptionBuilder
 {
+    EmitOptions Options { get; set; }
+    
     void Indented(Action body, int count = 1);
     
     void EmitNewline(int count = 1);
