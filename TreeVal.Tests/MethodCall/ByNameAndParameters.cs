@@ -6,6 +6,6 @@ public class ByNameAndParameters
     [Test]
     public void ShouldBeImplemented()
     {
-        Assert.Inconclusive("Not Implemented");
+        Assert.Fail("See Reg.Roup.Tests/Expectation/Scenario/RecordedExpressionTree.PoCo()");
     }
 }
