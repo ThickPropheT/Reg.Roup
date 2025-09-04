@@ -57,7 +57,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
                 //  should we just let this kind of error be thrown by the head itself?
                 Debug.Assert(
                     !tape.Any(),
-                    "expected context.Head to be able to move forward. _parent has unvisited child nodes.");
+                    "DBG: expected context.Head to be able to move forward. _parent has unvisited child nodes.");
                 break;
             }
 
@@ -65,7 +65,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             head.MoveForward();
         }
 
-        Debug.Assert(!tape.Any(), "_parent has unvisited child nodes.");
+        Debug.Assert(!tape.Any(), "DBG: _parent has unvisited child nodes.");
         return current;
     }
 }
