@@ -140,7 +140,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         _doNextIndent = true;
     }
 
-    public void EmitArray<T>(T[] array, Action<T> callback)
+    public void EmitArray<T>(T[] array, Action<T, int> callback)
     {
         EmitBlock(
             bracketStyle: BracketStyle.Square,
@@ -151,7 +151,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
                     var childEvaluation = array[i];
 
                     Emit($"[{i}]: ");
-                    callback(childEvaluation);
+                    callback(childEvaluation, i);
                 }
             });
     }

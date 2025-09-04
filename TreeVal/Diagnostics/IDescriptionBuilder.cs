@@ -34,7 +34,7 @@ public interface IDescriptionBuilder
     void EmitBlock(BracketStyle bracketStyle, Action body);
     void EmitBlock(string heading, BracketStyle bracketStyle, Action body);
 
-    void EmitArray<T>(T[] array, Action<T> callback);
+    void EmitArray<T>(T[] array, Action<T, int> callback);
 
     void EmitError(Exception error);
     void EmitTarget(Node node);

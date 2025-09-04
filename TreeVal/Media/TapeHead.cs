@@ -84,7 +84,19 @@ public class TapeHead : IDescribable
                 descriptionBuilder.EmitNode(Read());
                 
                 descriptionBuilder.Emit("Tape: ");
-                descriptionBuilder.EmitArray(_tape, node => descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem));
+                descriptionBuilder.EmitArray(_tape, (node, i) =>
+                {
+                    if (i < _currentIndex)
+                    {
+                        descriptionBuilder.Emit("✅ ");
+                    }
+                    else if (i == _currentIndex)
+                    {
+                        descriptionBuilder.Emit("❌ ");
+                    }
+                    
+                    descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
+                });
             });
         
         descriptionBuilder.Emit("],");
@@ -134,7 +146,19 @@ public class TapeHead : IDescribable
                     descriptionBuilder.EmitNode(Read());
                 
                     descriptionBuilder.Emit("Tape: ");
-                    descriptionBuilder.EmitArray(_tape, node => descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem));
+                    descriptionBuilder.EmitArray(_tape, (node, i) =>
+                    {
+                        if (i < _currentIndex)
+                        {
+                            descriptionBuilder.Emit("✅ ");
+                        }
+                        else if (i == _currentIndex)
+                        {
+                            descriptionBuilder.Emit("❌ ");
+                        }
+                        
+                        descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
+                    });
                 });
         
             descriptionBuilder.Emit("],");

@@ -81,7 +81,7 @@ public class DefaultNodeEvaluation : INodeEvaluation
                 descriptionBuilder.Emit("Children: ");
                 descriptionBuilder.EmitArray(
                     childEvaluations, 
-                    childEvaluation => childEvaluation.Describe(descriptionBuilder));
+                    (childEvaluation, _) => childEvaluation.Describe(descriptionBuilder));
             }
         });
     }
