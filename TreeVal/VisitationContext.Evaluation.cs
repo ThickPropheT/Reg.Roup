@@ -28,7 +28,7 @@ public partial class VisitationContext
         }
 
         if (evaluation.Status == EvaluationStatus.Rejected)
-            throw TreeRejectedException.ForRejection(evaluation);
+            throw TreeRejectedException.ForRejection(head, evaluation);
 
         if (head.CanMoveForward())
             throw TreeRejectedException.ForIncompleteRead(head, evaluation);

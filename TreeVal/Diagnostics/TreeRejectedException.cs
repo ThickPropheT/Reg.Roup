@@ -20,8 +20,11 @@ public class TreeRejectedException : Exception
         Evaluation = evaluation;
     }
 
-    public static TreeRejectedException ForRejection(INodeEvaluation evaluation)
-        => new(evaluation, "An evaluator rejected the source tree");
+    public static TreeRejectedException ForRejection(TapeHead head, INodeEvaluation evaluation)
+        => new(evaluation, "An evaluator rejected the source tree")
+        {
+            Head = head
+        };
 
     public static TreeRejectedException ForIncompleteRead(TapeHead head, INodeEvaluation evaluation)
         => new(evaluation, "Head contains unread nodes")
@@ -38,7 +41,7 @@ public class TreeRejectedException : Exception
     public static TreeRejectedException Rethrow(
         TreeRejectedException error, IDescriptionBuilder? descriptionBuilder = null)
     {
-        descriptionBuilder ??= new DefaultDescriptionBuilder(EmitOptions.Verbose);
+        descriptionBuilder ??= new DefaultDescriptionBuilder();
 
         error.Evaluation.Describe(descriptionBuilder);
 
