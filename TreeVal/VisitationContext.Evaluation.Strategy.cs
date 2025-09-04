@@ -35,7 +35,7 @@ public partial class VisitationContext
                 clip.Evaluate(childEvaluation);
                 return (clip, childEvaluation);
             })
-            .TakeDoWhile(result => result.childEvaluation.Status == EvaluationStatus.Rejected)
+            .TakeUntil(result => result.childEvaluation.Status == EvaluationStatus.Accepted)
             .ToArray();
 
         var (accepted, _) = evaluated.FirstOrDefault(result =>
