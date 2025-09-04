@@ -12,12 +12,11 @@ public partial class VisitationContext
     public static void EvaluateTree(TapeHead head, INodeEvaluatorFactory schema)
     {
         var context = new VisitationContext(head);
-
-        var evaluation = new Evaluation();
+        var evaluation = new DefaultNodeEvaluation(schema);
 
         try
         {
-            context.Evaluate(schema, evaluation);
+            context.Evaluate(evaluation);
         }
         catch (TreeRejectedException)
         {
@@ -28,20 +27,17 @@ public partial class VisitationContext
             throw TreeRejectedException.ForError(head, evaluation, ex);
         }
 
-        if (evaluation.CurrentStatus == Evaluation.Status.Rejected)
+        if (evaluation.Status == EvaluationStatus.Rejected)
             throw TreeRejectedException.ForRejection(evaluation);
 
         if (head.CanMoveForward())
             throw TreeRejectedException.ForIncompleteRead(head, evaluation);
     }
 
-    public void Evaluate(INodeEvaluatorFactory factory, Evaluation evaluation)
+    public void Evaluate(INodeEvaluation evaluation)
     {
-        var evaluator = factory.ToEvaluator();
-
-        var moveHead = evaluator.HeadMovementStrategy.GetStrategy(this);
-
-        var current = moveHead(Head);
+        var evaluator = evaluation.GetEvaluator();
+        var current = evaluation.GetTarget(this);
 
         if (current == null)
             return;
@@ -49,21 +45,26 @@ public partial class VisitationContext
         // in the most ideal case, we'll want to iterate all the conditions below
         // for the purpose of evaluating them. may as well get it out of the way.
         var conditions = evaluator.Conditions.ToArray();
+        var conditionEvaluations = new List<DefaultConditionEvaluation>(conditions.Length);
 
         try
         {
             foreach (var condition in conditions)
             {
-                condition.Evaluate(current, evaluation);
+                var conditionEvaluation = new DefaultConditionEvaluation(condition, current);
+                conditionEvaluations.Add(conditionEvaluation);
+
+                condition.Evaluate(current, conditionEvaluation);
             }
         }
         catch (ConditionFailedException ex)
         {
-            evaluation.Reject(ex.Condition, ex.Node, ex);
-            return;
+            ex.Evaluation.Reject(ex);
         }
 
-        if (evaluation.CurrentStatus == Evaluation.Status.Rejected)
+        evaluation.Record(conditionEvaluations);
+
+        if (evaluation.Status == EvaluationStatus.Rejected)
             // don't bother evaluating children if a rejection has already occurred.
             return;
 

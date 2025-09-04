@@ -1,23 +1,15 @@
-using TreeVal.Media;
-
 namespace TreeVal.Eval.Condition;
 
 public class ConditionFailedException : Exception
 {
-    public ICondition Condition { get; }
-    public Node Node { get; }
+    public IConditionEvaluation Evaluation { get; }
 
-    public ConditionFailedException(ICondition condition, Node node)
-        : base("TODO") // TODO
+    public ConditionFailedException(IConditionEvaluation evaluation, string message)
+        : base(message)
     {
-        Condition = condition;
-        Node = node;
+        Evaluation = evaluation;
     }
 
-    public ConditionFailedException(ICondition condition, Node node, Exception inner) 
-        : base("TODO", inner) // TODO
-    {
-        Condition = condition;
-        Node = node;
-    }
+    public static ConditionFailedException ExpectedNode<T>(IConditionEvaluation evaluation)
+        => new(evaluation, $"Node must have value of type {typeof(T)}");
 }

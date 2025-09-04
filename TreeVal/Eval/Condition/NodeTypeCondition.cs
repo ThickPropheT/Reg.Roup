@@ -6,7 +6,7 @@ public class NodeTypeCondition : ICondition
 {
     private readonly Type _type;
 
-    private Action<NodeTypeCondition, Node>? _matchFailed;
+    private Action<IConditionEvaluation>? _matchFailed;
 
     private NodeTypeCondition(Type type)
     {
@@ -17,16 +17,16 @@ public class NodeTypeCondition : ICondition
         => new(typeof(T));
 
     public static NodeTypeCondition AssertMatching<T>()
-        => new(typeof(T)) { _matchFailed = (condition, node) => throw new ConditionFailedException(condition, node) };
+        => new(typeof(T)) { _matchFailed = evaluation => throw ConditionFailedException.ExpectedNode<T>(evaluation) };
 
-    public void Evaluate(Node node, Evaluation evaluation)
+    public void Evaluate(Node node, IConditionEvaluation evaluation)
     {
         var doesMatch = DoesMatch(node);
 
         if (_matchFailed == null)
         {
             if (!doesMatch)
-                evaluation.Reject(this, node);
+                evaluation.Reject();
 
             return;
         }
@@ -34,7 +34,7 @@ public class NodeTypeCondition : ICondition
         if (doesMatch)
             return;
 
-        _matchFailed(this, node);
+        _matchFailed(evaluation);
     }
 
     private bool DoesMatch(Node node)

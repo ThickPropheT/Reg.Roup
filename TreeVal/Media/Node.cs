@@ -52,7 +52,7 @@ public class Node : IEquatable<Node>, IDescribable
         => Value.GetHashCode();
 
     public void Describe(IDescriptionBuilder descriptionBuilder)
-        => descriptionBuilder.EmitBlock(() => descriptionBuilder.EmitLine(ToString()));
+        => descriptionBuilder.EmitNode(this);
 
     public override string ToString()
         => Value.ToString()!;

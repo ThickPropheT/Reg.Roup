@@ -8,15 +8,19 @@ namespace TreeVal;
 public class ExpressionTreeEvaluator
 {
     private readonly INodeEvaluatorFactory _schema;
+    private readonly IDescriptionBuilder? _descriptionBuilder;
 
     public string? Name { get; private set; }
 
-    private ExpressionTreeEvaluator(INodeEvaluatorFactory schema)
+    private ExpressionTreeEvaluator(INodeEvaluatorFactory schema, IDescriptionBuilder? descriptionBuilder)
     {
         _schema = schema;
+        _descriptionBuilder = descriptionBuilder;
     }
 
-    public static ExpressionTreeEvaluator Create(Func<IEvaluatorBuilderFactory, INodeEvaluatorFactory> buildEvaluatorTree)
+    public static ExpressionTreeEvaluator Create(
+        Func<IEvaluatorBuilderFactory, INodeEvaluatorFactory> buildEvaluatorTree,
+        IDescriptionBuilder? descriptionBuilder = null)
     {
         var factory = new DefaultEvaluatorBuilderFactory();
 
@@ -27,7 +31,7 @@ public class ExpressionTreeEvaluator
             throw new NotSupportedException();
         }
 
-        return new ExpressionTreeEvaluator(root);
+        return new ExpressionTreeEvaluator(root, descriptionBuilder);
     }
     
     public ExpressionTreeEvaluator WithName(string name)
@@ -50,7 +54,7 @@ public class ExpressionTreeEvaluator
         }
         catch (TreeRejectedException ex)
         {
-            throw TreeRejectedException.Rethrow(ex);
+            throw TreeRejectedException.Rethrow(ex, _descriptionBuilder);
         }
     }
 
