@@ -16,13 +16,15 @@ public static class MethodCallEvaluatorExtensions
             .HavingAnyChild();
 
     // this accepts both static & instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory, string? name)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory,
+        string? name)
         => factory
             .MethodCallBase(name)
             .HavingAnyChild();
 
     // this accepts both static, instance, & extension
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory, Type ownerType)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory,
+        Type ownerType)
         => factory
             .MethodCallBase(ownerType)
             .HavingAnyChild();
@@ -134,9 +136,14 @@ public static class MethodCallEvaluatorExtensions
         => factory
             .MethodCallBase(typeof(TOwner), name)
             .HavingChildren(call =>
-                parameters.Length > 0
-                    ? parameters
-                    : [factory.AcceptChildren(call)]);
+            {
+                var target = DefaultMethodCallTarget(factory, call);
+
+                return target.Concat(
+                    parameters.Length > 0
+                        ? parameters
+                        : [factory.AcceptChildren(call)]);
+            });
 
     // TODO the params on this were hiding the declaring type, target method above
     // TODO verify this accepts only instance
@@ -239,7 +246,8 @@ public static class MethodCallEvaluatorExtensions
     private static bool IsExtensionMethod(MethodInfo method)
         => method.IsDefined(typeof(ExtensionAttribute), true);
 
-    private static IEvaluatorBuilder[] DefaultMethodCallTarget(IEvaluatorBuilderFactory factory, MethodCallExpression call)
+    private static IEvaluatorBuilder[] DefaultMethodCallTarget(
+        IEvaluatorBuilderFactory factory, MethodCallExpression call)
     {
         if (!call.Method.IsStatic)
         {
