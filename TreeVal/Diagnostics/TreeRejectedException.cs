@@ -43,7 +43,7 @@ public class TreeRejectedException : Exception
     {
         descriptionBuilder ??= new DefaultDescriptionBuilder();
 
-        error.Evaluation.Describe(descriptionBuilder);
+        descriptionBuilder.EmitTreeRejection(error);
 
         return new TreeRejectedException(
             error.Evaluation,

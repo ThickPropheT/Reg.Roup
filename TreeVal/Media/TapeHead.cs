@@ -1,11 +1,13 @@
+using TreeVal.Diagnostics;
+
 namespace TreeVal.Media;
 
-public class TapeHead
+public class TapeHead : IDescribable
 {
     private readonly Node[] _tape;
     private int _currentIndex;
 
-    private int CurrentOrFirstIndex => _currentIndex >= 0
+    public int CurrentOrFirstIndex => _currentIndex >= 0
         ? _currentIndex
         : 0;
 
@@ -69,15 +71,37 @@ public class TapeHead
             ? _tape[_currentIndex - 1]
             : null;
 
+    private void FastForward(Clip clip) => _currentIndex += clip._currentIndex;
+
+    public virtual void Describe(IDescriptionBuilder descriptionBuilder)
+    {
+        descriptionBuilder.EmitBlock(
+            "Head: ",
+            () =>
+            {
+                descriptionBuilder.EmitLine($"CurrentIndex: {_currentIndex},");
+                descriptionBuilder.Emit("Current: ");
+                descriptionBuilder.EmitNode(Read());
+                
+                descriptionBuilder.Emit("Tape: ");
+                descriptionBuilder.EmitArray(_tape, node => descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem));
+            });
+        
+        descriptionBuilder.Emit("],");
+    }
+
+
     // TODO clean this & related stuff up
     public Clip.Builder CreateClip() => new(this);
-    private void FastForward(Clip clip) => _currentIndex += clip._currentIndex;
 
     public class Clip : TapeHead
     {
-        private Clip(Node[] tape)
+        private readonly TapeHead _original;
+
+        private Clip(TapeHead original, Node[] tape)
             : base(tape)
         {
+            _original = original;
         }
 
         public static Clip Create(TapeHead current, int fromIndex, int toIndex)
@@ -88,12 +112,32 @@ public class TapeHead
 
             Array.Copy(source, fromIndex, destination, 0, destinationLength);
 
-            return new Clip(destination);
+            return new Clip(current, destination);
         }
 
         public void SpliceOnto(TapeHead end)
         {
             end.FastForward(this);
+        }
+
+        public override void Describe(IDescriptionBuilder descriptionBuilder)
+        {
+            descriptionBuilder.EmitBlock(
+                "Clip: ",
+                () =>
+                {
+                    descriptionBuilder.Emit("Original: ");
+                    _original.Describe(descriptionBuilder);
+                    
+                    descriptionBuilder.EmitLine($"CurrentIndex: {_currentIndex},");
+                    descriptionBuilder.Emit("Current: ");
+                    descriptionBuilder.EmitNode(Read());
+                
+                    descriptionBuilder.Emit("Tape: ");
+                    descriptionBuilder.EmitArray(_tape, node => descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem));
+                });
+        
+            descriptionBuilder.Emit("],");
         }
 
         public class Builder

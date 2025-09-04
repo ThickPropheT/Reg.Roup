@@ -15,6 +15,12 @@ public enum EmitOptions
     Verbose = 7
 }
 
+public enum NodeStyle
+{
+    PropertyValue = 0,
+    ArrayItem
+}
+
 public class DefaultDescriptionBuilder : IDescriptionBuilder
 {
     private readonly int _indentIncrement;
@@ -23,7 +29,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
     private bool _doNextIndent = true;
 
     private readonly StringBuilder _text = new();
-    
+
     public EmitOptions Options { get; set; }
 
     public DefaultDescriptionBuilder(EmitOptions options = EmitOptions.Verbose, int indentIncrement = 2)
@@ -102,11 +108,11 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         _doNextIndent = true;
     }
 
-    public void EmitBlock(Action body, BracketStyle bracketStyle = BracketStyle.Curly)
+    public void EmitBlock(Action body)
     {
-        EmitOpenBlock(bracketStyle);
+        EmitOpenBlock();
         Indented(body);
-        EmitFooter(bracketStyle);
+        EmitFooter();
         _doNextIndent = true;
     }
 
@@ -118,12 +124,36 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         _doNextIndent = true;
     }
 
+    public void EmitBlock(BracketStyle bracketStyle, Action body)
+    {
+        EmitOpenBlock(bracketStyle);
+        Indented(body);
+        EmitFooter(bracketStyle);
+        _doNextIndent = true;
+    }
+
     public void EmitBlock(string heading, BracketStyle bracketStyle, Action body)
     {
         EmitHeader(heading, bracketStyle);
         Indented(body);
         EmitFooter(bracketStyle);
         _doNextIndent = true;
+    }
+
+    public void EmitArray<T>(T[] array, Action<T> callback)
+    {
+        EmitBlock(
+            bracketStyle: BracketStyle.Square,
+            () =>
+            {
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var childEvaluation = array[i];
+
+                    Emit($"[{i}]: ");
+                    callback(childEvaluation);
+                }
+            });
     }
 
     public void EmitError(Exception error)
@@ -133,17 +163,22 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         _doNextIndent = true;
     }
 
-    public void EmitTarget(IDescribable target)
+    public void EmitTarget(Node target)
     {
         if (!Options.HasFlag(EmitOptions.Targets))
             return;
 
         Emit("Target: ");
-        target.Describe(this);
+        EmitNode(target);
     }
 
-    public void EmitNode(Node node)
+    public void EmitNode(Node node, NodeStyle style = NodeStyle.PropertyValue)
     {
+        if (style == NodeStyle.ArrayItem)
+        {
+            EmitIndent();
+        }
+
         EmitBlock(() =>
         {
             EmitLine($"Type: {node.Value.GetType()},");
@@ -151,7 +186,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             if (!Options.HasFlag(EmitOptions.TargetValues))
                 return;
 
-            EmitLine($"Value: {node},");
+            EmitLine($"Value: {node.Value},");
         });
     }
 
@@ -219,12 +254,26 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             }
 
             Emit("Actual: ");
-            actual.Describe(this);
+            EmitNode(actual);
 
             if (error == null)
                 return;
 
             EmitError(error);
+        });
+    }
+
+    public void EmitTreeRejection(TreeRejectedException error)
+    {
+        EmitBlock(() =>
+        {
+            Emit("Message: ");
+            EmitLine(error.Message);
+
+            error.Head?.Describe(this);
+
+            Emit("EvaluationTree: ");
+            error.Evaluation.Describe(this);
         });
     }
 

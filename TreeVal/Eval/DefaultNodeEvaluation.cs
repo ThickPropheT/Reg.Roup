@@ -78,19 +78,10 @@ public class DefaultNodeEvaluation : INodeEvaluation
 
             if (childEvaluations.Any())
             {
-                descriptionBuilder.EmitBlock(
-                    "Children: ",
-                    bracketStyle: BracketStyle.Square,
-                    () =>
-                    {
-                        for (var i = 0; i < childEvaluations.Length; i++)
-                        {
-                            var childEvaluation = childEvaluations[i];
-
-                            descriptionBuilder.Emit($"[{i}]: ");
-                            childEvaluation.Describe(descriptionBuilder);
-                        }
-                    });
+                descriptionBuilder.Emit("Children: ");
+                descriptionBuilder.EmitArray(
+                    childEvaluations, 
+                    childEvaluation => childEvaluation.Describe(descriptionBuilder));
             }
         });
     }

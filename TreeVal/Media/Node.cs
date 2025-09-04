@@ -1,8 +1,9 @@
-using TreeVal.Diagnostics;
+using System.Diagnostics;
 
 namespace TreeVal.Media;
 
-public class Node : IEquatable<Node>, IDescribable
+[DebuggerDisplay("{Value}")]
+public class Node : IEquatable<Node>
 {
     public object Value { get; }
 
@@ -51,13 +52,11 @@ public class Node : IEquatable<Node>, IDescribable
     public override int GetHashCode()
         => Value.GetHashCode();
 
-    public void Describe(IDescriptionBuilder descriptionBuilder)
-        => descriptionBuilder.EmitNode(this);
-
     public override string ToString()
         => Value.ToString()!;
 }
 
+[DebuggerDisplay("{Value}")]
 public class Node<T> : Node
 {
     public new T Value => (T) base.Value;
