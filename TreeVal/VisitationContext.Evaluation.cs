@@ -12,7 +12,7 @@ public partial class VisitationContext
     public static void EvaluateTree(TapeHead head, INodeEvaluatorFactory schema)
     {
         var context = new VisitationContext(head);
-        var evaluation = new DefaultNodeEvaluation(schema);
+        var evaluation = new DefaultNodeEvaluation(null, schema);
 
         try
         {
@@ -51,7 +51,7 @@ public partial class VisitationContext
         {
             foreach (var condition in conditions)
             {
-                var conditionEvaluation = new DefaultConditionEvaluation(condition, current);
+                var conditionEvaluation = new DefaultConditionEvaluation(evaluation, condition, current);
                 conditionEvaluations.Add(conditionEvaluation);
 
                 condition.Evaluate(current, conditionEvaluation);

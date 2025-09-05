@@ -1,11 +1,14 @@
+using TreeVal.Diagnostics;
 using TreeVal.Eval.Condition;
 using TreeVal.Media;
 
 namespace TreeVal.Eval;
 
-public class Observer : ICondition
+public class Observer : ICondition, IDescribable
 {
     private readonly Action<object, IConditionEvaluation> _observe;
+    
+    public string? Label { get; init; }
 
     public Observer(Action<object, IConditionEvaluation> observe)
     {
@@ -14,11 +17,28 @@ public class Observer : ICondition
 
     public void Evaluate(Node node, IConditionEvaluation evaluation)
         => _observe(node.Value, evaluation);
+
+    public void Describe(IDescriptionBuilder descriptionBuilder)
+    {
+        if (Label == null)
+        {
+            descriptionBuilder.EmitLine($"{this},");
+            return;
+        }
+        
+        descriptionBuilder.EmitBlock(() =>
+        {
+            descriptionBuilder.EmitLine($"Type: {this},");
+            descriptionBuilder.EmitLine($"Label: {Label},");
+        });
+    }
 }
 
-public class Observer<T> : ICondition<T>
+public class Observer<T> : ICondition<T>, IDescribable
 {
     private readonly Action<T, IConditionEvaluation> _observe;
+    
+    public string? Label { get; init; }
 
     public Observer(Action<T, IConditionEvaluation> observe)
     {
@@ -37,4 +57,19 @@ public class Observer<T> : ICondition<T>
 
     public void Evaluate(Node<T> node, IConditionEvaluation evaluation)
         => _observe(node.Value, evaluation);
+
+    public void Describe(IDescriptionBuilder descriptionBuilder)
+    {
+        if (Label == null)
+        {
+            descriptionBuilder.EmitLine($"{this},");
+            return;
+        }
+        
+        descriptionBuilder.EmitBlock(() =>
+        {
+            descriptionBuilder.EmitLine($"Type: {this},");
+            descriptionBuilder.EmitLine($"Label: {Label},");
+        });
+    }
 }

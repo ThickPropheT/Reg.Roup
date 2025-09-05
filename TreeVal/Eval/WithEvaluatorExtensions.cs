@@ -36,7 +36,7 @@ public static class WithEvaluatorExtensions
             IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
             => new(conditions, childLookups)
             {
-                HeadMovementStrategy = VisitationContext.MovementStrategy.From((_, _) => _node)
+                HeadMovementStrategy = VisitationContext.MovementStrategy.From((_, _, _) => _node)
             };
     }
 }

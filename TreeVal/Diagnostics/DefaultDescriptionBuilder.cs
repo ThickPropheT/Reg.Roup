@@ -251,7 +251,8 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         EmitBlock(() =>
         {
             Emit("Status: ");
-            EmitFailIcon(suffix: ",\n");
+            EmitFailIcon(suffix: "");
+            EmitLine(",");
             Emit("Expected: ");
 
             // ReSharper disable once SuspiciousTypeConversion.Global

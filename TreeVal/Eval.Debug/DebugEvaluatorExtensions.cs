@@ -7,9 +7,17 @@ namespace TreeVal.Eval.Debug;
 
 public static class DebugEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Debug(this IEvaluatorBuilder builder, Action<object, IConditionEvaluation> observe)
+    public static IEvaluatorBuilder Debug(
+        this IEvaluatorBuilder builder, Action<object, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer(observe));
+        return builder;
+    }
+
+    public static IEvaluatorBuilder Debug(
+        this IEvaluatorBuilder builder, string label, Action<object, IConditionEvaluation> observe)
+    {
+        builder.AddCondition(new Observer(observe) { Label = label });
         return builder;
     }
 
@@ -17,6 +25,13 @@ public static class DebugEvaluatorExtensions
         this IEvaluatorBuilder<T> builder, Action<T, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer<T>(observe));
+        return builder;
+    }
+
+    public static IEvaluatorBuilder<T> Debug<T>(
+        this IEvaluatorBuilder<T> builder, string label, Action<T, IConditionEvaluation> observe)
+    {
+        builder.AddCondition(new Observer<T>(observe) { Label = label });
         return builder;
     }
 
@@ -30,6 +45,17 @@ public static class DebugEvaluatorExtensions
                     factory
                         .AnyOne()
                         .Debug((o, evaluation) => observe(o, evaluation))));
+
+    public static IEvaluatorBuilderFactory Debug(
+        this IEvaluatorBuilderFactory factory, string label, Action<object, IConditionEvaluation> observe)
+        => new BuilderFactoryAspect(
+            factory,
+            evaluator => new AttachDebuggerEvaluator(
+                evaluator,
+                () =>
+                    factory
+                        .AnyOne()
+                        .Debug(label, (o, evaluation) => observe(o, evaluation))));
 
     private class AttachDebuggerEvaluator : INodeEvaluator
     {

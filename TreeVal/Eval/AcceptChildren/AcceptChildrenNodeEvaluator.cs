@@ -18,7 +18,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
         HeadMovementStrategy = VisitationContext.MovementStrategy.From(MoveHead);
     }
 
-    private Node? MoveHead(VisitationContext _, TapeHead head)
+    private Node? MoveHead(VisitationContext _, TapeHead head, INodeEvaluation evaluation)
     {
         var tape = _recorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);

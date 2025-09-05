@@ -14,7 +14,7 @@ public partial class VisitationContext
             .EnumerateChildren(current)
             .Select(child =>
             {
-                var childEvaluation = new DefaultNodeEvaluation(child);
+                var childEvaluation = new DefaultNodeEvaluation(evaluation, child);
                 Evaluate(childEvaluation);
                 return childEvaluation;
             })
@@ -31,7 +31,7 @@ public partial class VisitationContext
             .Select(child =>
             {
                 var clip = BranchFromHead();
-                var childEvaluation = new DefaultNodeEvaluation(child);
+                var childEvaluation = new DefaultNodeEvaluation(evaluation, child);
                 clip.Evaluate(childEvaluation);
                 return (clip, childEvaluation);
             })

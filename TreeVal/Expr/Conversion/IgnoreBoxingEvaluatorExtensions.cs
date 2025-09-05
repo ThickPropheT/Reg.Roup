@@ -23,9 +23,9 @@ public static class IgnoreBoxingEvaluatorExtensions
         {
             _target = target;
 
-            HeadMovementStrategy = VisitationContext.MovementStrategy.From((context, head) =>
+            HeadMovementStrategy = VisitationContext.MovementStrategy.From((context, head, evaluation) =>
             {
-                var moveHead = _target.HeadMovementStrategy.GetStrategy(context);
+                var moveHead = _target.HeadMovementStrategy.GetStrategy(context, evaluation);
 
                 var current = moveHead(head);
 

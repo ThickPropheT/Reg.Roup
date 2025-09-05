@@ -1,3 +1,4 @@
+using TreeVal.Eval;
 using TreeVal.Media;
 
 namespace TreeVal;
@@ -14,20 +15,20 @@ public partial class VisitationContext
 
     public class MovementStrategy
     {
-        public static MovementStrategy MoveForward { get; } = new(context => context.MoveForwardOrFail);
-        public static MovementStrategy TryMoveForward { get; } = new(context => context.TryMoveForward);
+        public static MovementStrategy MoveForward { get; } = new((context, _) => context.MoveForwardOrFail);
+        public static MovementStrategy TryMoveForward { get; } = new((context, _) => context.TryMoveForward);
 
-        public static MovementStrategy From(Func<VisitationContext, TapeHead, Node?> strategy)
-            => new(context => head => strategy(context, head));
+        public static MovementStrategy From(Func<VisitationContext, TapeHead, INodeEvaluation, Node?> strategy)
+            => new((context, evaluation) => head => strategy(context, head, evaluation));
 
-        private readonly Func<VisitationContext, Func<TapeHead, Node?>> _lookupStrategy;
+        private readonly Func<VisitationContext, INodeEvaluation, Func<TapeHead, Node?>> _lookupStrategy;
 
-        private MovementStrategy(Func<VisitationContext, Func<TapeHead, Node?>> lookupStrategy)
+        private MovementStrategy(Func<VisitationContext, INodeEvaluation, Func<TapeHead, Node?>> lookupStrategy)
         {
             _lookupStrategy = lookupStrategy;
         }
 
-        public Func<TapeHead, Node?> GetStrategy(VisitationContext context)
-            => _lookupStrategy(context);
+        public Func<TapeHead, Node?> GetStrategy(VisitationContext context, INodeEvaluation evaluation)
+            => _lookupStrategy(context, evaluation);
     }
 }

@@ -1,13 +1,17 @@
+using System.Diagnostics;
 using TreeVal.Diagnostics;
 using TreeVal.Eval.Condition;
 using TreeVal.Media;
 
 namespace TreeVal.Eval;
 
+[DebuggerDisplay("{Status} -> {Evaluator}")]
 public class DefaultConditionEvaluation : IConditionEvaluation
 {
     private EvaluationStatus? _status;
 
+    public INodeEvaluation Owner { get; }
+    
     public ICondition Evaluator { get; }
     public Node Target { get; }
 
@@ -15,8 +19,9 @@ public class DefaultConditionEvaluation : IConditionEvaluation
 
     public Exception? Error { get; private set; }
 
-    public DefaultConditionEvaluation(ICondition evaluator, Node target)
+    public DefaultConditionEvaluation(INodeEvaluation parent, ICondition evaluator, Node target)
     {
+        Owner = parent;
         Evaluator = evaluator;
         Target = target;
     }
