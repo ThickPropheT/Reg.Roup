@@ -23,9 +23,12 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
         var tape = _recorder.RecordVisitationOf(_parent).ToList();
         tape.Remove(_parent);
 
-        // there weren't any children, actually.
-        if (!tape.Any())
+        var childTape = _recorder.RecordVisitationOf(_parent).ToList();
+        childTape.Remove(_parent);
+        
+        if (!childTape.Any())
         {
+            // there weren't any children, actually.
             return null;
         }
 
@@ -38,6 +41,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
         foreach (var node in past)
         {
             if (node == current)
+                // current is used for the ACTUAL work below, so we'll leave it in for now.
                 continue;
             
             // TODO
@@ -52,7 +56,13 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             //  - alternatively, modify All & Any evaluation strategies to record
             //     results of child evaluations immediately following each evaluation,
             //     rather than after completion of all child evaluations.
-            tape.Remove(node);
+            childTape.Remove(node);
+        }
+        
+        if (!childTape.Any())
+        {
+            // somebody beat us to it.
+            return null;
         }
 
         // - if current != _parent, then some number of children of _parent
@@ -62,14 +72,14 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
         if (current == _parent)
         {
             // no need to check to see if we can move forward.
-            // if we're here, then tape is not empty and therefore,
+            // if we're here, then childTape is not empty and therefore,
             // _parent has children left on head's tape.
             current = head.MoveForward();
         }
 
-        while (tape.Contains(current))
+        while (childTape.Contains(current))
         {
-            tape.Remove(current);
+            childTape.Remove(current);
 
             current = head.PeekForward();
 
@@ -79,7 +89,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
                 // TODO
                 //  should we just let this kind of error be thrown by the head itself?
                 Debug.Assert(
-                    !tape.Any(),
+                    !childTape.Any(),
                     "DBG: expected context.Head to be able to move forward. _parent has unvisited child nodes.");
                 break;
             }
