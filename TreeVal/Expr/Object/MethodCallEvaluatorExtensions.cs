@@ -16,15 +16,15 @@ public static class MethodCallEvaluatorExtensions
             .HavingAnyChild();
 
     // this accepts both static & instance
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory,
-        string? name)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IEvaluatorBuilderFactory factory, string? name)
         => factory
             .MethodCallBase(name)
             .HavingAnyChild();
 
     // this accepts both static, instance, & extension
-    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(this IEvaluatorBuilderFactory factory,
-        Type ownerType)
+    public static IEvaluatorBuilder<MethodCallExpression> MethodCall(
+        this IEvaluatorBuilderFactory factory, Type ownerType)
         => factory
             .MethodCallBase(ownerType)
             .HavingAnyChild();
