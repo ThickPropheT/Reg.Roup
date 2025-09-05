@@ -28,6 +28,9 @@ public class TapeHead : IDescribable
     public Node Read()
         => _tape[_currentIndex];
 
+    public IEnumerable<Node> ReadToStart()
+        => _tape.Take(new Range(0, CurrentOrFirstIndex + 1)).Reverse();
+    
     public IEnumerable<Node> ReadToEnd()
         => _tape.Take(new Range(CurrentOrFirstIndex, _tape.Length - 1));
 

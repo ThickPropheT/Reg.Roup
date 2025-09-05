@@ -29,8 +29,31 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             return null;
         }
 
-        // TODO should we just pass this in like all the other methods around here?
         var current = head.Read();
+
+        var past = head
+            .ReadToStart()
+            .TakeWhile(node => node != _parent);
+
+        foreach (var node in past)
+        {
+            if (node == current)
+                continue;
+            
+            // TODO
+            //  - this assumes that we got to this point linearly along the tape.
+            //     seems like a safe enough assumption, but the head CAN move backward as well.
+            //     we can't rely on walking up the evaluation hierarchy in search of
+            //     the parent's children, because they could have been evaluated in
+            //     a sibling evaluator whose results have not yet been recorded on
+            //     the parent evaluation.
+            //  - if this becomes an issue, consider adding a second TapeHead
+            //     that be used to write an absolute log of evaluated nodes in real time.
+            //  - alternatively, modify All & Any evaluation strategies to record
+            //     results of child evaluations immediately following each evaluation,
+            //     rather than after completion of all child evaluations.
+            tape.Remove(node);
+        }
 
         // - if current != _parent, then some number of children of _parent
         //     have already been processed by another evaluator.
