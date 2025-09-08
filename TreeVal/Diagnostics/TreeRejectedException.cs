@@ -27,7 +27,13 @@ public class TreeRejectedException : Exception
         };
 
     public static TreeRejectedException ForIncompleteRead(TapeHead head, INodeEvaluation evaluation)
-        => new(evaluation, "Head contains unread nodes")
+        => new(evaluation, "Tape contains unread nodes")
+        {
+            Head = head
+        };
+    
+    public static TreeRejectedException ForReadPastEnd(TapeHead head, INodeEvaluation evaluation)
+        => new(evaluation, "Attempted to read past end of tape")
         {
             Head = head
         };

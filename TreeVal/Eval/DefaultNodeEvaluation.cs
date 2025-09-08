@@ -36,9 +36,16 @@ public class DefaultNodeEvaluation : INodeEvaluation
         if (Target != null)
             return Target;
 
-        var evaluator = GetEvaluator();
-        var moveHead = evaluator.HeadMovementStrategy.GetStrategy(context, this);
-        return Target = moveHead(context.Head);
+        try
+        {
+            var evaluator = GetEvaluator();
+            var moveHead = evaluator.HeadMovementStrategy.GetStrategy(context, this);
+            return Target = moveHead(context.Head);
+        }
+        catch (IndexOutOfRangeException)
+        {
+            throw TreeRejectedException.ForReadPastEnd(context.Head, this);
+        }
     }
 
     public void Record(IEnumerable<IConditionEvaluation> conditionEvaluations)
