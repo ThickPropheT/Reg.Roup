@@ -18,7 +18,6 @@ public static class WhenEvaluatorExtensions
 
     public static WhenEvaluatorBuilder<IEvaluatorBuilder<TNode>, T> When<TNode, T>(
         this IEvaluatorBuilder<TNode> builder, Func<T?> getTarget)
-    
         => new(builder, getTarget);
 }
 

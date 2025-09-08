@@ -6,17 +6,17 @@ namespace TreeVal.Scaffolding;
 
 public class EvaluatorBuilder : IEvaluatorBuilder
 {
-    private readonly List<ICondition> _conditions = new(1);
-    private readonly List<Func<Node, IEnumerable<INodeEvaluatorFactory>>> _childLookups = new(1);
+    protected readonly List<ICondition> Conditions = new(1);
+    protected readonly List<Func<Node, IEnumerable<INodeEvaluatorFactory>>> ChildLookups = new(1);
 
     public void AddCondition(ICondition condition)
-        => _conditions.Add(condition);
+        => Conditions.Add(condition);
 
     public void AddChildren(Func<Node, IEnumerable<INodeEvaluatorFactory>> getChildren)
-        => _childLookups.Add(getChildren);
+        => ChildLookups.Add(getChildren);
 
     public INodeEvaluator ToEvaluator()
-        => ToEvaluatorImpl(_conditions, _childLookups);
+        => ToEvaluatorImpl(Conditions, ChildLookups);
 
     protected virtual INodeEvaluator ToEvaluatorImpl(
         IEnumerable<ICondition> conditions,
