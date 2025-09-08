@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using TreeVal.Eval;
 using TreeVal.Eval.AcceptChildren;
+using TreeVal.Extensions;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Expr.Object;
@@ -40,7 +40,7 @@ public static class MethodCallEvaluatorExtensions
         this IEvaluatorBuilderFactory factory, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .OfType<MethodCallExpression>()
-            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
+            .Where(call => !call.Method.IsStatic || call.Method.IsExtensionMethod())
             .HavingChild(target)
             .HavingAnyChild();
 
@@ -120,7 +120,7 @@ public static class MethodCallEvaluatorExtensions
         this IEvaluatorBuilderFactory factory, string? name, Func<MethodCallExpression, INodeEvaluatorFactory> target)
         => factory
             .MethodCallBase(name)
-            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
+            .Where(call => !call.Method.IsStatic || call.Method.IsExtensionMethod())
             .HavingChild(target)
             .HavingAnyChild();
 
@@ -239,44 +239,47 @@ public static class MethodCallEvaluatorExtensions
         => factory
             .OfType<MethodCallExpression>()
             .Equals(ownerType, call => call.Method.DeclaringType)
-            .Where(call => !call.Method.IsStatic || IsExtensionMethod(call.Method))
+            .Where(call => !call.Method.IsStatic || call.Method.IsExtensionMethod())
             .HavingChild(target);
-
-
-    private static bool IsExtensionMethod(MethodInfo method)
-        => method.IsDefined(typeof(ExtensionAttribute), true);
 
     private static IEvaluatorBuilder[] DefaultMethodCallTarget(
         IEvaluatorBuilderFactory factory, MethodCallExpression call)
     {
-        if (!call.Method.IsStatic)
+        return !call.Method.IsStatic || call.Method.IsExtensionMethod() 
+            ? [factory.AnyMethodTarget(call.Method)] 
+            : [];
+    }
+
+    public static IEvaluatorBuilder AnyMethodTarget(
+        this IEvaluatorBuilderFactory factory, MethodInfo method)
+    {
+        // instance methods
+        if (!method.IsStatic)
         {
             return
-            [
                 factory
                     .AnyOne()
                     // TODO may be yagni since I don't think this is even possible
-                    .Is(e => e.Type, call.Method.DeclaringType)
-                    .HavingAnyChild()
-            ];
+                    .Is(e => e.Type, method.DeclaringType)
+                    .HavingAnyChild();
         }
 
-        if (IsExtensionMethod(call.Method))
+        // extension methods
+        if (method.IsExtensionMethod())
         {
             return
-            [
                 factory
                     .AnyOne()
                     .With(
-                        e => (e, parameters: call.Method.GetParameters()),
+                        e => (e, parameters: method.GetParameters()),
                         (node, a) =>
                             node
                                 .Where(_ => a.parameters.Length > 0)
                                 .Is(_ => a.e.Type, a.parameters[0].ParameterType))
-                    .HavingAnyChild()
-            ];
+                    .HavingAnyChild();
         }
 
-        return [];
+        // static, non-extension methods
+        throw new ArgumentException("Strategy for defining static method targets is indeterminate", nameof(method));
     }
 }

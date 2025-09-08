@@ -3,8 +3,6 @@ using TreeVal.Media;
 
 namespace TreeVal.Eval.AcceptChildren;
 
-using System.Diagnostics;
-
 public class AcceptChildrenNodeEvaluator : NodeEvaluator
 {
     private readonly Node _parent;
@@ -20,12 +18,9 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
 
     private Node? MoveHead(VisitationContext _, TapeHead head, INodeEvaluation evaluation)
     {
-        var tape = _recorder.RecordVisitationOf(_parent).ToList();
-        tape.Remove(_parent);
-
         var childTape = _recorder.RecordVisitationOf(_parent).ToList();
         childTape.Remove(_parent);
-        
+
         if (!childTape.Any())
         {
             // there weren't any children, actually.
@@ -43,7 +38,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             if (node == current)
                 // current is used for the ACTUAL work below, so we'll leave it in for now.
                 continue;
-            
+
             // TODO
             //  - this assumes that we got to this point linearly along the tape.
             //     seems like a safe enough assumption, but the head CAN move backward as well.
@@ -58,7 +53,7 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             //     rather than after completion of all child evaluations.
             childTape.Remove(node);
         }
-        
+
         if (!childTape.Any())
         {
             // somebody beat us to it.
@@ -77,28 +72,35 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
             current = head.MoveForward();
         }
 
-        while (childTape.Contains(current))
+        var isOnTape = childTape.Contains(current);
+
+        while (isOnTape)
         {
             childTape.Remove(current);
 
             current = head.PeekForward();
 
-            // if the head has run out of tape, bail out. 
+            // if the head has run out of tape, bail out.
             if (current == null)
             {
                 // TODO
                 //  should we just let this kind of error be thrown by the head itself?
-                Debug.Assert(
+                System.Diagnostics.Debug.Assert(
                     !childTape.Any(),
                     "DBG: expected context.Head to be able to move forward. _parent has unvisited child nodes.");
                 break;
             }
 
+            isOnTape = childTape.Contains(current);
+
+            // if we're about to move too far forward, bail out.
+            if (!isOnTape)
+                break;
+
             // otherwise, move forward.
             head.MoveForward();
         }
 
-        Debug.Assert(!tape.Any(), "DBG: _parent has unvisited child nodes.");
         return current;
     }
 }

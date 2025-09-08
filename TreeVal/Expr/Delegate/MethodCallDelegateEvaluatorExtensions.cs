@@ -2,6 +2,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using TreeVal.Eval;
 using TreeVal.Expr.Conversion;
+using TreeVal.Expr.Object;
+using TreeVal.Extensions;
+using TreeVal.Primitives;
 using TreeVal.Scaffolding;
 
 namespace TreeVal.Expr.Delegate;
@@ -20,76 +23,76 @@ public static class MethodCallDelegateEvaluatorExtensions
             .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
             .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
             .HavingChildren(call =>
-                [
-                    // TODO
-                    //  had this arrangement originally, but it was failing for parse.With(Parser.Instance.Parse)
-                    //  b/c the order of these 2 was reversed. i bet this is order correct in some other use case.
-                    // factory
-                    //     .OfType<ConstantExpression>()
-                    //     .Debug(
-                    //         label: "After OfType in MethodCallDelegate",
-                    //         (o, ctx) =>
-                    //         {
-                    //             
-                    //         })
-                    //     .Where(constant => constant.Value is MethodInfo)
-                    //     .When(where).IsNotNull()
-                    //     // ReSharper disable once VariableHidesOuterVariable
-                    //     .Then((node, where) =>
-                    //         node.Equals(true, constant => where((MethodInfo) constant.Value!))),
-                    //
-                    // factory
-                    //     .OfType<ConstantExpression>()
-                    //     .Equals(typeof(Type), constant => constant.Type),
+            [
+                factory
+                    .OfType<ConstantExpression>()
+                    .With(
+                        constant => (constant, methodInfo: constant.Value as MethodInfo),
+                        (builder, a) =>
+                            builder
+                                .Where(_ => a.methodInfo != null)
 
-                    // MethodInfo for the method to convert to Delegate
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value is MethodInfo)
-                        .When(where).IsNotNull()
-                        // ReSharper disable once VariableHidesOuterVariable
-                        .Then((node, where) =>
-                            node.Equals(true, constant => where((MethodInfo) constant.Value!))),
+                                // arg[0]: delegateType
+                                .HavingChild(_ => DelegateType<TDelegate>(factory))
+                                .Case((@case, _) =>
+                                [
+                                    @case.When(where)
+                                        .IsNotNull()
+                                        .Then((node, predicate) => node.Equals(true, _ => predicate(a.methodInfo!))),
 
-                    // Type of Delegate to convert the method to
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Equals(typeof(Type), constant => constant.Type)
-                        .Equals(typeof(TDelegate), constant => constant.Value),
+                                    // arg[1]: target
 
-                    getTarget?.Invoke(call) ?? factory
-                        // TODO i think this part may actually be targeted at static methods
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value == null)
-                ]
-            );
+                                    // instance & extension methods
+                                    @case.When(a.methodInfo)
+                                        .IsTrue(methodInfo => !methodInfo.IsStatic || methodInfo.IsExtensionMethod())
+                                        .Then((node, _) =>
+                                            node.HavingChild(_ =>
+                                                getTarget?.Invoke(call)
+                                                ?? factory.AnyMethodTarget(a.methodInfo!))),
 
-    public static IEvaluatorBuilder MethodCallDelegate(
-        this IEvaluatorBuilderFactory factory,
-        string? name,
-        Func<MethodCallExpression, INodeEvaluatorFactory>? getTarget = null,
-        Func<MethodInfo, bool>? where = null
-    )
+                                    // static, non-extension methods
+                                    @case.When(a.methodInfo)
+                                        .IsTrue(methodInfo => methodInfo.IsStatic && !methodInfo.IsExtensionMethod())
+                                        .Then((node, _) =>
+                                            node.HavingChild(_ =>
+                                                factory.Constant(EValue.Null()))),
+                                ])
+                    )
+            ]);
+
+    private static IEvaluatorBuilder DelegateType<TDelegate>(IEvaluatorBuilderFactory factory)
         => factory
-            .IgnoreBoxing()
-            .OfType<MethodCallExpression>()
-            .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
-            .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
-            .HavingChildren(call =>
-                [
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value is MethodInfo)
-                        .Equals(name, constant => ((MethodInfo) constant.Value!).Name)
-                        .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
+            .OfType<ConstantExpression>()
+            .Equals(typeof(Type), constant => constant.Type)
+            .Equals(typeof(TDelegate), constant => constant.Value);
 
-                    factory
-                        .OfType<ConstantExpression>()
-                        .Equals(typeof(Type), constant => constant.Type),
-
-                    getTarget?.Invoke(call) ?? factory
-                        .OfType<ConstantExpression>()
-                        .Where(constant => constant.Value == null)
-                ]
-            );
+    // TODO
+    // public static IEvaluatorBuilder MethodCallDelegate(
+    //     this IEvaluatorBuilderFactory factory,
+    //     string? name,
+    //     Func<MethodCallExpression, INodeEvaluatorFactory>? getTarget = null,
+    //     Func<MethodInfo, bool>? where = null
+    // )
+    //     => factory
+    //         .IgnoreBoxing()
+    //         .OfType<MethodCallExpression>()
+    //         .Where(call => call.Method.DeclaringType == typeof(MethodInfo))
+    //         .Where(call => call.Method.Name == nameof(MethodInfo.CreateDelegate))
+    //         .HavingChildren(call =>
+    //             [
+    //                 factory
+    //                     .OfType<ConstantExpression>()
+    //                     .Where(constant => constant.Value is MethodInfo)
+    //                     .Equals(name, constant => ((MethodInfo) constant.Value!).Name)
+    //                     .Where(constant => where?.Invoke((MethodInfo) constant.Value!) != false),
+    //
+    //                 factory
+    //                     .OfType<ConstantExpression>()
+    //                     .Equals(typeof(Type), constant => constant.Type),
+    //
+    //                 getTarget?.Invoke(call) ?? factory
+    //                     .OfType<ConstantExpression>()
+    //                     .Where(constant => constant.Value == null)
+    //             ]
+    //         );
 }
