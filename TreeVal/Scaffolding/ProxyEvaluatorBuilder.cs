@@ -7,7 +7,7 @@ namespace TreeVal.Scaffolding;
 public class ProxyEvaluatorBuilder : EvaluatorBuilder
 {
     private readonly Func<
-            IEnumerable<ICondition>,
+            IEnumerable<Func<Node, IEnumerable<ICondition>>>,
             IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
             INodeEvaluator
         >?
@@ -19,7 +19,7 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
 
     public ProxyEvaluatorBuilder(
         Func<
-                IEnumerable<ICondition>,
+                IEnumerable<Func<Node, IEnumerable<ICondition>>>,
                 IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
                 INodeEvaluator
             >
@@ -29,19 +29,19 @@ public class ProxyEvaluatorBuilder : EvaluatorBuilder
     }
 
     public static (
-        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
         IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups
         ) Scoped(Action<IEvaluatorBuilder> body)
     {
         var builder = new ProxyEvaluatorBuilder();
         body(builder);
-        return (builder.Conditions, builder.ChildLookups);
+        return (builder.ConditionLookups, builder.ChildLookups);
     }
 
     protected override INodeEvaluator ToEvaluatorImpl(
-        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
         IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
-        => _toEvaluator?.Invoke(conditions.ToArray(), childLookups)
+        => _toEvaluator?.Invoke(conditionLookups, childLookups)
            ?? throw new NotSupportedException();
 }
 
@@ -53,7 +53,7 @@ public class ProxyEvaluatorBuilder<T> : ProxyEvaluatorBuilder, IEvaluatorBuilder
 
     public ProxyEvaluatorBuilder(
         Func<
-                IEnumerable<ICondition>,
+                IEnumerable<Func<Node, IEnumerable<ICondition>>>,
                 IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>>,
                 INodeEvaluator
             >
@@ -63,12 +63,12 @@ public class ProxyEvaluatorBuilder<T> : ProxyEvaluatorBuilder, IEvaluatorBuilder
     }
 
     public static (
-        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
         IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups
         ) Scoped(Action<IEvaluatorBuilder<T>> body)
     {
         var builder = new ProxyEvaluatorBuilder<T>();
         body(builder);
-        return (builder.Conditions, builder.ChildLookups);
+        return (builder.ConditionLookups, builder.ChildLookups);
     }
 }

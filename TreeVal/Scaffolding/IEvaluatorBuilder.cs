@@ -11,7 +11,7 @@ public interface INodeEvaluatorFactory
 
 public interface IEvaluatorBuilder : INodeEvaluatorFactory
 {
-    void AddCondition(ICondition condition);
+    void AddConditions(Func<Node, IEnumerable<ICondition>> getConditions);
     void AddChildren(Func<Node, IEnumerable<INodeEvaluatorFactory>> getChildren);
 }
 

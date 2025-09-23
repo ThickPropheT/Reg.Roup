@@ -62,8 +62,6 @@ public static class DebugEvaluatorExtensions
         private readonly INodeEvaluator _target;
         private readonly Func<INodeEvaluatorFactory> _buildDebugEvaluator;
 
-        public IEnumerable<ICondition> Conditions => _target.Conditions;
-
         public VisitationContext.MovementStrategy HeadMovementStrategy => _target.HeadMovementStrategy;
 
         public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy => _target.ChildEvaluationStrategy;
@@ -74,16 +72,20 @@ public static class DebugEvaluatorExtensions
             _buildDebugEvaluator = buildDebugEvaluator;
         }
 
+        public IEnumerable<ICondition> EnumerateConditions(Node current)
+            => _target.EnumerateConditions(current);
+
         public IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current)
         {
+            throw new NotImplementedException(
+                "I think this debug option may not be 'invisible'. I think it's inclusion in a schema causes a double move-forward of the tape head.");
+
             yield return _buildDebugEvaluator();
 
             foreach (var childBuilder in _target.EnumerateChildren(current))
             {
                 yield return childBuilder;
             }
-
-            ;
         }
     }
 }

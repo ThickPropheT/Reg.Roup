@@ -32,9 +32,10 @@ public static class WithEvaluatorExtensions
             _node = new Node<T>(t);
         }
 
-        protected override NodeEvaluator ToEvaluatorImpl(IEnumerable<ICondition> conditions,
+        protected override INodeEvaluator ToEvaluatorImpl(
+            IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
             IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
-            => new(conditions, childLookups)
+            => new NodeEvaluator(conditionLookups, childLookups)
             {
                 HeadMovementStrategy = VisitationContext.MovementStrategy.From((_, _, _) => _node)
             };

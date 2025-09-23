@@ -44,7 +44,7 @@ public partial class VisitationContext
 
         // in the most ideal case, we'll want to iterate all the conditions below
         // for the purpose of evaluating them. may as well get it out of the way.
-        var conditions = evaluator.Conditions.ToArray();
+        var conditions = evaluator.EnumerateConditions(current).ToArray();
         var conditionEvaluations = new List<DefaultConditionEvaluation>(conditions.Length);
 
         try

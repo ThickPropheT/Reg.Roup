@@ -4,8 +4,8 @@ public class ConditionFailedException : Exception
 {
     public IConditionEvaluation Evaluation { get; }
 
-    public ConditionFailedException(IConditionEvaluation evaluation, string message)
-        : base(message)
+    public ConditionFailedException(IConditionEvaluation evaluation, string message, Exception? innerException = null)
+        : base(message, innerException)
     {
         Evaluation = evaluation;
     }

@@ -8,8 +8,11 @@ public class OneOfNodeEvaluator : NodeEvaluator
 {
     private readonly INodeEvaluatorFactory[] _options;
 
-    public OneOfNodeEvaluator(IEnumerable<ICondition> conditions, INodeEvaluatorFactory[] options)
-        : base(conditions, [])
+    public OneOfNodeEvaluator(
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
+        INodeEvaluatorFactory[] options
+    )
+        : base(conditionLookups, [])
     {
         _options = options;
         ChildEvaluationStrategy = VisitationContext.EvaluationStrategy.OneOf;

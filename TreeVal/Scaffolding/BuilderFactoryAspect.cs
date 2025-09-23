@@ -30,13 +30,13 @@ public class BuilderFactoryAspect : IEvaluatorBuilderFactory
 
     private INodeEvaluator ThroughPipe(
         IEvaluatorBuilder builder,
-        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
         IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups
     )
     {
-        foreach (var condition in conditions)
+        foreach (var conditionLookup in conditionLookups)
         {
-            builder.AddCondition(condition);
+            builder.AddConditions(conditionLookup);
         }
 
         foreach (var childLookup in childLookups)

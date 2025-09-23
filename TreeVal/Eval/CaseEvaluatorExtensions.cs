@@ -10,6 +10,16 @@ public static class CaseEvaluatorExtensions
         Func<ICase<IEvaluatorBuilder<TNode>>, TNode, IThen[]> body
     )
     {
+        builder.AddConditions(node =>
+        {
+            var (conditionLookups, _) = ProxyEvaluatorBuilder<TNode>
+                .Scoped(standIn =>
+                    body(new CaseImpl<IEvaluatorBuilder<TNode>>(standIn), node)
+                );
+            
+            return conditionLookups.SelectMany(conditionLookup => conditionLookup(new Node(node!)));
+        });
+        
         builder.AddChildren(node =>
         {
             var (_, childLookups) = ProxyEvaluatorBuilder<TNode>

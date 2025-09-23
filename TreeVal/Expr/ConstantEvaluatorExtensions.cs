@@ -14,10 +14,13 @@ public static class ConstantEvaluatorExtensions
         this IEvaluatorBuilderFactory factory, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
-            .When(value).IsNotNull()
-            // ReSharper disable once VariableHidesOuterVariable
-            .Then((node, value) =>
-                node.Equals(value, constant => constant.Value));
+            .Case((@case, _) =>
+            [
+                @case.When(value)
+                    .IsNotNull()
+                    // ReSharper disable once VariableHidesOuterVariable
+                    .Then((node, value) => node.Equals(value, constant => constant.Value))
+            ]);
 
     public static IEvaluatorBuilder<ConstantExpression> Constant(this IEvaluatorBuilderFactory factory, EType type)
         => factory
@@ -29,10 +32,13 @@ public static class ConstantEvaluatorExtensions
         => factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type)
-            .When(value).IsNotNull()
-            // ReSharper disable once VariableHidesOuterVariable
-            .Then((node, value) =>
-                node.Equals(value, constant => constant.Value));
+            .Case((@case, _) =>
+            [
+                @case.When(value)
+                    .IsNotNull()
+                    // ReSharper disable once VariableHidesOuterVariable
+                    .Then((node, value) => node.Equals(value, constant => constant.Value))
+            ]);
 
     public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this IEvaluatorBuilderFactory factory)
     {
@@ -52,9 +58,12 @@ public static class ConstantEvaluatorExtensions
         return factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type)
-            .When(value).IsNotNull()
-            // ReSharper disable once VariableHidesOuterVariable
-            .Then((node, value) =>
-                node.Equals(value, constant => constant.Value));
+            .Case((@case, _) =>
+            [
+                @case.When(value)
+                    .IsNotNull()
+                    // ReSharper disable once VariableHidesOuterVariable
+                    .Then((node, value) => node.Equals(value, constant => constant.Value))
+            ]);
     }
 }

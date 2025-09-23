@@ -10,12 +10,11 @@ public static class IgnoreBoxingEvaluatorExtensions
 {
     public static IEvaluatorBuilderFactory IgnoreBoxing(this IEvaluatorBuilderFactory factory)
         => new BuilderFactoryAspect(factory, evaluator => new IgnoreBoxingEvaluator(evaluator));
-    
+
     private class IgnoreBoxingEvaluator : INodeEvaluator
     {
         private readonly INodeEvaluator _target;
 
-        public IEnumerable<ICondition> Conditions => _target.Conditions;
         public VisitationContext.MovementStrategy HeadMovementStrategy { get; }
         public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy => _target.ChildEvaluationStrategy;
 
@@ -34,6 +33,9 @@ public static class IgnoreBoxingEvaluatorExtensions
                     : current;
             });
         }
+
+        public IEnumerable<ICondition> EnumerateConditions(Node current)
+            => _target.EnumerateConditions(current);
 
         public IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current)
             => _target.EnumerateChildren(current);

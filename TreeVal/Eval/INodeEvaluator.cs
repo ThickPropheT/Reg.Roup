@@ -6,9 +6,9 @@ namespace TreeVal.Eval;
 
 public interface INodeEvaluator
 {
-    IEnumerable<ICondition> Conditions { get; }
     VisitationContext.MovementStrategy HeadMovementStrategy { get; }
     VisitationContext.EvaluationStrategy? ChildEvaluationStrategy { get; }
 
+    IEnumerable<ICondition> EnumerateConditions(Node current);
     IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current);
 }

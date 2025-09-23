@@ -8,8 +8,12 @@ public class AcceptChildrenNodeEvaluator : NodeEvaluator
     private readonly Node _parent;
     private readonly IVisitationRecorder _recorder;
 
-    public AcceptChildrenNodeEvaluator(IEnumerable<ICondition> conditions, Node parent, IVisitationRecorder recorder)
-        : base(conditions, [])
+    public AcceptChildrenNodeEvaluator(
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
+        Node parent,
+        IVisitationRecorder recorder
+    )
+        : base(conditionLookups, [])
     {
         _parent = parent;
         _recorder = recorder;

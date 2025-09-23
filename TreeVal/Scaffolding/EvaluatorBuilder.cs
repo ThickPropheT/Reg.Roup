@@ -6,20 +6,20 @@ namespace TreeVal.Scaffolding;
 
 public class EvaluatorBuilder : IEvaluatorBuilder
 {
-    protected readonly List<ICondition> Conditions = new(1);
+    protected readonly List<Func<Node, IEnumerable<ICondition>>> ConditionLookups = new(1);
     protected readonly List<Func<Node, IEnumerable<INodeEvaluatorFactory>>> ChildLookups = new(1);
 
-    public void AddCondition(ICondition condition)
-        => Conditions.Add(condition);
+    public void AddConditions(Func<Node, IEnumerable<ICondition>> getConditions)
+        => ConditionLookups.Add(getConditions);
 
     public void AddChildren(Func<Node, IEnumerable<INodeEvaluatorFactory>> getChildren)
         => ChildLookups.Add(getChildren);
 
     public INodeEvaluator ToEvaluator()
-        => ToEvaluatorImpl(Conditions, ChildLookups);
+        => ToEvaluatorImpl(ConditionLookups, ChildLookups);
 
     protected virtual INodeEvaluator ToEvaluatorImpl(
-        IEnumerable<ICondition> conditions,
+        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
         IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
-        => new NodeEvaluator(conditions.ToArray(), childLookups);
+        => new NodeEvaluator(conditionLookups, childLookups);
 }
