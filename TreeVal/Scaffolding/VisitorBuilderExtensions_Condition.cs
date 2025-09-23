@@ -14,6 +14,16 @@ public static class VisitorBuilderExtensions_Condition
 
     public static void AddCondition<T>(this IVisitorBuilder<T> builder, ICondition<T> condition)
         => builder.AddCondition((ICondition)condition);
+    
+    public static void AddConditions(this IVisitorBuilder builder, Func<Node, IEnumerable<ICondition>> getConditions)
+        => builder
+            .Get<IEvaluateConditionsStageBuilder>()
+            .OrCreateStage()
+            .AddConditions(n => getConditions(n));
+    
+    public static void AddConditions<T>(
+        this IVisitorBuilder<T> builder, Func<T, IEnumerable<ICondition>> getConditions)
+        => builder.AddConditions(n => getConditions((T) n.Value));
 }
 
 public static class VisitorBuilderExtensions_Children
