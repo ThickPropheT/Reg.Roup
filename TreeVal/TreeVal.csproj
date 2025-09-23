@@ -6,4 +6,22 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="Eval\INodeEvaluator.cs" />
+      <Compile Remove="Eval\OneOfNodeEvaluator.cs" />
+      <Compile Remove="Scaffolding\DefaultEvaluatorBuilderFactory.cs" />
+      <Compile Remove="Scaffolding\EvaluatorBuilder.cs" />
+      <Compile Remove="Scaffolding\EvaluatorBuilderExtensions.cs" />
+      <Compile Remove="Scaffolding\IEvaluatorBuilder.cs" />
+      <Compile Remove="Scaffolding\IEvaluatorBuilderFactory.cs" />
+      <Compile Remove="Scaffolding\TypalEvaluatorBuilder.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Eval\NodeEvaluator.cs" />
+      <Compile Remove="Eval\OneOfNodeEvaluator.cs" />
+      <Compile Remove="VisitationContext.Clipping.cs" />
+      <Compile Remove="VisitationContext.cs" />
+    </ItemGroup>
+
 </Project>

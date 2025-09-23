@@ -11,9 +11,9 @@ namespace TreeVal.Expr.Delegate;
 
 public static class MethodCallDelegateEvaluatorExtensions
 {
-    public static IEvaluatorBuilder MethodCallDelegate<TDelegate>(
-        this IEvaluatorBuilderFactory factory,
-        Func<MethodCallExpression, INodeEvaluatorFactory>? getTarget = null,
+    public static IVisitorBuilder MethodCallDelegate<TDelegate>(
+        this IVisitorBuilderFactory factory,
+        Func<MethodCallExpression, IVisitorFactory>? getTarget = null,
         Func<MethodInfo, bool>? where = null
     )
         where TDelegate : System.Delegate
@@ -60,7 +60,7 @@ public static class MethodCallDelegateEvaluatorExtensions
                     )
             ]);
 
-    private static IEvaluatorBuilder DelegateType<TDelegate>(IEvaluatorBuilderFactory factory)
+    private static IVisitorBuilder DelegateType<TDelegate>(IVisitorBuilderFactory factory)
         => factory
             .OfType<ConstantExpression>()
             .Equals(typeof(Type), constant => constant.Type)

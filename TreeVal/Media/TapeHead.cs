@@ -2,7 +2,14 @@ using TreeVal.Diagnostics;
 
 namespace TreeVal.Media;
 
-public class TapeHead : IDescribable
+public interface ITapeHead
+{
+    Node Read();
+
+    Node MoveForward();
+}
+
+public class TapeHead : ITapeHead, IDescribable
 {
     private readonly Node[] _tape;
     private int _currentIndex;
@@ -30,7 +37,7 @@ public class TapeHead : IDescribable
 
     public IEnumerable<Node> ReadToStart()
         => _tape.Take(new Range(0, CurrentOrFirstIndex + 1)).Reverse();
-    
+
     public IEnumerable<Node> ReadToEnd()
         => _tape.Take(new Range(CurrentOrFirstIndex, _tape.Length - 1));
 
@@ -85,23 +92,25 @@ public class TapeHead : IDescribable
                 descriptionBuilder.EmitLine($"CurrentIndex: {_currentIndex},");
                 descriptionBuilder.Emit("Current: ");
                 descriptionBuilder.EmitNode(Read());
-                
+
                 descriptionBuilder.Emit("Tape: ");
-                descriptionBuilder.EmitArray(_tape, (node, i) =>
-                {
-                    if (i < _currentIndex)
+                descriptionBuilder.EmitArray(
+                    _tape,
+                    (node, i) =>
                     {
-                        descriptionBuilder.EmitPassIcon();
-                    }
-                    else if (i == _currentIndex)
-                    {
-                        descriptionBuilder.EmitFailIcon();
-                    }
-                    
-                    descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
-                });
+                        if (i < _currentIndex)
+                        {
+                            descriptionBuilder.EmitPassIcon();
+                        }
+                        else if (i == _currentIndex)
+                        {
+                            descriptionBuilder.EmitFailIcon();
+                        }
+
+                        descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
+                    });
             });
-        
+
         descriptionBuilder.Emit("],");
     }
 
@@ -143,27 +152,29 @@ public class TapeHead : IDescribable
                 {
                     descriptionBuilder.Emit("Original: ");
                     _original.Describe(descriptionBuilder);
-                    
+
                     descriptionBuilder.EmitLine($"CurrentIndex: {_currentIndex},");
                     descriptionBuilder.Emit("Current: ");
                     descriptionBuilder.EmitNode(Read());
-                
+
                     descriptionBuilder.Emit("Tape: ");
-                    descriptionBuilder.EmitArray(_tape, (node, i) =>
-                    {
-                        if (i < _currentIndex)
+                    descriptionBuilder.EmitArray(
+                        _tape,
+                        (node, i) =>
                         {
-                            descriptionBuilder.EmitPassIcon();
-                        }
-                        else if (i == _currentIndex)
-                        {
-                            descriptionBuilder.EmitFailIcon();
-                        }
-                        
-                        descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
-                    });
+                            if (i < _currentIndex)
+                            {
+                                descriptionBuilder.EmitPassIcon();
+                            }
+                            else if (i == _currentIndex)
+                            {
+                                descriptionBuilder.EmitFailIcon();
+                            }
+
+                            descriptionBuilder.EmitNode(node, NodeStyle.ArrayItem);
+                        });
                 });
-        
+
             descriptionBuilder.Emit("],");
         }
 

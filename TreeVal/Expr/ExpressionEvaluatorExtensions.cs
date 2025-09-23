@@ -5,6 +5,6 @@ namespace TreeVal.Expr;
 
 public static class ExpressionEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<Expression> AnyOne(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilder<Expression> AnyOne(this IVisitorBuilderFactory factory)
         => factory.OfType<Expression>();
 }

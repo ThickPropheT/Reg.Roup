@@ -8,17 +8,17 @@ namespace TreeVal.Expr.Conversion;
 
 public static class IgnoreBoxingEvaluatorExtensions
 {
-    public static IEvaluatorBuilderFactory IgnoreBoxing(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilderFactory IgnoreBoxing(this IVisitorBuilderFactory factory)
         => new BuilderFactoryAspect(factory, evaluator => new IgnoreBoxingEvaluator(evaluator));
 
-    private class IgnoreBoxingEvaluator : INodeEvaluator
+    private class IgnoreBoxingEvaluator : IVisitor
     {
-        private readonly INodeEvaluator _target;
+        private readonly IVisitor _target;
 
         public VisitationContext.MovementStrategy HeadMovementStrategy { get; }
         public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy => _target.ChildEvaluationStrategy;
 
-        public IgnoreBoxingEvaluator(INodeEvaluator target)
+        public IgnoreBoxingEvaluator(IVisitor target)
         {
             _target = target;
 
@@ -33,11 +33,11 @@ public static class IgnoreBoxingEvaluatorExtensions
                     : current;
             });
         }
-
+        
         public IEnumerable<ICondition> EnumerateConditions(Node current)
             => _target.EnumerateConditions(current);
 
-        public IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current)
+        public IEnumerable<IVisitorFactory> EnumerateChildren(Node current)
             => _target.EnumerateChildren(current);
     }
 }

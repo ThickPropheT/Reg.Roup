@@ -5,9 +5,9 @@ namespace TreeVal.Eval;
 
 public static class CaseEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<TNode> Case<TNode>(
-        this IEvaluatorBuilder<TNode> builder,
-        Func<ICase<IEvaluatorBuilder<TNode>>, TNode, IThen[]> body
+    public static IVisitorBuilder<TNode> Case<TNode>(
+        this IVisitorBuilder<TNode> builder,
+        Func<ICase<IVisitorBuilder<TNode>>, TNode, IThen[]> body
     )
     {
         builder.AddConditions(node =>
@@ -20,21 +20,44 @@ public static class CaseEvaluatorExtensions
             return conditionLookups.SelectMany(conditionLookup => conditionLookup(new Node(node!)));
         });
         
+        // before
         builder.AddChildren(node =>
         {
             var (_, childLookups) = ProxyEvaluatorBuilder<TNode>
                 .Scoped(standIn =>
-                    body(new CaseImpl<IEvaluatorBuilder<TNode>>(standIn), node)
+                    body(new CaseImpl<IVisitorBuilder<TNode>>(standIn), node)
                 );
 
             return childLookups.SelectMany(childLookup => childLookup(new Node(node!)));
         });
+        
+        // after
+        builder
+            .Get<IEvaluateChildrenStageBuilder>()
+            .OrCreateStage()
+            .AddChildren(node =>
+            {
+                var (_, childLookups) = ProxyEvaluatorBuilder<TNode>
+                    .Scoped(standIn =>
+                        body(new CaseImpl<IVisitorBuilder<TNode>>(standIn), (TNode)node.Value)
+                    );
+
+                return childLookups.SelectMany(childLookup => childLookup(new Node(node!)));
+            });
 
         return builder;
     }
 
+    private class Builder : VisitorBuilder
+    {
+        public Builder(IVisitorBuilderFactory originator) 
+            : base(originator)
+        {
+        }
+    }
+
     private class CaseImpl<TBuilder> : ICase<TBuilder>
-        where TBuilder : IEvaluatorBuilder
+        where TBuilder : IVisitorBuilder
     {
         private readonly TBuilder _builder;
 
@@ -48,7 +71,7 @@ public static class CaseEvaluatorExtensions
     }
 
     private class TargetImpl<TBuilder, T> : ITarget<TBuilder, T>
-        where TBuilder : IEvaluatorBuilder
+        where TBuilder : IVisitorBuilder
     {
         private readonly TBuilder _builder;
         private readonly T? _target;
@@ -67,7 +90,7 @@ public static class CaseEvaluatorExtensions
     }
 
     private class WhenImpl<TBuilder, T> : IWhen<TBuilder, T>
-        where TBuilder : IEvaluatorBuilder
+        where TBuilder : IVisitorBuilder
     {
         private readonly TBuilder _builder;
         private readonly T? _target;
@@ -82,10 +105,11 @@ public static class CaseEvaluatorExtensions
 
         public IThen Then(Func<TBuilder, T, TBuilder> condition)
         {
-            if (_target == null || _predicate?.Invoke(_target) == false)
-                return ThenInstance;
+            if (_target != null && _predicate?.Invoke(_target) != false)
+            {
+                condition(_builder, _target!);
+            }
 
-            condition(_builder, _target!);
             return ThenInstance;
         }
     }
@@ -103,7 +127,7 @@ public interface IThen
 }
 
 public interface IWhen<TBuilder, out T>
-    where TBuilder : IEvaluatorBuilder
+    where TBuilder : IVisitorBuilder
 {
     // TODO
     //  does this actually need to return IThen?
@@ -113,14 +137,14 @@ public interface IWhen<TBuilder, out T>
 }
 
 public interface ITarget<TBuilder, out T>
-    where TBuilder : IEvaluatorBuilder
+    where TBuilder : IVisitorBuilder
 {
     IWhen<TBuilder, T> IsNotNull();
     IWhen<TBuilder, T> IsTrue(Func<T, bool> predicate);
 }
 
 public interface ICase<TBuilder>
-    where TBuilder : IEvaluatorBuilder
+    where TBuilder : IVisitorBuilder
 {
     ITarget<TBuilder, T> When<T>(T? target);
 }

@@ -6,8 +6,8 @@ namespace TreeVal.Eval;
 
 public static class IsEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<T> Is<T>(
-        this IEvaluatorBuilder<T> builder,
+    public static IVisitorBuilder<T> Is<T>(
+        this IVisitorBuilder<T> builder,
         Func<T, Type> getLeft,
         Type? right,
         [CallerArgumentExpression(nameof(getLeft))]
@@ -19,8 +19,8 @@ public static class IsEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> Is<T>(
-        this IEvaluatorBuilder<T> builder,
+    public static IVisitorBuilder<T> Is<T>(
+        this IVisitorBuilder<T> builder,
         Func<T, Type> getLeft,
         Func<Type?> getRight,
         [CallerArgumentExpression(nameof(getLeft))]

@@ -8,28 +8,28 @@ namespace TreeVal.Eval;
 [DebuggerDisplay("{Status}")]
 public class DefaultNodeEvaluation : INodeEvaluation
 {
-    private readonly INodeEvaluatorFactory _evaluatorFactory;
+    private readonly IVisitorFactory _evaluatorFactory;
 
     private EvaluationStatus? _status;
 
     public INodeEvaluation? Parent { get; }
 
     public Node? Target { get; private set; }
-    public INodeEvaluator? Evaluator { get; private set; }
+    public IVisitor? Evaluator { get; private set; }
 
     public EvaluationStatus Status => _status ?? EvaluationStatus.Accepted;
 
     public IConditionEvaluation[] ConditionEvaluations { get; private set; } = [];
     public IEnumerable<INodeEvaluation> ChildEvaluations { get; private set; } = [];
 
-    public DefaultNodeEvaluation(INodeEvaluation? parent, INodeEvaluatorFactory evaluatorFactory)
+    public DefaultNodeEvaluation(INodeEvaluation? parent, IVisitorFactory evaluatorFactory)
     {
         Parent = parent;
         _evaluatorFactory = evaluatorFactory;
     }
 
-    public INodeEvaluator GetEvaluator()
-        => Evaluator ??= _evaluatorFactory.ToEvaluator();
+    public IVisitor GetEvaluator()
+        => Evaluator ??= _evaluatorFactory.CreateVisitor();
 
     public Node? GetTarget(VisitationContext context)
     {

@@ -6,56 +6,54 @@ namespace TreeVal.Eval;
 // TODO test coverage
 public static class HavingChildrenEvaluatorExtensions
 {
-    private static readonly DefaultEvaluatorBuilderFactory Factory = new();
-
-    public static IEvaluatorBuilder HavingChild(
-        this IEvaluatorBuilder builder, INodeEvaluatorFactory child)
+    public static IVisitorBuilder HavingChild(
+        this IVisitorBuilder builder, IVisitorFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
-    public static IEvaluatorBuilder HavingChildren(
-        this IEvaluatorBuilder builder, params INodeEvaluatorFactory[] children)
+    public static IVisitorBuilder HavingChildren(
+        this IVisitorBuilder builder, params IVisitorFactory[] children)
     {
         builder.AddChildren(_ => children);
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> HavingChild<T>(
-        this IEvaluatorBuilder<T> builder, INodeEvaluatorFactory child)
+    public static IVisitorBuilder<T> HavingChild<T>(
+        this IVisitorBuilder<T> builder, IVisitorFactory child)
     {
         builder.AddChildren(_ => [child]);
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> HavingChildren<T>(
-        this IEvaluatorBuilder<T> builder, params INodeEvaluatorFactory[] children)
+    public static IVisitorBuilder<T> HavingChildren<T>(
+        this IVisitorBuilder<T> builder, params IVisitorFactory[] children)
     {
         builder.AddChildren(_ => children);
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> HavingChild<T>(
-        this IEvaluatorBuilder<T> builder, Func<T, INodeEvaluatorFactory> getChild)
+    public static IVisitorBuilder<T> HavingChild<T>(
+        this IVisitorBuilder<T> builder, Func<T, IVisitorFactory> getChild)
     {
         builder.AddChildren(node => [getChild(node)]);
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> HavingChildren<T>(
-        this IEvaluatorBuilder<T> builder, Func<T, IEnumerable<INodeEvaluatorFactory>> getChildren)
+    public static IVisitorBuilder<T> HavingChildren<T>(
+        this IVisitorBuilder<T> builder, Func<T, IEnumerable<IVisitorFactory>> getChildren)
     {
         builder.AddChildren(node => getChildren(node));
         return builder;
     }
 
-    public static IEvaluatorBuilder HavingAnyChild(this IEvaluatorBuilder builder)
+    public static IVisitorBuilder HavingAnyChild(this IVisitorBuilder builder)
     {
-        builder.AddChildren(parent => [Factory.AcceptChildren(parent)]);
+        builder.AddChildren(parent => [builder.Originator.AcceptChildren(parent)]);
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> HavingAnyChild<T>(this IEvaluatorBuilder<T> builder)
-        => builder.HavingChild(parent => Factory.AcceptChildren(parent));
+    public static IVisitorBuilder<T> HavingAnyChild<T>(this IVisitorBuilder<T> builder)
+        => builder.HavingChild(parent => builder.Originator.AcceptChildren(parent));
 }

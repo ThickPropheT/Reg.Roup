@@ -7,22 +7,22 @@ namespace TreeVal;
 
 public class ExpressionTreeEvaluator
 {
-    private readonly INodeEvaluatorFactory _schema;
+    private readonly IVisitorFactory _schema;
     private readonly IDescriptionBuilder? _descriptionBuilder;
 
     public string? Name { get; private set; }
 
-    private ExpressionTreeEvaluator(INodeEvaluatorFactory schema, IDescriptionBuilder? descriptionBuilder)
+    private ExpressionTreeEvaluator(IVisitorFactory schema, IDescriptionBuilder? descriptionBuilder)
     {
         _schema = schema;
         _descriptionBuilder = descriptionBuilder;
     }
 
     public static ExpressionTreeEvaluator Create(
-        Func<IEvaluatorBuilderFactory, INodeEvaluatorFactory> buildEvaluatorTree,
+        Func<IVisitorBuilderFactory, IVisitorFactory> buildEvaluatorTree,
         IDescriptionBuilder? descriptionBuilder = null)
     {
-        var factory = new DefaultEvaluatorBuilderFactory();
+        var factory = new VisitorBuilderFactory();
 
         var root = buildEvaluatorTree(factory);
 
@@ -50,7 +50,8 @@ public class ExpressionTreeEvaluator
 
         try
         {
-            VisitationContext.EvaluateTree(head, _schema);
+            var v = new VisitationEngine();
+            // VisitationContext.EvaluateTree(head, _schema);
         }
         catch (TreeRejectedException ex)
         {

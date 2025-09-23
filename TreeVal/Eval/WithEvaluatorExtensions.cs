@@ -6,16 +6,16 @@ namespace TreeVal.Eval;
 
 public static class WithEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<TNode> With<TNode, T>(
-        this IEvaluatorBuilder<TNode> builder,
+    public static IVisitorBuilder<TNode> With<TNode, T>(
+        this IVisitorBuilder<TNode> builder,
         Func<TNode, T> selector,
-        Action<IEvaluatorBuilder<T>, T> apply
+        Action<IVisitorBuilder<T>, T> apply
     )
     {
         builder.AddChildren(n =>
         {
             var t = selector(n);
-            var w = new WhenBuilder<T>(t);
+            var w = new WhenBuilder<T>(t, builder.Originator);
             apply(w, t);
             return [w];
         });
@@ -23,19 +23,23 @@ public static class WithEvaluatorExtensions
         return builder;
     }
 
-    private class WhenBuilder<T> : EvaluatorBuilder, IEvaluatorBuilder<T>
+    private class WhenBuilder<T> : VisitorBuilder, IVisitorBuilder<T>
     {
         private readonly Node<T> _node;
 
-        public WhenBuilder(T t)
+        public WhenBuilder(T t, IVisitorBuilderFactory originator)
+            : base(originator)
         {
             _node = new Node<T>(t);
         }
 
-        protected override INodeEvaluator ToEvaluatorImpl(
+        public override IVisitor CreateVisitor()
+            => new Visitor();
+
+        protected Visitor ToEvaluatorImpl(
             IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
-            IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups)
-            => new NodeEvaluator(conditionLookups, childLookups)
+            IEnumerable<Func<Node, IEnumerable<IVisitorFactory>>> childLookups)
+            => new(conditionLookups, childLookups)
             {
                 HeadMovementStrategy = VisitationContext.MovementStrategy.From((_, _, _) => _node)
             };

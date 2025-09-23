@@ -6,24 +6,24 @@ namespace TreeVal.Expr.Delegate;
 
 public static class LambdaEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<LambdaExpression> Lambda(
-        this IEvaluatorBuilderFactory factory, INodeEvaluatorFactory body)
+    public static IVisitorBuilder<LambdaExpression> Lambda(
+        this IVisitorBuilderFactory factory, IVisitorFactory body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChild(body);
 
-    public static IEvaluatorBuilder<LambdaExpression> Lambda(
-        this IEvaluatorBuilderFactory factory, INodeEvaluatorFactory[] parameters, INodeEvaluatorFactory body)
+    public static IVisitorBuilder<LambdaExpression> Lambda(
+        this IVisitorBuilderFactory factory, IVisitorFactory[] parameters, IVisitorFactory body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChildren(new[] { body }.Concat(parameters).ToArray());
 
-    public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilder<ParameterExpression> Parameter<T>(this IVisitorBuilderFactory factory)
         => factory
             .OfType<ParameterExpression>()
             .Equals(typeof(T), parameter => parameter.Type);
 
-    public static IEvaluatorBuilder<ParameterExpression> Parameter<T>(this IEvaluatorBuilderFactory factory,
+    public static IVisitorBuilder<ParameterExpression> Parameter<T>(this IVisitorBuilderFactory factory,
         string? name)
         => factory
             .OfType<ParameterExpression>()

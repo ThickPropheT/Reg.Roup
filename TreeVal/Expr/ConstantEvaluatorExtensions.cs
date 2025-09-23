@@ -7,11 +7,11 @@ namespace TreeVal.Expr;
 
 public static class ConstantEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilder<ConstantExpression> Constant(this IVisitorBuilderFactory factory)
         => factory.OfType<ConstantExpression>();
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant(
-        this IEvaluatorBuilderFactory factory, EValue<object?>? value)
+    public static IVisitorBuilder<ConstantExpression> Constant(
+        this IVisitorBuilderFactory factory, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
             .Case((@case, _) =>
@@ -22,13 +22,13 @@ public static class ConstantEvaluatorExtensions
                     .Then((node, value) => node.Equals(value, constant => constant.Value))
             ]);
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant(this IEvaluatorBuilderFactory factory, EType type)
+    public static IVisitorBuilder<ConstantExpression> Constant(this IVisitorBuilderFactory factory, EType type)
         => factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type);
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant(
-        this IEvaluatorBuilderFactory factory, EType type, EValue<object?>? value)
+    public static IVisitorBuilder<ConstantExpression> Constant(
+        this IVisitorBuilderFactory factory, EType type, EValue<object?>? value)
         => factory
             .OfType<ConstantExpression>()
             .Equals(type, constant => constant.Type)
@@ -40,7 +40,7 @@ public static class ConstantEvaluatorExtensions
                     .Then((node, value) => node.Equals(value, constant => constant.Value))
             ]);
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilder<ConstantExpression> Constant<T>(this IVisitorBuilderFactory factory)
     {
         EType type = typeof(T);
 
@@ -49,8 +49,8 @@ public static class ConstantEvaluatorExtensions
             .Equals(type, constant => constant.Type);
     }
 
-    public static IEvaluatorBuilder<ConstantExpression> Constant<T>(
-        this IEvaluatorBuilderFactory factory, EValue<T?>? value)
+    public static IVisitorBuilder<ConstantExpression> Constant<T>(
+        this IVisitorBuilderFactory factory, EValue<T?>? value)
     {
         EType type = typeof(T);
         value ??= EValue<T>.Null();

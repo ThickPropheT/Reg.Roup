@@ -4,10 +4,10 @@ namespace TreeVal.Eval;
 
 public static class EachChildEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<TNode> WithEachChildBeing<TNode, TChild>(
-        this IEvaluatorBuilder<TNode> builder,
+    public static IVisitorBuilder<TNode> WithEachChildBeing<TNode, TChild>(
+        this IVisitorBuilder<TNode> builder,
         Func<TNode, IEnumerable<TChild>> selectChildren,
-        Func<TChild, INodeEvaluatorFactory> getEvaluator
+        Func<TChild, IVisitorFactory> getEvaluator
     )
     {
         builder.AddChildren(node => selectChildren(node).Select(getEvaluator));

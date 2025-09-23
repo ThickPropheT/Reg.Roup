@@ -4,34 +4,36 @@ using TreeVal.Media;
 
 namespace TreeVal.Scaffolding;
 
-public class BuilderFactoryAspect : IEvaluatorBuilderFactory
+public class BuilderFactoryAspect : IVisitorBuilderFactory
 {
-    private readonly IEvaluatorBuilderFactory _source;
-    private readonly Func<INodeEvaluator, INodeEvaluator> _pipe;
+    private readonly IVisitorBuilderFactory _source;
+    private readonly Func<IVisitor, IVisitor> _pipe;
 
-    public BuilderFactoryAspect(IEvaluatorBuilderFactory source, Func<INodeEvaluator, INodeEvaluator> pipe)
+    public IStageDirector StageDirector => _source.StageDirector;
+
+    public BuilderFactoryAspect(IVisitorBuilderFactory source, Func<IVisitor, IVisitor> pipe)
     {
         _source = source;
         _pipe = pipe;
     }
 
-    public IEvaluatorBuilder Where(Func<Node, bool> predicate, string predicateExpression = "")
+    public IVisitorBuilder Where(Func<Node, bool> predicate, string predicateExpression = "")
         => new ProxyEvaluatorBuilder((conditions, childLookups) =>
             ThroughPipe(_source.Where(predicate, predicateExpression), conditions, childLookups));
 
-    public IEvaluatorBuilder<T> OfType<T>()
-        => new ProxyEvaluatorBuilder<T>((conditions, childLookups)
-            => ThroughPipe(_source.OfType<T>(), conditions, childLookups));
+    public IVisitorBuilder<T> OfType<T>()
+        => new ProxyEvaluatorBuilder<T>((conditions, childLookups) =>
+            ThroughPipe(_source.OfType<T>(), conditions, childLookups));
 
-    public IEvaluatorBuilder OneOf(
-        INodeEvaluatorFactory option1, INodeEvaluatorFactory option2, params INodeEvaluatorFactory[] options)
-        => new ProxyEvaluatorBuilder((conditions, _)
-            => ThroughPipe(_source.OneOf(option1, option2, options), conditions, []));
+    public IVisitorBuilder OneOf(
+        IVisitorFactory option1, IVisitorFactory option2, params IVisitorFactory[] options)
+        => new ProxyEvaluatorBuilder((conditions, _) =>
+            ThroughPipe(_source.OneOf(option1, option2, options), conditions, []));
 
-    private INodeEvaluator ThroughPipe(
-        IEvaluatorBuilder builder,
+    private IVisitor ThroughPipe(
+        IVisitorBuilder builder,
         IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
-        IEnumerable<Func<Node, IEnumerable<INodeEvaluatorFactory>>> childLookups
+        IEnumerable<Func<Node, IEnumerable<IVisitorFactory>>> childLookups
     )
     {
         foreach (var conditionLookup in conditionLookups)
@@ -44,8 +46,8 @@ public class BuilderFactoryAspect : IEvaluatorBuilderFactory
             builder.AddChildren(childLookup);
         }
 
-        var evaluator = builder.ToEvaluator();
+        var visitor = builder.CreateVisitor();
 
-        return _pipe(evaluator);
+        return _pipe(visitor);
     }
 }

@@ -3,7 +3,7 @@ using TreeVal.Media;
 
 namespace TreeVal.Eval.AcceptChildren;
 
-public class AcceptChildrenNodeEvaluator : NodeEvaluator
+public class AcceptChildrenNodeEvaluator : Visitor
 {
     private readonly Node _parent;
     private readonly IVisitationRecorder _recorder;

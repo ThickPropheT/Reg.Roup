@@ -7,8 +7,8 @@ namespace TreeVal.Eval;
 
 public static class WhereEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Where(
-        this IEvaluatorBuilder builder,
+    public static IVisitorBuilder Where(
+        this IVisitorBuilder builder,
         Func<Node, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""
@@ -18,14 +18,14 @@ public static class WhereEvaluatorExtensions
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> Where<T>(
-        this IEvaluatorBuilder<T> builder,
-        Func<T, bool> predicate,
+    public static IVisitorBuilder<TNode> Where<TNode>(
+        this IVisitorBuilder<TNode> builder,
+        Func<TNode, bool> predicate,
         [CallerArgumentExpression(nameof(predicate))]
         string predicateExpression = ""
     )
     {
-        builder.AddCondition(new WhereCondition<T>(predicateExpression, predicate));
+        builder.AddCondition(new WhereCondition<TNode>(predicateExpression, predicate));
         return builder;
     }
 }

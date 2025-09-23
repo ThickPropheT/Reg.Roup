@@ -9,7 +9,7 @@ namespace TreeVal.Expr.Object;
 //  add overloads that expose the options supported.
 public static class ConstructorEvaluatorExtensions
 {
-    public static IEvaluatorBuilder<NewExpression> New(this IEvaluatorBuilderFactory factory)
+    public static IVisitorBuilder<NewExpression> New(this IVisitorBuilderFactory factory)
         => factory
             .OfType<NewExpression>()
             .Where(@new => @new.Constructor != null);

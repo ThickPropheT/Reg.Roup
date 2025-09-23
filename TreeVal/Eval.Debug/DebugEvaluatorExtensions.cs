@@ -7,85 +7,86 @@ namespace TreeVal.Eval.Debug;
 
 public static class DebugEvaluatorExtensions
 {
-    public static IEvaluatorBuilder Debug(
-        this IEvaluatorBuilder builder, Action<object, IConditionEvaluation> observe)
+    public static IVisitorBuilder Debug(
+        this IVisitorBuilder builder, Action<object, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer(observe));
         return builder;
     }
 
-    public static IEvaluatorBuilder Debug(
-        this IEvaluatorBuilder builder, string label, Action<object, IConditionEvaluation> observe)
+    public static IVisitorBuilder Debug(
+        this IVisitorBuilder builder, string label, Action<object, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer(observe) { Label = label });
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> Debug<T>(
-        this IEvaluatorBuilder<T> builder, Action<T, IConditionEvaluation> observe)
+    public static IVisitorBuilder<T> Debug<T>(
+        this IVisitorBuilder<T> builder, Action<T, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer<T>(observe));
         return builder;
     }
 
-    public static IEvaluatorBuilder<T> Debug<T>(
-        this IEvaluatorBuilder<T> builder, string label, Action<T, IConditionEvaluation> observe)
+    public static IVisitorBuilder<T> Debug<T>(
+        this IVisitorBuilder<T> builder, string label, Action<T, IConditionEvaluation> observe)
     {
         builder.AddCondition(new Observer<T>(observe) { Label = label });
         return builder;
     }
 
-    public static IEvaluatorBuilderFactory Debug(
-        this IEvaluatorBuilderFactory factory, Action<object, IConditionEvaluation> observe)
+    public static IVisitorBuilderFactory Debug(
+        this IVisitorBuilderFactory factory, Action<object, IConditionEvaluation> observe)
         => new BuilderFactoryAspect(
             factory,
-            evaluator => new AttachDebuggerEvaluator(
-                evaluator,
+            visitor => new AttachDebuggerVisitor(
+                visitor,
                 () =>
                     factory
                         .AnyOne()
                         .Debug((o, evaluation) => observe(o, evaluation))));
 
-    public static IEvaluatorBuilderFactory Debug(
-        this IEvaluatorBuilderFactory factory, string label, Action<object, IConditionEvaluation> observe)
+    public static IVisitorBuilderFactory Debug(
+        this IVisitorBuilderFactory factory, string label, Action<object, IConditionEvaluation> observe)
         => new BuilderFactoryAspect(
             factory,
-            evaluator => new AttachDebuggerEvaluator(
-                evaluator,
+            visitor => new AttachDebuggerVisitor(
+                visitor,
                 () =>
                     factory
                         .AnyOne()
                         .Debug(label, (o, evaluation) => observe(o, evaluation))));
 
-    private class AttachDebuggerEvaluator : INodeEvaluator
+    private class AttachDebuggerVisitor : IVisitor
     {
-        private readonly INodeEvaluator _target;
-        private readonly Func<INodeEvaluatorFactory> _buildDebugEvaluator;
+        private readonly IVisitor _target;
+        private readonly Func<IVisitorFactory> _buildDebugEvaluator;
 
-        public VisitationContext.MovementStrategy HeadMovementStrategy => _target.HeadMovementStrategy;
-
-        public VisitationContext.EvaluationStrategy? ChildEvaluationStrategy => _target.ChildEvaluationStrategy;
-
-        public AttachDebuggerEvaluator(INodeEvaluator target, Func<INodeEvaluatorFactory> buildDebugEvaluator)
+        public AttachDebuggerVisitor(IVisitor target, Func<IVisitorFactory> buildDebugEvaluator)
         {
             _target = target;
             _buildDebugEvaluator = buildDebugEvaluator;
         }
-
+        
         public IEnumerable<ICondition> EnumerateConditions(Node current)
             => _target.EnumerateConditions(current);
 
-        public IEnumerable<INodeEvaluatorFactory> EnumerateChildren(Node current)
+        public IEnumerable<IVisitorFactory> EnumerateChildren(Node current)
         {
             throw new NotImplementedException(
                 "I think this debug option may not be 'invisible'. I think it's inclusion in a schema causes a double move-forward of the tape head.");
-
+            
             yield return _buildDebugEvaluator();
 
             foreach (var childBuilder in _target.EnumerateChildren(current))
             {
                 yield return childBuilder;
             }
+        }
+
+        public void Visit(TapeHead head)
+        {
+            
         }
     }
 }

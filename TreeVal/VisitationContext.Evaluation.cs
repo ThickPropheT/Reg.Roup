@@ -7,9 +7,9 @@ using TreeVal.Scaffolding;
 namespace TreeVal;
 
 // TODO why is it called VisitationContext? could it be called something better?
-public partial class VisitationContext
+public class VisitationContext
 {
-    public static void EvaluateTree(TapeHead head, INodeEvaluatorFactory schema)
+    public static void EvaluateTree(TapeHead head, IVisitorFactory schema)
     {
         var context = new VisitationContext(head);
         var evaluation = new DefaultNodeEvaluation(null, schema);
