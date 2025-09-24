@@ -4,9 +4,9 @@ namespace TreeVal.Scaffolding;
 
 public static class DefaultVisitorBuilder
 {
-    public static VisitorBuilder Create(IVisitorBuilderFactory creator)
+    public static VisitorBuilder Create(IVisitorBuilderFactory originator)
     {
-        var builder = new VisitorBuilder(creator);
+        var builder = new VisitorBuilder(originator);
 
         builder
             .Get<IReadNodeStageBuilder>()
@@ -15,9 +15,9 @@ public static class DefaultVisitorBuilder
         return builder;
     }
 
-    public static VisitorBuilder<TNode> Create<TNode>(IVisitorBuilderFactory creator)
+    public static VisitorBuilder<TNode> Create<TNode>(IVisitorBuilderFactory originator)
     {
-        var builder = new VisitorBuilder<TNode>(creator);
+        var builder = new VisitorBuilder<TNode>(originator);
 
         builder
             .Get<IReadNodeStageBuilder>()

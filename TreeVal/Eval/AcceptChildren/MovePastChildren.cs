@@ -1,34 +1,31 @@
-using TreeVal.Eval.Condition;
 using TreeVal.Media;
 
 namespace TreeVal.Eval.AcceptChildren;
 
-public class AcceptChildrenNodeEvaluator : Visitor
+public class MovePastChildren : IAfterEnteringBehavior
 {
     private readonly Node _parent;
     private readonly IVisitationRecorder _recorder;
 
-    public AcceptChildrenNodeEvaluator(
-        IEnumerable<Func<Node, IEnumerable<ICondition>>> conditionLookups,
-        Node parent,
-        IVisitationRecorder recorder
-    )
-        : base(conditionLookups, [])
+    public MovePastChildren(Node parent, IVisitationRecorder recorder)
     {
         _parent = parent;
         _recorder = recorder;
-        HeadMovementStrategy = VisitationContext.MovementStrategy.From(MoveHead);
     }
 
-    private Node? MoveHead(VisitationContext _, TapeHead head, INodeEvaluation evaluation)
+    public IStageContext Perform(IStageContext currentContext)
     {
+        var head = currentContext.TapeHead;
+
         var childTape = _recorder.RecordVisitationOf(_parent).ToList();
         childTape.Remove(_parent);
 
         if (!childTape.Any())
         {
+            throw new NotImplementedException("This isn't 1:1 with how things used to work");
+
             // there weren't any children, actually.
-            return null;
+            return currentContext;
         }
 
         var current = head.Read();
@@ -105,6 +102,6 @@ public class AcceptChildrenNodeEvaluator : Visitor
             head.MoveForward();
         }
 
-        return current;
+        return new StageContext(head);
     }
 }

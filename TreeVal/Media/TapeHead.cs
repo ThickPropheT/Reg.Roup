@@ -5,8 +5,10 @@ namespace TreeVal.Media;
 public interface ITapeHead
 {
     Node Read();
+    IEnumerable<Node> ReadToStart();
 
     Node MoveForward();
+    Node? PeekForward();
 }
 
 public class TapeHead : ITapeHead, IDescribable
