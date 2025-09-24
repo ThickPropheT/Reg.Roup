@@ -5,6 +5,7 @@ namespace TreeVal.Eval;
 public class VisitChildrenStageBuilder : VisitationStageBuilder, IVisitChildrenStageBuilder
 {
     public VisitChildrenStageBuilder()
+        : base(new IVisitationStageBuilder.Identity<IVisitChildrenStageBuilder>())
     {
         BeforeLeaving(_ => new RejectIfAnyBehaviorFailed());
     }

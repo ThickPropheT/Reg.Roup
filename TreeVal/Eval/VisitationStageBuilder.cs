@@ -11,7 +11,7 @@ public class VisitationStageBuilder : IVisitationStageBuilder
 
     public IVisitationStageBuilder.Identity Key { get; }
 
-    public VisitationStageBuilder(IVisitationStageBuilder.Identity? key = null)
+    public VisitationStageBuilder(IVisitationStageBuilder.Identity? key)
     {
         Key = key ?? new IVisitationStageBuilder.Identity<IVisitationStageBuilder>();
     }

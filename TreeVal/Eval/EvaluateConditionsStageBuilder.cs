@@ -5,6 +5,7 @@ namespace TreeVal.Eval;
 public class EvaluateConditionsStageBuilder : VisitationStageBuilder, IEvaluateConditionsStageBuilder
 {
     public EvaluateConditionsStageBuilder()
+        : base(new IVisitationStageBuilder.Identity<IEvaluateConditionsStageBuilder>())
     {
         BeforeLeaving(_ => new RejectIfAnyBehaviorFailed());
     }
