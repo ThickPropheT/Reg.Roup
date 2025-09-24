@@ -28,8 +28,8 @@ public class DefaultNodeEvaluation : INodeEvaluation
         _evaluatorFactory = evaluatorFactory;
     }
 
-    public IVisitor GetEvaluator()
-        => Evaluator ??= _evaluatorFactory.CreateVisitor();
+    public IVisitor GetEvaluator(Node node)
+        => Evaluator ??= _evaluatorFactory.CreateVisitor(node);
 
     public Node? GetTarget(VisitationContext context)
     {
@@ -38,9 +38,10 @@ public class DefaultNodeEvaluation : INodeEvaluation
 
         try
         {
-            var evaluator = GetEvaluator();
             var moveHead = evaluator.HeadMovementStrategy.GetStrategy(context, this);
-            return Target = moveHead(context.Head);
+            var target = moveHead(context.Head);
+            var evaluator = GetEvaluator(target);
+            return Target = target;
         }
         catch (IndexOutOfRangeException)
         {

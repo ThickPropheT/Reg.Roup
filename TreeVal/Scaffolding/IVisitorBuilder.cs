@@ -1,36 +1,18 @@
 using TreeVal.Eval;
+using TreeVal.Media;
 
 namespace TreeVal.Scaffolding;
 
 public interface IVisitorBuilder : IVisitorFactory
 {
     IVisitorBuilderFactory Originator { get; }
-    
-    IStageQuery<TStage> Get<TStage>()
-        where TStage : IVisitationStageBuilder;
-    
-    IStageQuery<TStage> Get<TStage>(Key<TStage> key)
-        where TStage : IVisitationStageBuilder;
 
-    public class Key<T>
+    void OnDiscovery(Action<Node, IDiscovered> callback);
+
+    interface IDiscovered
     {
-        private readonly object _identity;
-
-        public Key()
-        {
-            _identity = typeof(T);
-        }
-
-        public Key(object identity)
-        {
-            _identity = identity;
-        }
-    }
-
-    public interface IStageQuery<TStage>
-    {
-        TStage? Stage();
-        TStage OrCreateStage(Func<TStage>? createStage = null);
+        IVisitationStageBuilder? Get(IVisitationStageBuilder.Identity key);
+        void Set(IVisitationStageBuilder builder);
     }
 }
 

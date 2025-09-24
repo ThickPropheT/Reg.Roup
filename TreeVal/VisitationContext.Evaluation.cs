@@ -36,11 +36,12 @@ public class VisitationContext
 
     public void Evaluate(INodeEvaluation evaluation)
     {
-        var evaluator = evaluation.GetEvaluator();
         var current = evaluation.GetTarget(this);
 
         if (current == null)
             return;
+
+        var evaluator = evaluation.GetEvaluator(current);
 
         // in the most ideal case, we'll want to iterate all the conditions below
         // for the purpose of evaluating them. may as well get it out of the way.

@@ -33,7 +33,7 @@ public static class WithEvaluatorExtensions
             _node = new Node<T>(t);
         }
 
-        public override IVisitor CreateVisitor()
+        public override IVisitor CreateVisitor(Node node)
             => new Visitor();
 
         protected Visitor ToEvaluatorImpl(

@@ -10,104 +10,87 @@ public static class CaseEvaluatorExtensions
         Func<ICase<IVisitorBuilder<TNode>>, TNode, IThen[]> body
     )
     {
-        builder.AddConditions(node =>
-        {
-            var (conditionLookups, _) = ProxyEvaluatorBuilder<TNode>
-                .Scoped(standIn =>
-                    body(new CaseImpl<IEvaluatorBuilder<TNode>>(standIn), node)
-                );
-            
-            return conditionLookups.SelectMany(conditionLookup => conditionLookup(new Node(node!)));
-        });
-        
-        // before
-        builder.AddChildren(node =>
-        {
-            var (_, childLookups) = ProxyEvaluatorBuilder<TNode>
-                .Scoped(standIn =>
-                    body(new CaseImpl<IVisitorBuilder<TNode>>(standIn), node)
-                );
-
-            return childLookups.SelectMany(childLookup => childLookup(new Node(node!)));
-        });
-        
-        // after
-        builder
-            .Get<IEvaluateChildrenStageBuilder>()
-            .OrCreateStage()
-            .AddChildren(node =>
-            {
-                var (_, childLookups) = ProxyEvaluatorBuilder<TNode>
-                    .Scoped(standIn =>
-                        body(new CaseImpl<IVisitorBuilder<TNode>>(standIn), (TNode)node.Value)
-                    );
-
-                return childLookups.SelectMany(childLookup => childLookup(new Node(node!)));
-            });
+        builder.OnDiscovery((n, discovered) =>
+            body(
+                new CaseImpl<TNode>(new DiscoveryRecorder<TNode>(builder.Originator, n, discovered)),
+                (TNode) n.Value
+            ));
 
         return builder;
     }
 
-    private class Builder : VisitorBuilder
+    class DiscoveryRecorder<TNode> : VisitorBuilder<TNode>
     {
-        public Builder(IVisitorBuilderFactory originator) 
+        private readonly IVisitorBuilder.IDiscovered _discovered;
+        private readonly Node _node;
+
+        public DiscoveryRecorder(IVisitorBuilderFactory originator, Node node, IVisitorBuilder.IDiscovered discovered)
             : base(originator)
         {
+            _node = node;
+            _discovered = discovered;
         }
-    }
 
-    private class CaseImpl<TBuilder> : ICase<TBuilder>
-        where TBuilder : IVisitorBuilder
-    {
-        private readonly TBuilder _builder;
-
-        public CaseImpl(TBuilder builder)
+        public void RecordDiscoveries(Action during)
         {
-            _builder = builder;
-        }
+            during();
 
-        public ITarget<TBuilder, T> When<T>(T? target)
-            => new TargetImpl<TBuilder, T>(_builder, target);
+            foreach (var stage in DiscoverStages(_node))
+            {
+                _discovered.Set(stage);
+            }
+        }
     }
 
-    private class TargetImpl<TBuilder, T> : ITarget<TBuilder, T>
-        where TBuilder : IVisitorBuilder
+    private class CaseImpl<TNode> : ICase<IVisitorBuilder<TNode>>
     {
-        private readonly TBuilder _builder;
+        private readonly DiscoveryRecorder<TNode> _recorder;
+
+        public CaseImpl(DiscoveryRecorder<TNode> recorder)
+        {
+            _recorder = recorder;
+        }
+
+        public ITarget<IVisitorBuilder<TNode>, T> When<T>(T? target)
+            => new TargetImpl<TNode, T>(_recorder, target);
+    }
+
+    private class TargetImpl<TNode, T> : ITarget<IVisitorBuilder<TNode>, T>
+    {
+        private readonly DiscoveryRecorder<TNode> _recorder;
         private readonly T? _target;
 
-        public TargetImpl(TBuilder builder, T? target)
+        public TargetImpl(DiscoveryRecorder<TNode> recorder, T? target)
         {
-            _builder = builder;
+            _recorder = recorder;
             _target = target;
         }
 
-        public IWhen<TBuilder, T> IsNotNull()
-            => new WhenImpl<TBuilder, T>(_builder, _target);
+        public IWhen<IVisitorBuilder<TNode>, T> IsNotNull()
+            => new WhenImpl<TNode, T>(_recorder, _target);
 
-        public IWhen<TBuilder, T> IsTrue(Func<T, bool> predicate)
-            => new WhenImpl<TBuilder, T>(_builder, _target, predicate);
+        public IWhen<IVisitorBuilder<TNode>, T> IsTrue(Func<T, bool> predicate)
+            => new WhenImpl<TNode, T>(_recorder, _target, predicate);
     }
 
-    private class WhenImpl<TBuilder, T> : IWhen<TBuilder, T>
-        where TBuilder : IVisitorBuilder
+    private class WhenImpl<TNode, T> : IWhen<IVisitorBuilder<TNode>, T>
     {
-        private readonly TBuilder _builder;
+        private readonly DiscoveryRecorder<TNode> _recorder;
         private readonly T? _target;
         private readonly Func<T, bool>? _predicate;
 
-        public WhenImpl(TBuilder builder, T? target, Func<T, bool>? predicate = null)
+        public WhenImpl(DiscoveryRecorder<TNode> recorder, T? target, Func<T, bool>? predicate = null)
         {
-            _builder = builder;
+            _recorder = recorder;
             _target = target;
             _predicate = predicate;
         }
 
-        public IThen Then(Func<TBuilder, T, TBuilder> condition)
+        public IThen Then(Func<IVisitorBuilder<TNode>, T, IVisitorBuilder<TNode>> callback)
         {
             if (_target != null && _predicate?.Invoke(_target) != false)
             {
-                condition(_builder, _target!);
+                _recorder.RecordDiscoveries(during: () => callback(_recorder, _target));
             }
 
             return ThenInstance;
@@ -133,7 +116,7 @@ public interface IWhen<TBuilder, out T>
     //  does this actually need to return IThen?
     //  it /does/ provide a warm & fuzzy that the caller
     //  of the outer Case(...) method is using it correctly.
-    IThen Then(Func<TBuilder, T, TBuilder> condition);
+    IThen Then(Func<TBuilder, T, TBuilder> callback);
 }
 
 public interface ITarget<TBuilder, out T>

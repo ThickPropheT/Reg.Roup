@@ -4,8 +4,8 @@ namespace TreeVal.Scaffolding;
 
 public interface IStageDirector
 {
-    IVisitorBuilder.Key<TStage> ValidateKey<TStage>(IVisitorBuilder.Key<TStage> key);
-    
+    IVisitationStageBuilder.Identity ValidateKey(IVisitationStageBuilder.Identity key);
+
     TStage Create<TStage>()
         where TStage : IVisitationStageBuilder;
 

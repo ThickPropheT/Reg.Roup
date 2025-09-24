@@ -1,12 +1,13 @@
 using TreeVal.Eval;
+using TreeVal.Media;
 
 namespace TreeVal.Scaffolding;
 
 public class VisitorBuilder : IVisitorBuilder
 {
     private readonly IStageDirector _director;
-    private readonly Dictionary<object, IVisitationStageBuilder> _stages = new(1);
-    
+    private Action<Node, IVisitorBuilder.IDiscovered>? _discover;
+
     public IVisitorBuilderFactory Originator { get; }
 
     public VisitorBuilder(IVisitorBuilderFactory originator)
@@ -15,50 +16,43 @@ public class VisitorBuilder : IVisitorBuilder
         Originator = originator;
     }
 
-    public IVisitorBuilder.IStageQuery<TStage> Get<TStage>()
-        where TStage : IVisitationStageBuilder
-        => Get(new IVisitorBuilder.Key<TStage>(this));
+    public void OnDiscovery(Action<Node, IVisitorBuilder.IDiscovered> callback)
+    {
+        _discover = (n, discovered) =>
+        {
+            _discover?.Invoke(n, discovered);
+            callback(n, discovered);
+        };
+    }
 
-    public IVisitorBuilder.IStageQuery<TStage> Get<TStage>(IVisitorBuilder.Key<TStage> key)
-        where TStage : IVisitationStageBuilder
-        => new StageQuery<TStage>(this, _director.ValidateKey(key));
-
-    public virtual IVisitor CreateVisitor()
+    public virtual IVisitor CreateVisitor(Node node)
         => new Visitor(
             _director
-                .Arrange(_stages.Values)
+                .Arrange(DiscoverStages(node))
                 .Select(builder => builder.CreateStage())
         );
 
-    private class StageQuery<TStage> : IVisitorBuilder.IStageQuery<TStage>
-        where TStage : IVisitationStageBuilder
+    protected IEnumerable<IVisitationStageBuilder> DiscoverStages(Node node)
     {
-        private readonly VisitorBuilder _builder;
-        private readonly IVisitorBuilder.Key<TStage> _key;
+        if (_discover == null)
+            return [];
 
-        public StageQuery(VisitorBuilder builder, IVisitorBuilder.Key<TStage> key)
-        {
-            _builder = builder;
-            _key = key;
-        }
+        var discovered = new Discovered();
+        _discover(node, discovered);
+        return discovered.Stages;
+    }
 
-        public TStage? Stage()
-            => _builder._stages.TryGetValue(_key, out var stage)
-                ? (TStage) stage
-                : default;
+    private class Discovered : IVisitorBuilder.IDiscovered
+    {
+        private readonly Dictionary<IVisitationStageBuilder.Identity, IVisitationStageBuilder> _stages = new(1);
 
-        public TStage OrCreateStage(Func<TStage>? createStage = null)
-        {
-            createStage ??= () => _builder._director.Create<TStage>();
+        public IVisitationStageBuilder? Get(IVisitationStageBuilder.Identity key)
+            => _stages.GetValueOrDefault(key);
 
-            if (!_builder._stages.TryGetValue(_key, out var stage))
-            {
-                stage = createStage();
-                _builder._stages[_key] = stage;
-            }
+        public void Set(IVisitationStageBuilder builder)
+            => _stages[builder.Key] = builder;
 
-            return (TStage) stage;
-        }
+        public IEnumerable<IVisitationStageBuilder> Stages => _stages.Values;
     }
 }
 
@@ -67,38 +61,5 @@ public class VisitorBuilder<TNode> : VisitorBuilder, IVisitorBuilder<TNode>
     public VisitorBuilder(IVisitorBuilderFactory originator)
         : base(originator)
     {
-    }
-}
-
-public static class DefaultVisitorBuilder
-{
-    public static VisitorBuilder Create(IVisitorBuilderFactory creator)
-    {
-        var builder = new VisitorBuilder(creator);
-
-        builder
-            .Get<IReadNodeStageBuilder>()
-            .OrCreateStage(() => new MoveForwardStageBuilder());
-
-        return builder;
-    }
-    
-    public static VisitorBuilder<TNode> Create<TNode>(IVisitorBuilderFactory creator)
-    {
-        var builder = new VisitorBuilder<TNode>(creator);
-
-        builder
-            .Get<IReadNodeStageBuilder>()
-            .OrCreateStage(() => new MoveForwardStageBuilder());
-
-        return builder;
-    }
-}
-
-public class MoveForwardStageBuilder : VisitationStageBuilder, IReadNodeStageBuilder
-{
-    public MoveForwardStageBuilder()
-    {
-        AfterEntering(_ => new MediaBehavior.MoveForward());
     }
 }

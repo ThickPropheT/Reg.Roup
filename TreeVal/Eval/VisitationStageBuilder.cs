@@ -9,6 +9,13 @@ public class VisitationStageBuilder : IVisitationStageBuilder
 
     private readonly List<Func<Node, IEnumerable<IBehavior>>> _behaviorFactories = [];
 
+    public IVisitationStageBuilder.Identity Key { get; }
+
+    public VisitationStageBuilder(IVisitationStageBuilder.Identity? key = null)
+    {
+        Key = key ?? new IVisitationStageBuilder.Identity<IVisitationStageBuilder>();
+    }
+
     public void AfterEntering(Func<Node, IAfterEnteringBehavior> afterEntering)
         => _afterEntering = afterEntering;
 

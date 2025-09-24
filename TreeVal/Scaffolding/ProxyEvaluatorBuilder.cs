@@ -38,7 +38,7 @@ public class ProxyEvaluatorBuilder : VisitorBuilder
         return (builder.ConditionLookups, builder.ChildLookups);
     }
 
-    public override IVisitor CreateVisitor()
+    public override IVisitor CreateVisitor(Node node)
         => _toEvaluator?.Invoke(conditionLookups, childLookups)
            ?? throw new NotSupportedException();
 }
