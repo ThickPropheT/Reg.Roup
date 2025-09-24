@@ -10,5 +10,5 @@ public class EvaluateConditionsStageBuilder : VisitationStageBuilder, IEvaluateC
     }
 
     public void AddConditions(Func<IEnumerable<ICondition>> getConditions)
-        => AddBehaviors(_ => getConditions().Select(condition => new Evaluate(condition)));
+        => AddBehaviors(n => getConditions().Select(condition => new Evaluate(condition, n)));
 }

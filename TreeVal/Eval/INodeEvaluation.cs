@@ -12,7 +12,7 @@ public interface INodeEvaluation : IDescribable
     IConditionEvaluation[] ConditionEvaluations { get; }
     IEnumerable<INodeEvaluation> ChildEvaluations { get; }
 
-    IVisitor GetEvaluator();
+    IVisitor GetEvaluator(Node node);
     Node? GetTarget(VisitationContext context);
 
     void Record(IEnumerable<IConditionEvaluation> conditionEvaluations);

@@ -23,24 +23,25 @@ public class VisitorBuilderFactory : IVisitorBuilderFactory
     public IVisitorBuilder<TNode> OfType<TNode>()
     {
         var builder = DefaultVisitorBuilder.Create<TNode>(this);
-        
+
         builder.AddCondition(NodeTypeCondition.AssertMatching<TNode>());
 
         return builder;
     }
 
     public IVisitorBuilder OneOf(
-            IVisitorFactory option1, IVisitorFactory option2, params IVisitorFactory[] options)
-        => new ProxyEvaluatorBuilder(behaviors =>
-            new OneOfNodeEvaluator(behaviors, new[] { option1, option2 }.Concat(options).ToArray()));
-    // {
-    //     var builder = DefaultVisitorBuilder.Create(this);
-    //     
-    //     var stageBuilder = builder
-    //         .Get<IVisitChildrenStageBuilder>()
-    //         .OrCreateStage();
-    //
-    //
-    //     return builder;
-    // }
+        IVisitorFactory option1, IVisitorFactory option2, params IVisitorFactory[] options)
+    {
+        var builder = DefaultVisitorBuilder.Create(this);
+        options = new[] { option1, option2 }.Concat(options).ToArray();
+
+        builder
+            .Get<IVisitChildrenStageBuilder>()
+            .OrCreateStage(
+                (_, childrenStage) => childrenStage.AddChildren(() => options),
+                _ => new OneOfConditionsStageBuilder()
+            );
+
+        return builder;
+    }
 }

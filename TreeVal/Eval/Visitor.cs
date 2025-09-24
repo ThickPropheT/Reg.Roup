@@ -25,14 +25,14 @@ public class Visitor : IVisitor
     private class InitialStageContext : IStageContext
     {
         public ITapeHead TapeHead { get; }
-        
+
         public IEnumerable<BehaviorContext> Visitations { get; }
 
         public InitialStageContext(ITapeHead tapeHead)
         {
             TapeHead = tapeHead;
         }
-        
+
         public Node ReadCurrentNode()
         {
             throw new NotImplementedException();
