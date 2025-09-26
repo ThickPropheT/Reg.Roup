@@ -27,7 +27,7 @@ public static class AcceptChildrenEvaluatorExtensions
         public MovePastChildrenStageBuilder(Node parent, IVisitationRecorder recorder)
             : base(new IVisitationStageBuilder.Identity<IReadNodeStageBuilder>())
         {
-            AfterEntering(_ => new MovePastChildren(parent, recorder));
+            AfterEntering(_ => new MediaBehavior.SkipChildren(parent, recorder));
         }
     }
 }
