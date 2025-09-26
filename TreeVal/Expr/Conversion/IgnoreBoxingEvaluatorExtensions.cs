@@ -13,8 +13,11 @@ public static class IgnoreBoxingEvaluatorExtensions
             {
                 builder
                     .Get<IReadNodeStageBuilder>()
-                    .OrCreateStage(_ => new SkipWhileStageBuilder(n =>
-                        n.Value is UnaryExpression { NodeType: ExpressionType.Convert })
+                    .OrCreateStage((_, readStage) =>
+                        readStage.AfterEntering(_ =>
+                            new MediaBehavior.SkipWhile(n =>
+                                n.Value is UnaryExpression { NodeType: ExpressionType.Convert }
+                            ))
                     );
 
                 return builder;
