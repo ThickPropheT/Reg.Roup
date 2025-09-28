@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using TreeVal.Eval;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Eval.Where;
 
 namespace TreeVal.Expr.Object;
 

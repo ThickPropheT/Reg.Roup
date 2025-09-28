@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Expr;
+using TreeVal.Expr.Constant;
 using TreeVal.Expr.Conversion;
 
 namespace TreeVal.Tests.Cast;

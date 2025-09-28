@@ -1,5 +1,5 @@
-using TreeVal.Eval;
 using TreeVal.Media;
+using TreeVal.Stage.Eval;
 
 namespace TreeVal.Diagnostics;
 
@@ -31,7 +31,7 @@ public class TreeRejectedException : Exception
         {
             Head = head
         };
-    
+
     public static TreeRejectedException ForReadPastEnd(TapeHead head, INodeEvaluation evaluation)
         => new(evaluation, "Attempted to read past end of tape")
         {

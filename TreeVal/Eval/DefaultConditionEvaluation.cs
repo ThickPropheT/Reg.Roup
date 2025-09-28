@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using TreeVal.Diagnostics;
-using TreeVal.Eval.Condition;
 using TreeVal.Media;
+using TreeVal.Stage.Eval;
 
 namespace TreeVal.Eval;
 
@@ -11,7 +11,7 @@ public class DefaultConditionEvaluation : IConditionEvaluation
     private EvaluationStatus? _status;
 
     public INodeEvaluation Owner { get; }
-    
+
     public ICondition Evaluator { get; }
     public Node Target { get; }
 

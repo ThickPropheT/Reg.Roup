@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Eval;
-using TreeVal.Expr;
+using TreeVal.Expr.Constant;
 using TreeVal.Primitives;
 
 namespace TreeVal.Tests.Constant;
@@ -11,7 +10,7 @@ public class ByType
 {
     private static readonly Type TChild = typeof(Child);
     private static readonly Type TBase = typeof(Base);
-    
+
     private static readonly Child C1 = new();
     private static readonly Other O1 = new();
 

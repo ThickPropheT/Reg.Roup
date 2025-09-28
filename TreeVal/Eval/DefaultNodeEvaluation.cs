@@ -2,6 +2,8 @@ using System.Diagnostics;
 using TreeVal.Diagnostics;
 using TreeVal.Media;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Eval;
+using TreeVal.Visit;
 
 namespace TreeVal.Eval;
 
@@ -38,15 +40,17 @@ public class DefaultNodeEvaluation : INodeEvaluation
 
         try
         {
-            var moveHead = evaluator.HeadMovementStrategy.GetStrategy(context, this);
-            var target = moveHead(context.Head);
-            var evaluator = GetEvaluator(target);
-            return Target = target;
+            // var moveHead = evaluator.HeadMovementStrategy.GetStrategy(context, this);
+            // var target = moveHead(context.Head);
+            // var evaluator = GetEvaluator(target);
+            // return Target = target;
         }
         catch (IndexOutOfRangeException)
         {
-            throw TreeRejectedException.ForReadPastEnd(context.Head, this);
+            // throw TreeRejectedException.ForReadPastEnd(context.Head, this);
         }
+
+        throw new NotImplementedException();
     }
 
     public void Record(IEnumerable<IConditionEvaluation> conditionEvaluations)

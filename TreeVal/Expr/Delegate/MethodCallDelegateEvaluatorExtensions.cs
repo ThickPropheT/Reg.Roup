@@ -1,11 +1,16 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using TreeVal.Eval;
+using TreeVal.Expr.Constant;
 using TreeVal.Expr.Conversion;
 using TreeVal.Expr.Object;
 using TreeVal.Extensions;
 using TreeVal.Primitives;
 using TreeVal.Scaffolding;
+using TreeVal.Scaffolding.Case;
+using TreeVal.Stage.Children.HavingChildren;
+using TreeVal.Stage.Eval.Equals;
+using TreeVal.Stage.Eval.Where;
+using TreeVal.Visit.With;
 
 namespace TreeVal.Expr.Delegate;
 

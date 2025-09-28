@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using TreeVal.Eval;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Read;
 
 namespace TreeVal.Expr.Conversion;
 
@@ -12,9 +12,9 @@ public static class IgnoreBoxingEvaluatorExtensions
             builder =>
             {
                 builder
-                    .Get<IReadNodeStageBuilder>()
+                    .GetReadStage()
                     .OrCreateStage((_, readStage) =>
-                        readStage.AfterEntering(_ =>
+                        readStage.AfterEntering((_, c) =>
                             new MediaBehavior.SkipWhile(n =>
                                 n.Value is UnaryExpression { NodeType: ExpressionType.Convert }
                             ))

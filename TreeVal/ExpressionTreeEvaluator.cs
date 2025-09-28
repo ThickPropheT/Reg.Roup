@@ -22,7 +22,7 @@ public class ExpressionTreeEvaluator
         Func<IVisitorBuilderFactory, IVisitorFactory> buildEvaluatorTree,
         IDescriptionBuilder? descriptionBuilder = null)
     {
-        var factory = new VisitorBuilderFactory();
+        var factory = new VisitorBuilderFactory(null);
 
         var root = buildEvaluatorTree(factory);
 
@@ -33,7 +33,7 @@ public class ExpressionTreeEvaluator
 
         return new ExpressionTreeEvaluator(root, descriptionBuilder);
     }
-    
+
     public ExpressionTreeEvaluator WithName(string name)
     {
         Name = name;
@@ -45,7 +45,7 @@ public class ExpressionTreeEvaluator
         var tape = LinearExpressionTreeRecorder
             .RecordVisitationOf(expressionTree)
             .ToArray<Node>();
-        
+
         var head = new TapeHead(tape);
 
         try

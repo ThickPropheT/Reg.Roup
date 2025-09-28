@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
-using TreeVal.Eval;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Children.HavingChildren;
+using TreeVal.Stage.Eval.Equals;
 
 namespace TreeVal.Expr.Delegate;
 

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Eval;
-using TreeVal.Eval.AcceptChildren;
+using TreeVal.Stage.Children.HavingChildren;
+using TreeVal.Stage.Children.SkipChildren;
 
 namespace TreeVal.Tests;
 

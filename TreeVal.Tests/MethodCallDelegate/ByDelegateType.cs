@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
-using TreeVal.Eval.AcceptChildren;
 using TreeVal.Expr.Delegate;
+using TreeVal.Stage.Children.SkipChildren;
 using TreeVal.Tests.__Resources.Dummies;
 using TreeVal.Tests.__Resources.Tools;
 
@@ -51,7 +51,7 @@ public class ByDelegateType
     {
         Assert.That(() => evaluator.Evaluate(validExpression), Throws.Nothing);
     }
-    
+
     [Test, Combinatorial]
     public void ThrowsOnInvalidSchemas(
         [ValueSource(nameof(Evaluators))] ExpressionTreeEvaluator evaluator,

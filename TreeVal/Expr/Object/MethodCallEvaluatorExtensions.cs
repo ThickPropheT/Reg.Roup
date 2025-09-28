@@ -1,9 +1,13 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using TreeVal.Eval;
-using TreeVal.Eval.AcceptChildren;
 using TreeVal.Extensions;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Children.HavingChildren;
+using TreeVal.Stage.Children.SkipChildren;
+using TreeVal.Stage.Eval.Equals;
+using TreeVal.Stage.Eval.Is;
+using TreeVal.Stage.Eval.Where;
+using TreeVal.Visit.With;
 
 namespace TreeVal.Expr.Object;
 

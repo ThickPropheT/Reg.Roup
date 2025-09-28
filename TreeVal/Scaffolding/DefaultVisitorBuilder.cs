@@ -1,4 +1,4 @@
-using TreeVal.Eval;
+using TreeVal.Stage.Read;
 
 namespace TreeVal.Scaffolding;
 
@@ -9,7 +9,7 @@ public static class DefaultVisitorBuilder
         var builder = new VisitorBuilder(originator);
 
         builder
-            .Get<IReadNodeStageBuilder>()
+            .GetReadStage()
             .OrCreateStage(_ => new MoveForwardStageBuilder());
 
         return builder;
@@ -20,7 +20,7 @@ public static class DefaultVisitorBuilder
         var builder = new VisitorBuilder<TNode>(originator);
 
         builder
-            .Get<IReadNodeStageBuilder>()
+            .GetReadStage()
             .OrCreateStage(_ => new MoveForwardStageBuilder());
 
         return builder;

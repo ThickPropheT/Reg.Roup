@@ -1,8 +1,8 @@
 using TreeVal.Diagnostics;
 using TreeVal.Eval;
-using TreeVal.Eval.Condition;
 using TreeVal.Media;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Eval;
 
 namespace TreeVal;
 
@@ -11,7 +11,7 @@ public class VisitationContext
 {
     public static void EvaluateTree(TapeHead head, IVisitorFactory schema)
     {
-        var context = new VisitationContext(head);
+        var context = new VisitationContext(/*head*/);
         var evaluation = new DefaultNodeEvaluation(null, schema);
 
         try
@@ -45,32 +45,32 @@ public class VisitationContext
 
         // in the most ideal case, we'll want to iterate all the conditions below
         // for the purpose of evaluating them. may as well get it out of the way.
-        var conditions = evaluator.EnumerateConditions(current).ToArray();
-        var conditionEvaluations = new List<DefaultConditionEvaluation>(conditions.Length);
+        // var conditions = evaluator.EnumerateConditions(current).ToArray();
+        // var conditionEvaluations = new List<DefaultConditionEvaluation>(conditions.Length);
 
         try
         {
-            foreach (var condition in conditions)
-            {
-                var conditionEvaluation = new DefaultConditionEvaluation(evaluation, condition, current);
-                conditionEvaluations.Add(conditionEvaluation);
-
-                condition.Evaluate(current, conditionEvaluation);
-            }
+            // foreach (var condition in conditions)
+            // {
+            //     var conditionEvaluation = new DefaultConditionEvaluation(evaluation, condition, current);
+            //     conditionEvaluations.Add(conditionEvaluation);
+            //
+            //     condition.Evaluate(current, conditionEvaluation);
+            // }
         }
         catch (ConditionFailedException ex)
         {
             ex.Evaluation.Reject(ex);
         }
 
-        evaluation.Record(conditionEvaluations);
+        // evaluation.Record(conditionEvaluations);
 
         if (evaluation.Status == EvaluationStatus.Rejected)
             // don't bother evaluating children if a rejection has already occurred.
             return;
 
-        var evaluateChildren = evaluator.ChildEvaluationStrategy?.GetStrategy(this);
+        // var evaluateChildren = evaluator.ChildEvaluationStrategy?.GetStrategy(this);
 
-        evaluateChildren?.Invoke(evaluator, current, evaluation);
+        // evaluateChildren?.Invoke(evaluator, current, evaluation);
     }
 }

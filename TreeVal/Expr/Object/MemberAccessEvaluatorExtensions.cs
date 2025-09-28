@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using TreeVal.Eval;
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Eval.Equals;
+using TreeVal.Stage.Eval.Where;
 
 namespace TreeVal.Expr.Object;
 

@@ -1,7 +1,6 @@
 using System.Text;
-using TreeVal.Eval;
-using TreeVal.Eval.Condition;
 using TreeVal.Media;
+using TreeVal.Stage.Eval;
 
 namespace TreeVal.Diagnostics;
 
@@ -242,7 +241,8 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         }
         else
         {
-            expected.Describe(this);
+            throw new NotImplementedException();
+            // expected.Describe(this);
         }
     }
 

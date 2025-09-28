@@ -1,4 +1,6 @@
 using TreeVal.Scaffolding;
+using TreeVal.Stage.Eval;
+using TreeVal.Visit;
 
 namespace TreeVal.Eval.Event;
 

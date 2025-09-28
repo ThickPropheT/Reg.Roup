@@ -3,6 +3,8 @@ using TreeVal.Diagnostics;
 using TreeVal.Eval;
 using TreeVal.Expr;
 using TreeVal.Expr.Object;
+using TreeVal.Stage.Children.HavingChildren;
+using TreeVal.Stage.Eval.Equals;
 using TreeVal.Tests.__Resources.Dummies;
 
 namespace TreeVal.Tests.MethodCall;
