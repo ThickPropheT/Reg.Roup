@@ -6,7 +6,7 @@ namespace TreeVal.Stage.Eval;
 public interface IConditionEvaluation : IDescribable
 {
     IBehaviorContext BehaviorContext { get; }
-    
+
     EvaluationStatus Status { get; }
 
     void Reject(Exception? error = null);

@@ -2,9 +2,10 @@ namespace TreeVal.Scaffolding.Stage;
 
 public interface IStageDirector
 {
-    IVisitationStageBuilder.Identity ValidateKey(IVisitationStageBuilder.Identity key);
+    TKey ValidateKey<TKey>(TKey key)
+        where TKey : IVisitationStageBuilder.Identity;
 
-    TStage Create<TStage>()
+    TStage Create<TStage>(IVisitationStageBuilder.Identity<TStage> key)
         where TStage : IVisitationStageBuilder;
 
     IEnumerable<IVisitationStageBuilder> Arrange(IEnumerable<IVisitationStageBuilder> stages);

@@ -4,10 +4,17 @@ using TreeVal.Scaffolding.Stage;
 
 namespace TreeVal.Stage.Eval;
 
-public static class ScaffoldingExtensions
+public static class EvaluateConditionsStage
 {
-    public static IStageQuery<IEvaluateConditionsStageBuilder> GetEvaluationStage(this IVisitorBuilder builder)
-        => builder.Get<IEvaluateConditionsStageBuilder>();
+    public interface IBuilder : IVisitationStageBuilder
+    {
+        void AddConditions(Func<IEnumerable<ICondition>> getConditions);
+    }
+
+    public static IVisitationStageBuilder.Identity<IBuilder> Key { get; } = new();
+
+    public static IStageQuery<IBuilder> GetEvaluationStage(this IVisitorBuilder builder)
+        => builder.Get<IBuilder>();
 
     public static void AddCondition(this IVisitorBuilder builder, ICondition condition)
         => builder

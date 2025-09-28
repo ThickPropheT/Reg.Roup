@@ -5,10 +5,10 @@ using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Eval;
 
-public class EvaluateConditionsStageBuilder : VisitationStageBuilder, IEvaluateConditionsStageBuilder
+public class EvaluateConditionsStageBuilder : VisitationStageBuilder, EvaluateConditionsStage.IBuilder
 {
     public EvaluateConditionsStageBuilder()
-        : base(new IVisitationStageBuilder.Identity<IEvaluateConditionsStageBuilder>())
+        : base(EvaluateConditionsStage.Key)
     {
         BeforeLeaving((_, _) => new RejectIfAnyBehaviorFailed());
     }

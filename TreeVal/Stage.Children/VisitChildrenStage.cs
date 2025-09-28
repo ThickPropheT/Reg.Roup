@@ -4,10 +4,17 @@ using TreeVal.Scaffolding.Stage;
 
 namespace TreeVal.Stage.Children;
 
-public static class ScaffoldingExtensions
+public static class VisitChildrenStage
 {
-    public static IStageQuery<IVisitChildrenStageBuilder> GetVisitChildrenStage(this IVisitorBuilder builder)
-        => builder.Get<IVisitChildrenStageBuilder>();
+    public interface IBuilder : IVisitationStageBuilder
+    {
+        void AddChildren(Func<IEnumerable<IVisitorFactory>> getChildren);
+    }
+
+    public static IVisitationStageBuilder.Identity<IBuilder> Key { get; } = new();
+
+    public static IStageQuery<IBuilder> GetVisitChildrenStage(this IVisitorBuilder builder)
+        => builder.Get<IBuilder>();
 
     public static void AddChildren(this IVisitorBuilder builder, Func<Node, IEnumerable<IVisitorFactory>> getChildren)
         => builder

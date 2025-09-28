@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
+using TreeVal.Expr;
 using TreeVal.Stage.Children.HavingChildren;
 using TreeVal.Stage.Children.SkipChildren;
 

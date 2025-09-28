@@ -7,10 +7,10 @@ using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Children;
 
-public class VisitChildrenStageBuilder : VisitationStageBuilder, IVisitChildrenStageBuilder
+public class VisitChildrenStageBuilder : VisitationStageBuilder, VisitChildrenStage.IBuilder
 {
     public VisitChildrenStageBuilder()
-        : base(new IVisitationStageBuilder.Identity<IVisitChildrenStageBuilder>())
+        : base(VisitChildrenStage.Key)
     {
         BeforeLeaving((_, _) => new RejectIfAnyBehaviorFailed());
     }

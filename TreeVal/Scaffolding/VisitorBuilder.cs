@@ -19,9 +19,10 @@ public class VisitorBuilder : IVisitorBuilder
 
     public void OnDiscovery(Action<Node, IVisitorBuilder.IDiscovered> callback)
     {
+        var discover = _discover;
         _discover = (n, discovered) =>
         {
-            _discover?.Invoke(n, discovered);
+            discover?.Invoke(n, discovered);
             callback(n, discovered);
         };
     }

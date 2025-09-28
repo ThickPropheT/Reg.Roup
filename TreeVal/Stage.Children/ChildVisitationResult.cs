@@ -6,8 +6,6 @@ public class ChildVisitationResult : VisitationResult
 {
     public IVisitorContext VisitorContext { get; }
 
-    public Exception? Error { get; init; }
-
     public ChildVisitationResult(IVisitorContext visitorContext)
     {
         VisitorContext = visitorContext;

@@ -15,9 +15,9 @@ public static class ScaffoldingExtensions
         where TStage : IVisitationStageBuilder
     {
         private readonly IVisitorBuilder _builder;
-        private readonly IVisitationStageBuilder.Identity _key;
+        private readonly IVisitationStageBuilder.Identity<TStage> _key;
 
-        public StageQuery(IVisitorBuilder builder, IVisitationStageBuilder.Identity key)
+        public StageQuery(IVisitorBuilder builder, IVisitationStageBuilder.Identity<TStage> key)
         {
             _builder = builder;
             _key = key;
@@ -30,7 +30,7 @@ public static class ScaffoldingExtensions
         {
             _builder.OnDiscovery((n, discovered) =>
             {
-                createStage ??= _ => _builder.Originator.StageDirector.Create<TStage>();
+                createStage ??= _ => _builder.Originator.StageDirector.Create(_key);
 
                 if (!TryGetStage(discovered, out var stage))
                 {
@@ -46,7 +46,7 @@ public static class ScaffoldingExtensions
         {
             _builder.OnDiscovery((n, discovered) =>
             {
-                createStage ??= _ => _builder.Originator.StageDirector.Create<TStage>();
+                createStage ??= _ => _builder.Originator.StageDirector.Create(_key);
 
                 if (!TryGetStage(discovered, out var stage))
                 {

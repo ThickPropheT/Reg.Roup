@@ -1,10 +1,12 @@
+using TreeVal.Stage.Eval;
+
 namespace TreeVal.Visit.Stage;
 
 public class StageVisitationResult : VisitationResult
 {
     public IStageContext StageContext { get; }
 
-    public Exception? Error { get; init; }
+    public EvaluationStatus Status { get; init; } = EvaluationStatus.Accepted;
 
     public StageVisitationResult(IStageContext stageContext)
     {
@@ -12,8 +14,15 @@ public class StageVisitationResult : VisitationResult
     }
 
     public static StageVisitationResult ForRejection(IStageContext stageContext)
-        => new(stageContext);
+        => new(stageContext)
+        {
+            Status = EvaluationStatus.Rejected
+        };
 
     public static StageVisitationResult ForError(IStageContext stageContext, Exception error)
-        => new(stageContext) { Error = error };
+        => new(stageContext)
+        {
+            Status = EvaluationStatus.Rejected,
+            Error = error
+        };
 }

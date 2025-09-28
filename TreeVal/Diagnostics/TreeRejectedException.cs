@@ -5,7 +5,7 @@ namespace TreeVal.Diagnostics;
 
 public class TreeRejectedException : Exception
 {
-    public TapeHead? Head { get; init; }
+    public ITapeHead? Head { get; init; }
     public INodeEvaluation Evaluation { get; }
 
     private TreeRejectedException(INodeEvaluation evaluation, string message)
@@ -20,25 +20,25 @@ public class TreeRejectedException : Exception
         Evaluation = evaluation;
     }
 
-    public static TreeRejectedException ForRejection(TapeHead head, INodeEvaluation evaluation)
+    public static TreeRejectedException ForRejection(ITapeHead head, INodeEvaluation evaluation)
         => new(evaluation, "An evaluator rejected the source tree")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForIncompleteRead(TapeHead head, INodeEvaluation evaluation)
+    public static TreeRejectedException ForIncompleteRead(ITapeHead head, INodeEvaluation evaluation)
         => new(evaluation, "Tape contains unread nodes")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForReadPastEnd(TapeHead head, INodeEvaluation evaluation)
+    public static TreeRejectedException ForReadPastEnd(ITapeHead head, INodeEvaluation evaluation)
         => new(evaluation, "Attempted to read past end of tape")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForError(TapeHead head, INodeEvaluation evaluation, Exception error)
+    public static TreeRejectedException ForError(ITapeHead head, INodeEvaluation evaluation, Exception error)
         => new(evaluation, "An unexpected error occurred while evaluating the source tree", error)
         {
             Head = head

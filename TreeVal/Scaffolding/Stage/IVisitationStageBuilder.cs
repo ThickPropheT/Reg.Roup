@@ -19,6 +19,24 @@ public interface IVisitationStageBuilder : IVisitationStageFactory
         {
             _identity = identity;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Identity) obj);
+        }
+
+        protected bool Equals(Identity other)
+        {
+            return _identity.Equals(other._identity);
+        }
+
+        public override int GetHashCode()
+        {
+            return _identity.GetHashCode();
+        }
     }
 
     public class Identity<T> : Identity

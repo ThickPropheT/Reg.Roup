@@ -2,8 +2,10 @@ using TreeVal.Diagnostics;
 
 namespace TreeVal.Media;
 
-public interface ITapeHead
+public interface ITapeHead : IDescribable
 {
+    bool CanMoveForward { get; }
+    
     Node Read();
     IEnumerable<Node> ReadToStart();
 
@@ -21,6 +23,19 @@ public class TapeHead : ITapeHead, IDescribable
         : 0;
 
     private int Length => _tape.Length;
+
+    public bool IsBeforeFront => _currentIndex < 0;
+    public bool IsAtFront => _currentIndex == 0;
+    public bool IsAtBack => _currentIndex == _tape.Length - 1;
+    public bool IsAfterBack => _currentIndex >= _tape.Length;
+    
+    public bool CanRead => 0 <= _currentIndex && _currentIndex <= _tape.Length - 1;
+    
+    public bool CanMoveForward
+        => _currentIndex < _tape.Length - 1;
+    
+    public bool CanMoveBackward
+        => _currentIndex > 0;
 
     public TapeHead(Node[] tape)
     {
@@ -43,12 +58,9 @@ public class TapeHead : ITapeHead, IDescribable
     public IEnumerable<Node> ReadToEnd()
         => _tape.Take(new Range(CurrentOrFirstIndex, _tape.Length - 1));
 
-    public bool CanMoveForward()
-        => _currentIndex < _tape.Length - 1;
-
     public Node MoveForward()
     {
-        if (!CanMoveForward())
+        if (!CanMoveForward)
         {
             throw new IndexOutOfRangeException();
         }
@@ -59,16 +71,13 @@ public class TapeHead : ITapeHead, IDescribable
     }
 
     public Node? PeekForward()
-        => CanMoveForward()
+        => CanMoveForward
             ? _tape[_currentIndex + 1]
             : null;
 
-    public bool CanMoveBackward()
-        => _currentIndex > 0;
-
     public Node MoveBackward()
     {
-        if (!CanMoveBackward())
+        if (!CanMoveBackward)
         {
             throw new IndexOutOfRangeException();
         }
@@ -79,7 +88,7 @@ public class TapeHead : ITapeHead, IDescribable
     }
 
     public Node? PeekBackward()
-        => CanMoveBackward()
+        => CanMoveBackward
             ? _tape[_currentIndex - 1]
             : null;
 

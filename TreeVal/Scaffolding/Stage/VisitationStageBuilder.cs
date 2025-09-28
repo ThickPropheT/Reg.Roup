@@ -14,9 +14,9 @@ public class VisitationStageBuilder : IVisitationStageBuilder
 
     public IVisitationStageBuilder.Identity Key { get; }
 
-    public VisitationStageBuilder(IVisitationStageBuilder.Identity? key)
+    public VisitationStageBuilder(IVisitationStageBuilder.Identity key)
     {
-        Key = key ?? new IVisitationStageBuilder.Identity<IVisitationStageBuilder>();
+        Key = key;
     }
 
     public void AfterEntering(Func<Node, Func<Node, IAfterEnteringBehavior>?, IAfterEnteringBehavior> afterEntering)

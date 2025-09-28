@@ -25,10 +25,10 @@ public static class ScaffoldingExtensions
     public static IVisitorBuilder<TNode> AcceptChildren<TNode>(this IVisitorBuilder<TNode> builder)
         => builder.HavingChild(parent => builder.Originator.AcceptChildren(parent));
 
-    private class MovePastChildrenStageBuilder : VisitationStageBuilder, IReadNodeStageBuilder
+    private class MovePastChildrenStageBuilder : VisitationStageBuilder, ReadNodeStage.IBuilder
     {
         public MovePastChildrenStageBuilder(Node parent, IVisitationRecorder recorder)
-            : base(new IVisitationStageBuilder.Identity<IReadNodeStageBuilder>())
+            : base(ReadNodeStage.Key)
         {
             AfterEntering((_, _) => new MediaBehavior.SkipChildren(parent, recorder));
         }

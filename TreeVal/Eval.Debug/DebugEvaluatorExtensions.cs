@@ -53,7 +53,7 @@ public static class DebugEvaluatorExtensions
                         }))));
 
     public static IVisitorBuilder Debug(
-        this IStageQuery<IReadNodeStageBuilder> readStageQuery, Action<object, IStageContext> observe)
+        this IStageQuery<ReadNodeStage.IBuilder> readStageQuery, Action<object, IStageContext> observe)
         => readStageQuery
             .OrCreateStage((_, readStage) => readStage.AfterEntering((n, prev) =>
                 new Breakpoint(stageContext =>

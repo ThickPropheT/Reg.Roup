@@ -2,10 +2,10 @@ using TreeVal.Scaffolding.Stage;
 
 namespace TreeVal.Stage.Read;
 
-public class MoveForwardStageBuilder : VisitationStageBuilder, IReadNodeStageBuilder
+public class MoveForwardStageBuilder : VisitationStageBuilder, ReadNodeStage.IBuilder
 {
     public MoveForwardStageBuilder()
-        : base(new IVisitationStageBuilder.Identity<IReadNodeStageBuilder>())
+        : base(ReadNodeStage.Key)
     {
         AfterEntering((_, _) => new MediaBehavior.MoveForward());
     }

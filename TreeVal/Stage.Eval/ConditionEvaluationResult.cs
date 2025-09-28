@@ -4,7 +4,7 @@ public class ConditionEvaluationResult : VisitationResult
 {
     public IConditionEvaluation Evaluation { get; }
 
-    public Exception? Error { get; init; }
+    public EvaluationStatus Status { get; init; } = EvaluationStatus.Accepted;
 
     public ConditionEvaluationResult(IConditionEvaluation evaluation)
     {
@@ -12,9 +12,15 @@ public class ConditionEvaluationResult : VisitationResult
     }
 
     public static ConditionEvaluationResult ForRejection(IConditionEvaluation evaluation)
-        // => new(evaluation);
-        => throw new NotImplementedException();
+        => new(evaluation)
+        {
+            Status = EvaluationStatus.Rejected
+        };
 
     public static ConditionEvaluationResult ForError(IConditionEvaluation evaluation, Exception error)
-        => new(evaluation) { Error = error };
+        => new(evaluation)
+        {
+            Status = EvaluationStatus.Rejected,
+            Error = error
+        };
 }
