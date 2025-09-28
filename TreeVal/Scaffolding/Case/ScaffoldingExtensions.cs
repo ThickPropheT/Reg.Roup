@@ -2,7 +2,7 @@ using TreeVal.Media;
 
 namespace TreeVal.Scaffolding.Case;
 
-public static class CaseEvaluatorExtensions
+public static class ScaffoldingExtensions
 {
     public static IVisitorBuilder<TNode> Case<TNode>(
         this IVisitorBuilder<TNode> builder,

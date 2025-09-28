@@ -1,5 +1,4 @@
 using TreeVal.Media;
-using TreeVal.Stage.Eval;
 using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Visit.Stage;
@@ -64,19 +63,10 @@ public class VisitationStage : IVisitationStage
         {
             return performBehavior(behavior, behaviorContext);
         }
-        catch (Exception ex)
-        {
-            // TODO
-            //  visitation is supposed to be divorced from evaluation now,
-            //  we should probably find a different way to do this error handling.
-            behaviorContext.RecordResult(new RejectionResult(ex));
-        }
         finally
         {
             stageContext.RecordVisitation(behaviorContext);
         }
-
-        return stageContext;
     }
 
     private static void PerformBehavior<TBehavior>(

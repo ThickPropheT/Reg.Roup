@@ -6,7 +6,7 @@ public class BehaviorContext
 {
     public IStageContext StageContext { get; }
 
-    public VisitationResult VisitationResult { get; }
+    public VisitationResult? VisitationResult { get; private set; }
 
     public BehaviorContext(IStageContext stageContext)
     {
@@ -14,6 +14,5 @@ public class BehaviorContext
     }
 
     public void RecordResult(VisitationResult result)
-    {
-    }
+        => VisitationResult = result;
 }

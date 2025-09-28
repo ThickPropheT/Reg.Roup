@@ -4,14 +4,14 @@ namespace TreeVal.Stage.Eval;
 
 public class RejectIfAnyBehaviorFailed : IBeforeLeavingBehavior
 {
-    public void Perform(BehaviorContext context)
+    public void Perform(BehaviorContext behaviorContext)
     {
-        var rejection = TryFindRejection(context);
+        var rejection = TryFindRejection(behaviorContext);
 
         if (rejection == null)
             return;
 
-        context.RecordResult(rejection);
+        behaviorContext.RecordResult(rejection);
     }
 
     private static RejectionResult? TryFindRejection(BehaviorContext context)

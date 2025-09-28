@@ -35,11 +35,6 @@ public class Visitor : IVisitor
             TapeHead = tapeHead;
         }
 
-        public Node ReadCurrentNode()
-        {
-            throw new NotImplementedException();
-        }
-
         public void RecordVisitation(BehaviorContext visitation)
         {
             throw new NotImplementedException();

@@ -3,21 +3,13 @@ using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Visit.Stage;
 
-public interface IStageContext
-{
-    ITapeHead TapeHead { get; }
-
-    IEnumerable<BehaviorContext> Visitations { get; }
-
-    void RecordVisitation(BehaviorContext visitation);
-}
-
 public class StageContext : IStageContext
 {
+    private readonly List<BehaviorContext> _visitations = new(1);
+
     public ITapeHead TapeHead { get; }
 
-    public IEnumerable<VisitationResult> VisitationResults { get; }
-    public IEnumerable<BehaviorContext> Visitations { get; }
+    public IEnumerable<BehaviorContext> Visitations => _visitations.AsReadOnly();
 
     public StageContext(ITapeHead tapeHead)
     {
@@ -25,10 +17,5 @@ public class StageContext : IStageContext
     }
 
     public void RecordVisitation(BehaviorContext visitation)
-    {
-    }
-
-    public void RecordResult(VisitationResult result)
-    {
-    }
+        => _visitations.Add(visitation);
 }

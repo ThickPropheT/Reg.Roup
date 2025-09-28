@@ -6,6 +6,6 @@ public class OneOfConditionsStageBuilder : VisitChildrenStageBuilder
 {
     public OneOfConditionsStageBuilder()
     {
-        BeforeLeaving((_, c) => new RejectIfAllBehaviorsFailed());
+        BeforeLeaving((_, _) => new RejectIfAllBehaviorsFailed());
     }
 }
