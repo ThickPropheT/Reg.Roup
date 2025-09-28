@@ -1,13 +1,18 @@
 using TreeVal.Media;
+using TreeVal.Stage.Eval;
 using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Visit.Stage;
 
 public interface IStageContext
 {
+    IVisitorContext VisitorContext { get; }
+    
     ITapeHead TapeHead { get; }
 
-    IEnumerable<BehaviorContext> Visitations { get; }
+    IEnumerable<BehaviorVisitationResult> BehaviorVisitations { get; }
 
-    void RecordVisitation(BehaviorContext visitation);
+    IBehaviorContext CreateBehaviorContext();
+
+    void RecordVisitation(BehaviorVisitationResult result);
 }

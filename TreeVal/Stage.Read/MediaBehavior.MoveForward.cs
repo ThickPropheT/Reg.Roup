@@ -7,11 +7,11 @@ public abstract partial class MediaBehavior
 {
     public class MoveForward : IAfterEnteringBehavior
     {
-        public IStageContext Perform(IStageContext current)
+        public IStageContext Perform(IBehaviorContext behaviorContext)
         {
-            current.TapeHead.MoveForward();
-
-            return new StageContext(current.TapeHead);
+            var stageContext = behaviorContext.StageContext;
+            stageContext.TapeHead.MoveForward();
+            return stageContext;
         }
     }
 }

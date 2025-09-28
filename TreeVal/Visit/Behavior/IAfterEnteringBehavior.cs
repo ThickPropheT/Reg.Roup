@@ -4,5 +4,5 @@ namespace TreeVal.Visit.Behavior;
 
 public interface IAfterEnteringBehavior
 {
-    IStageContext Perform(IStageContext current);
+    IStageContext Perform(IBehaviorContext behaviorContext);
 }

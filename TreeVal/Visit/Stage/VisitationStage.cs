@@ -21,12 +21,12 @@ public class VisitationStage : IVisitationStage
         BeforeLeaving = beforeLeaving;
     }
 
-    public IStageContext Visit(TapeHead head, IStageContext stageContext)
+    public IStageContext Visit(IStageContext stageContext)
     {
         var nextStageContext = PerformBehavior(
             stageContext,
             n => AfterEntering(n),
-            (behavior, _) => behavior.Perform(stageContext)
+            (behavior, behaviorContext) => behavior.Perform(behaviorContext)
         );
 
         foreach (var behavior in _behaviors.SelectMany(getBehavior => getBehavior(stageContext.TapeHead.Read())))
@@ -53,26 +53,32 @@ public class VisitationStage : IVisitationStage
     private static IStageContext PerformBehavior<TBehavior>(
         IStageContext stageContext,
         Func<Node, TBehavior> getBehavior,
-        Func<TBehavior, BehaviorContext, IStageContext> performBehavior
+        Func<TBehavior, IBehaviorContext, IStageContext> performBehavior
     )
     {
         var behavior = getBehavior(stageContext.TapeHead.Read());
-        var behaviorContext = new BehaviorContext(stageContext);
+        var behaviorContext = stageContext.CreateBehaviorContext();
 
         try
         {
-            return performBehavior(behavior, behaviorContext);
+            var result = performBehavior(behavior, behaviorContext);
+
+            stageContext.RecordVisitation(new BehaviorVisitationResult(behaviorContext));
+
+            return result;
         }
-        finally
+        catch (Exception ex)
         {
-            stageContext.RecordVisitation(behaviorContext);
+            stageContext.RecordVisitation(BehaviorVisitationResult.ForError(behaviorContext, ex));
         }
+
+        return stageContext;
     }
 
     private static void PerformBehavior<TBehavior>(
         IStageContext stageContext,
         Func<Node, TBehavior> getBehavior,
-        Action<TBehavior, BehaviorContext> performBehavior
+        Action<TBehavior, IBehaviorContext> performBehavior
     )
         => PerformBehavior(
             stageContext,

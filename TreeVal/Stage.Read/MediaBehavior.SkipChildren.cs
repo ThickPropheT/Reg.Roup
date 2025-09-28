@@ -18,19 +18,21 @@ public abstract partial class MediaBehavior
             _recorder = recorder;
         }
 
-        public IStageContext Perform(IStageContext currentContext)
+        public IStageContext Perform(IBehaviorContext behaviorContext)
         {
-            var head = currentContext.TapeHead;
+            var stageContext = behaviorContext.StageContext;
+            var head = stageContext.TapeHead;
 
             var childTape = _recorder.RecordVisitationOf(_parent).ToList();
             childTape.Remove(_parent);
 
             if (!childTape.Any())
             {
-                throw new NotImplementedException("This isn't 1:1 with how things used to work");
+                throw new NotImplementedException(
+                    "This isn't 1:1 with how things used to work. this used to return null.");
 
                 // there weren't any children, actually.
-                return currentContext;
+                return stageContext;
             }
 
             var current = head.Read();
@@ -62,6 +64,9 @@ public abstract partial class MediaBehavior
 
             if (!childTape.Any())
             {
+                throw new NotImplementedException(
+                    "This isn't 1:1 with how things used to work. this used to return null.");
+
                 // somebody beat us to it.
                 return null;
             }
@@ -107,7 +112,7 @@ public abstract partial class MediaBehavior
                 head.MoveForward();
             }
 
-            return new StageContext(head);
+            return stageContext;
         }
     }
 }

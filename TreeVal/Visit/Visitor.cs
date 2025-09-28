@@ -1,5 +1,3 @@
-using TreeVal.Media;
-using TreeVal.Visit.Behavior;
 using TreeVal.Visit.Stage;
 
 namespace TreeVal.Visit;
@@ -13,31 +11,22 @@ public class Visitor : IVisitor
         _stages = stages;
     }
 
-    public void Visit(TapeHead head)
+    public void Visit(IVisitorContext visitorContext)
     {
-        IStageContext stageContext = new InitialStageContext(head);
+        var stageContext = visitorContext.CreateStageContext();
 
         foreach (var stage in _stages)
         {
-            stageContext = stage.Visit(head, stageContext);
-        }
-    }
+            try
+            {
+                stageContext = stage.Visit(stageContext);
 
-    // TODO should this actually do anything or just throw?
-    private class InitialStageContext : IStageContext
-    {
-        public ITapeHead TapeHead { get; }
-
-        public IEnumerable<BehaviorContext> Visitations { get; }
-
-        public InitialStageContext(ITapeHead tapeHead)
-        {
-            TapeHead = tapeHead;
-        }
-
-        public void RecordVisitation(BehaviorContext visitation)
-        {
-            throw new NotImplementedException();
+                visitorContext.RecordVisitation(new StageVisitationResult(stageContext));
+            }
+            catch (Exception ex)
+            {
+                visitorContext.RecordVisitation(StageVisitationResult.ForError(stageContext, ex));
+            }
         }
     }
 }

@@ -1,31 +1,38 @@
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Stage;
 
 namespace TreeVal.Stage.Eval;
 
 public class RejectIfAllBehaviorsFailed : IBeforeLeavingBehavior
 {
-    public void Perform(BehaviorContext behaviorContext)
+    public void Perform(IBehaviorContext behaviorContext)
     {
-        var rejection = TryFindRejection(behaviorContext);
+        var stageContext = behaviorContext.StageContext;
+
+        var rejection = TryFindRejection(stageContext);
 
         if (rejection == null)
             return;
 
-        behaviorContext.RecordResult(rejection);
+        stageContext.VisitorContext.RecordVisitation(rejection);
     }
 
-    private static RejectionResult? TryFindRejection(BehaviorContext context)
+    private static StageVisitationResult? TryFindRejection(IStageContext stageContext)
     {
         try
         {
-            return context.StageContext.Visitations.All(v => v.VisitationResult is RejectionResult)
-                ? new RejectionResult()
+            return stageContext.BehaviorVisitations
+                .All(v => v.BehaviorContext.VisitationResult is ConditionEvaluationResult
+                {
+                    Evaluation.Status: EvaluationStatus.Rejected
+                })
+                ? StageVisitationResult.ForRejection(stageContext)
                 : null;
         }
         catch (Exception ex)
         {
             // I don't expect the above will ever throw, but the desired outcome is clear, so I'm including this.
-            return new RejectionResult(ex);
+            return StageVisitationResult.ForError(stageContext, ex);
         }
     }
 }

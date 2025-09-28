@@ -49,7 +49,7 @@ public static class DebugEvaluatorExtensions
                         new Breakpoint(stageContext =>
                         {
                             observe(n, stageContext);
-                            return prev?.Invoke(n).Perform(stageContext) ?? stageContext;
+                            return prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext()) ?? stageContext;
                         }))));
 
     public static IVisitorBuilder Debug(
@@ -58,7 +58,7 @@ public static class DebugEvaluatorExtensions
             .OrCreateStage((_, readStage) => readStage.AfterEntering((n, prev) =>
                 new Breakpoint(stageContext =>
                 {
-                    stageContext = prev?.Invoke(n).Perform(stageContext) ?? stageContext;
+                    stageContext = prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext()) ?? stageContext;
                     observe(n, stageContext);
                     return stageContext;
                 })));
@@ -83,39 +83,39 @@ public static class DebugEvaluatorExtensions
             _perform = perform;
         }
 
-        public IStageContext Perform(IStageContext current)
-            => _perform(current);
+        public IStageContext Perform(IBehaviorContext behaviorContext)
+            => _perform(behaviorContext.StageContext);
     }
 
-    private class AttachDebuggerVisitor : IVisitor
-    {
-        private readonly IVisitor _target;
-        private readonly Func<IVisitorFactory> _buildDebugEvaluator;
-
-        public AttachDebuggerVisitor(IVisitor target, Func<IVisitorFactory> buildDebugEvaluator)
-        {
-            _target = target;
-            _buildDebugEvaluator = buildDebugEvaluator;
-        }
-
-        // public IEnumerable<ICondition> EnumerateConditions(Node current)
-        //     => _target.EnumerateConditions(current);
-
-        public IEnumerable<IVisitorFactory> EnumerateChildren(Node current)
-        {
-            throw new NotImplementedException(
-                "I think this debug option may not be 'invisible'. I think it's inclusion in a schema causes a double move-forward of the tape head.");
-
-            yield return _buildDebugEvaluator();
-
-            // foreach (var childBuilder in _target.EnumerateChildren(current))
-            // {
-            //     yield return childBuilder;
-            // }
-        }
-
-        public void Visit(TapeHead head)
-        {
-        }
-    }
+    // private class AttachDebuggerVisitor : IVisitor
+    // {
+    //     private readonly IVisitor _target;
+    //     private readonly Func<IVisitorFactory> _buildDebugEvaluator;
+    //
+    //     public AttachDebuggerVisitor(IVisitor target, Func<IVisitorFactory> buildDebugEvaluator)
+    //     {
+    //         _target = target;
+    //         _buildDebugEvaluator = buildDebugEvaluator;
+    //     }
+    //
+    //     // public IEnumerable<ICondition> EnumerateConditions(Node current)
+    //     //     => _target.EnumerateConditions(current);
+    //
+    //     public IEnumerable<IVisitorFactory> EnumerateChildren(Node current)
+    //     {
+    //         throw new NotImplementedException(
+    //             "I think this debug option may not be 'invisible'. I think it's inclusion in a schema causes a double move-forward of the tape head.");
+    //
+    //         yield return _buildDebugEvaluator();
+    //
+    //         // foreach (var childBuilder in _target.EnumerateChildren(current))
+    //         // {
+    //         //     yield return childBuilder;
+    //         // }
+    //     }
+    //
+    //     public void Visit(TapeHead head)
+    //     {
+    //     }
+    // }
 }

@@ -7,7 +7,8 @@ public abstract partial class MediaBehavior
 {
     public class ReadCurrent : IAfterEnteringBehavior
     {
-        public IStageContext Perform(IStageContext current)
-            => new StageContext(current.TapeHead);
+        public IStageContext Perform(IBehaviorContext behaviorContext)
+        // don't move the TapeHead, just return stageContext.
+            => behaviorContext.StageContext;
     }
 }

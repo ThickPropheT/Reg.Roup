@@ -15,9 +15,10 @@ public abstract partial class MediaBehavior
             _predicate = predicate;
         }
 
-        public IStageContext Perform(IStageContext current)
+        public IStageContext Perform(IBehaviorContext behaviorContext)
         {
-            var tapeHead = current.TapeHead;
+            var stageContext = behaviorContext.StageContext;
+            var tapeHead = stageContext.TapeHead;
 
             Node node;
 
@@ -26,7 +27,7 @@ public abstract partial class MediaBehavior
                 node = tapeHead.MoveForward();
             } while (_predicate(node));
 
-            return new StageContext(tapeHead);
+            return stageContext;
         }
     }
 }

@@ -2,11 +2,13 @@ using TreeVal.Visit.Stage;
 
 namespace TreeVal.Visit.Behavior;
 
-public class BehaviorContext
+public class BehaviorContext : IBehaviorContext
 {
+    private VisitationResult? _result;
+
     public IStageContext StageContext { get; }
 
-    public VisitationResult? VisitationResult { get; private set; }
+    public VisitationResult VisitationResult => _result ?? new VisitationResult();
 
     public BehaviorContext(IStageContext stageContext)
     {
@@ -14,5 +16,5 @@ public class BehaviorContext
     }
 
     public void RecordResult(VisitationResult result)
-        => VisitationResult = result;
+        => _result = result;
 }

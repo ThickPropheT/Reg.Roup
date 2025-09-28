@@ -1,11 +1,12 @@
 using TreeVal.Diagnostics;
+using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Eval;
 
 public interface IConditionEvaluation : IDescribable
 {
-    INodeEvaluation Owner { get; }
-
+    IBehaviorContext BehaviorContext { get; }
+    
     EvaluationStatus Status { get; }
 
     void Reject(Exception? error = null);

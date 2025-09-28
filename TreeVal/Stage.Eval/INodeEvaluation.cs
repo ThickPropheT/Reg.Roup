@@ -14,7 +14,7 @@ public interface INodeEvaluation : IDescribable
     IEnumerable<INodeEvaluation> ChildEvaluations { get; }
 
     IVisitor GetEvaluator(Node node);
-    Node? GetTarget(VisitationContext context);
+    // Node? GetTarget(VisitationContext context);
 
     void Record(IEnumerable<IConditionEvaluation> conditionEvaluations);
     void Record(IEnumerable<INodeEvaluation> childEvaluations);

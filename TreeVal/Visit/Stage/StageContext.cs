@@ -1,21 +1,27 @@
 using TreeVal.Media;
+using TreeVal.Stage.Eval;
 using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Visit.Stage;
 
 public class StageContext : IStageContext
 {
-    private readonly List<BehaviorContext> _visitations = new(1);
+    private readonly List<BehaviorVisitationResult> _visitations = new(1);
 
+    public IVisitorContext VisitorContext { get; }
     public ITapeHead TapeHead { get; }
 
-    public IEnumerable<BehaviorContext> Visitations => _visitations.AsReadOnly();
+    public IEnumerable<BehaviorVisitationResult> BehaviorVisitations => _visitations.AsReadOnly();
 
-    public StageContext(ITapeHead tapeHead)
+    public StageContext(IVisitorContext visitorContext, ITapeHead tapeHead)
     {
         TapeHead = tapeHead;
+        VisitorContext = visitorContext;
     }
 
-    public void RecordVisitation(BehaviorContext visitation)
-        => _visitations.Add(visitation);
+    public IBehaviorContext CreateBehaviorContext()
+        => new BehaviorContext(this);
+
+    public void RecordVisitation(BehaviorVisitationResult result)
+        => _visitations.Add(result);
 }
