@@ -56,8 +56,8 @@ public class VisitationStage : IVisitationStage
         Func<TBehavior, IBehaviorContext, IStageContext> performBehavior
     )
     {
-        var behavior = getBehavior(stageContext.TapeHead.Read());
         var behaviorContext = stageContext.CreateBehaviorContext();
+        var behavior = getBehavior(stageContext.TapeHead.Read());
 
         try
         {
