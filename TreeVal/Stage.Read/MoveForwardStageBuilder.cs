@@ -7,6 +7,6 @@ public class MoveForwardStageBuilder : VisitationStageBuilder, IReadNodeStageBui
     public MoveForwardStageBuilder()
         : base(new IVisitationStageBuilder.Identity<IReadNodeStageBuilder>())
     {
-        AfterEntering((_, c) => new MediaBehavior.MoveForward());
+        AfterEntering((_, _) => new MediaBehavior.MoveForward());
     }
 }

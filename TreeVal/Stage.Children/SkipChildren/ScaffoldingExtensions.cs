@@ -30,7 +30,7 @@ public static class ScaffoldingExtensions
         public MovePastChildrenStageBuilder(Node parent, IVisitationRecorder recorder)
             : base(new IVisitationStageBuilder.Identity<IReadNodeStageBuilder>())
         {
-            AfterEntering((_, c) => new MediaBehavior.SkipChildren(parent, recorder));
+            AfterEntering((_, _) => new MediaBehavior.SkipChildren(parent, recorder));
         }
     }
 }

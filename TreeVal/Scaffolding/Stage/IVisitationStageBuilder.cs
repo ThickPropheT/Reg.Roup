@@ -7,9 +7,9 @@ public interface IVisitationStageBuilder : IVisitationStageFactory
 {
     Identity Key { get; }
 
-    void AfterEntering(Func<Node, IAfterEnteringBehavior, IAfterEnteringBehavior> afterEntering);
+    void AfterEntering(Func<Node, Func<Node, IAfterEnteringBehavior>?, IAfterEnteringBehavior> afterEntering);
     void AddBehaviors(Func<Node, IEnumerable<IBehavior>> getBehaviors);
-    void BeforeLeaving(Func<Node, IBeforeLeavingBehavior, IBeforeLeavingBehavior> getBehavior);
+    void BeforeLeaving(Func<Node, Func<Node, IBeforeLeavingBehavior>?, IBeforeLeavingBehavior> getBehavior);
 
     public class Identity
     {

@@ -14,7 +14,7 @@ public static class IgnoreBoxingEvaluatorExtensions
                 builder
                     .GetReadStage()
                     .OrCreateStage((_, readStage) =>
-                        readStage.AfterEntering((_, c) =>
+                        readStage.AfterEntering((_, _) =>
                             new MediaBehavior.SkipWhile(n =>
                                 n.Value is UnaryExpression { NodeType: ExpressionType.Convert }
                             ))
