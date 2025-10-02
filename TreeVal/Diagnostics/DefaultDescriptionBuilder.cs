@@ -164,7 +164,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         EmitBlock(() =>
         {
             Emit("Message: ");
-            EmitLine(error.Message);
+            EmitLine($"'{error.Message}', ");
 
             error.Head.Describe(this);
 
