@@ -25,7 +25,10 @@ public class Visitor : IVisitor
             }
             catch (Exception ex)
             {
-                visitorContext.RecordVisitation(StageVisitationResult.ForError(stageContext, ex));
+                var errorResult = StageVisitationResult.ForError(stageContext, ex);
+
+                visitorContext.RecordVisitation(errorResult);
+                throw VisitationException.StageError(ex, errorResult);
             }
         }
     }

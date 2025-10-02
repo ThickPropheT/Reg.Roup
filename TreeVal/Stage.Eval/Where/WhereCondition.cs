@@ -13,12 +13,12 @@ public class WhereCondition : ICondition
         _predicate = predicate;
     }
 
-    public void Evaluate(Node node, IConditionEvaluation evaluation)
+    public void Evaluate(Node node, IConditionContext context)
     {
         if (_predicate(node))
             return;
 
-        evaluation.Reject();
+        context.Reject();
     }
 
     public override string ToString() => _message;
@@ -35,17 +35,17 @@ public class WhereCondition<T> : ICondition
         _predicate = predicate;
     }
 
-    public void Evaluate(Node node, IConditionEvaluation evaluation)
+    public void Evaluate(Node node, IConditionContext context)
     {
         if (node.Value is not T t)
         {
-            throw ConditionFailedException.ExpectedNode<T>(evaluation);
+            throw ConditionFailedException.ExpectedNode<T>(context);
         }
 
         if (_predicate(t))
             return;
 
-        evaluation.Reject();
+        context.Reject();
     }
 
     public override string ToString() => _message;

@@ -7,23 +7,23 @@ namespace TreeVal.Eval.Event;
 public static class EvaluatorEventExtensions
 {
     public static IVisitorBuilder OnAccept(
-        this IVisitorBuilder builder, Action<object, IConditionEvaluation> callback)
+        this IVisitorBuilder builder, Action<object, IConditionContext> callback)
         => OnStatus(builder, EvaluationStatus.Accepted, callback);
 
     public static IVisitorBuilder OnReject(
-        this IVisitorBuilder builder, Action<object, IConditionEvaluation> callback)
+        this IVisitorBuilder builder, Action<object, IConditionContext> callback)
         => OnStatus(builder, EvaluationStatus.Rejected, callback);
 
     public static IVisitorBuilder<T> OnAccept<T>(
-        this IVisitorBuilder<T> builder, Action<T, IConditionEvaluation> callback)
+        this IVisitorBuilder<T> builder, Action<T, IConditionContext> callback)
         => OnStatus(builder, EvaluationStatus.Accepted, callback);
 
     public static IVisitorBuilder OnReject<T>(
-        this IVisitorBuilder<T> builder, Action<T, IConditionEvaluation> callback)
+        this IVisitorBuilder<T> builder, Action<T, IConditionContext> callback)
         => OnStatus(builder, EvaluationStatus.Rejected, callback);
 
     private static TBuilder OnStatus<TBuilder, T>(
-        TBuilder builder, EvaluationStatus status, Action<T, IConditionEvaluation> callback)
+        TBuilder builder, EvaluationStatus status, Action<T, IConditionContext> callback)
         where TBuilder : IVisitorBuilder
     {
         builder.AddCondition(

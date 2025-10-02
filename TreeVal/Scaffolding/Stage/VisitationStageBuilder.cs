@@ -39,5 +39,8 @@ public class VisitationStageBuilder : IVisitationStageBuilder
             _beforeLeaving != null
                 ? n => _beforeLeaving(n, null)
                 : null
-        );
+        )
+        {
+            CreatedBy = GetType().Name
+        };
 }

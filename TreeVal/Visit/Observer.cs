@@ -6,17 +6,17 @@ namespace TreeVal.Visit;
 
 public class Observer : ICondition, IDescribable
 {
-    private readonly Action<object, IConditionEvaluation> _observe;
+    private readonly Action<object, IConditionContext> _observe;
 
     public string? Label { get; init; }
 
-    public Observer(Action<object, IConditionEvaluation> observe)
+    public Observer(Action<object, IConditionContext> observe)
     {
         _observe = observe;
     }
 
-    public void Evaluate(Node node, IConditionEvaluation evaluation)
-        => _observe(node.Value, evaluation);
+    public void Evaluate(Node node, IConditionContext context)
+        => _observe(node.Value, context);
 
     public void Describe(IDescriptionBuilder descriptionBuilder)
     {
@@ -36,27 +36,27 @@ public class Observer : ICondition, IDescribable
 
 public class Observer<T> : ICondition<T>, IDescribable
 {
-    private readonly Action<T, IConditionEvaluation> _observe;
+    private readonly Action<T, IConditionContext> _observe;
 
     public string? Label { get; init; }
 
-    public Observer(Action<T, IConditionEvaluation> observe)
+    public Observer(Action<T, IConditionContext> observe)
     {
         _observe = observe;
     }
 
-    public void Evaluate(Node node, IConditionEvaluation evaluation)
+    public void Evaluate(Node node, IConditionContext context)
     {
         if (node.Value is not T t)
         {
-            throw ConditionFailedException.ExpectedNode<T>(evaluation);
+            throw ConditionFailedException.ExpectedNode<T>(context);
         }
 
-        _observe(t, evaluation);
+        _observe(t, context);
     }
 
-    public void Evaluate(Node<T> node, IConditionEvaluation evaluation)
-        => _observe(node.Value, evaluation);
+    public void Evaluate(Node<T> node, IConditionContext context)
+        => _observe(node.Value, context);
 
     public void Describe(IDescriptionBuilder descriptionBuilder)
     {

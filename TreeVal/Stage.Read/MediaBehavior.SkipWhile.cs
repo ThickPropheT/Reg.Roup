@@ -1,4 +1,5 @@
 using TreeVal.Media;
+using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 using TreeVal.Visit.Stage;
 
@@ -22,10 +23,17 @@ public abstract partial class MediaBehavior
 
             Node node;
 
-            do
+            try
             {
-                node = tapeHead.MoveForward();
-            } while (_predicate(node));
+                do
+                {
+                    node = tapeHead.MoveForward();
+                } while (_predicate(node));
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                throw VisitationException.BehaviorError(ex, behaviorContext);
+            }
 
             return stageContext;
         }

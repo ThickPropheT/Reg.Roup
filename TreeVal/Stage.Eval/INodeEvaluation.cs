@@ -10,13 +10,13 @@ public interface INodeEvaluation : IDescribable
 
     EvaluationStatus Status { get; }
 
-    IConditionEvaluation[] ConditionEvaluations { get; }
+    IConditionContext[] ConditionEvaluations { get; }
     IEnumerable<INodeEvaluation> ChildEvaluations { get; }
 
     IVisitor GetEvaluator(Node node);
     // Node? GetTarget(VisitationContext context);
 
-    void Record(IEnumerable<IConditionEvaluation> conditionEvaluations);
+    void Record(IEnumerable<IConditionContext> conditionEvaluations);
     void Record(IEnumerable<INodeEvaluation> childEvaluations);
 
     void Reject();

@@ -3,7 +3,7 @@ using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Eval;
 
-public interface IConditionEvaluation : IDescribable
+public interface IConditionContext : IDescribable
 {
     IBehaviorContext BehaviorContext { get; }
 

@@ -1,24 +1,26 @@
+using TreeVal.Visit;
+
 namespace TreeVal.Stage.Eval;
 
 public class ConditionEvaluationResult : VisitationResult
 {
-    public IConditionEvaluation Evaluation { get; }
+    public IConditionContext Context { get; }
 
     public EvaluationStatus Status { get; init; } = EvaluationStatus.Accepted;
 
-    public ConditionEvaluationResult(IConditionEvaluation evaluation)
+    public ConditionEvaluationResult(IConditionContext context)
     {
-        Evaluation = evaluation;
+        Context = context;
     }
 
-    public static ConditionEvaluationResult ForRejection(IConditionEvaluation evaluation)
-        => new(evaluation)
+    public static ConditionEvaluationResult ForRejection(IConditionContext context)
+        => new(context)
         {
             Status = EvaluationStatus.Rejected
         };
 
-    public static ConditionEvaluationResult ForError(IConditionEvaluation evaluation, Exception error)
-        => new(evaluation)
+    public static ConditionEvaluationResult ForError(IConditionContext context, Exception error)
+        => new(context)
         {
             Status = EvaluationStatus.Rejected,
             Error = error

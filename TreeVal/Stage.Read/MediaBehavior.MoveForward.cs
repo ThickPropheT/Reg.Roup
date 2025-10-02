@@ -1,3 +1,4 @@
+using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 using TreeVal.Visit.Stage;
 
@@ -9,9 +10,15 @@ public abstract partial class MediaBehavior
     {
         public IStageContext Perform(IBehaviorContext behaviorContext)
         {
-            var stageContext = behaviorContext.StageContext;
-            stageContext.TapeHead.MoveForward();
-            return stageContext;
+            try
+            {
+                behaviorContext.TapeHead.MoveForward();
+                return behaviorContext.StageContext;
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                throw VisitationException.BehaviorError(ex, behaviorContext);
+            }
         }
     }
 }

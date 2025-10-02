@@ -1,58 +1,58 @@
 using TreeVal.Media;
-using TreeVal.Stage.Eval;
+using TreeVal.Visit;
 
 namespace TreeVal.Diagnostics;
 
 public class TreeRejectedException : Exception
 {
     public ITapeHead? Head { get; init; }
-    public INodeEvaluation Evaluation { get; }
+    public IVisitorContext VisitorContext { get; }
 
-    private TreeRejectedException(INodeEvaluation evaluation, string message)
+    private TreeRejectedException(IVisitorContext visitorContext, string message)
         : base(message)
     {
-        Evaluation = evaluation;
+        VisitorContext = visitorContext;
     }
 
-    private TreeRejectedException(INodeEvaluation evaluation, string message, Exception inner)
+    private TreeRejectedException(IVisitorContext visitorContext, string message, Exception inner)
         : base(message, inner)
     {
-        Evaluation = evaluation;
+        VisitorContext = visitorContext;
     }
 
-    public static TreeRejectedException ForRejection(ITapeHead head, INodeEvaluation evaluation)
-        => new(evaluation, "An evaluator rejected the source tree")
+    public static TreeRejectedException ForRejection(ITapeHead head, VisitorContext visitorContext)
+        => new(visitorContext, "An evaluator rejected the source tree")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForIncompleteRead(ITapeHead head, INodeEvaluation evaluation)
-        => new(evaluation, "Tape contains unread nodes")
+    public static TreeRejectedException ForIncompleteRead(ITapeHead head, VisitorContext visitorContext)
+        => new(visitorContext, "Tape contains unread nodes")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForReadPastEnd(ITapeHead head, INodeEvaluation evaluation)
-        => new(evaluation, "Attempted to read past end of tape")
+    public static TreeRejectedException ForReadPastEnd(ITapeHead head, VisitorContext visitorContext)
+        => new(visitorContext, "Attempted to read past end of tape")
         {
             Head = head
         };
 
-    public static TreeRejectedException ForError(ITapeHead head, INodeEvaluation evaluation, Exception error)
-        => new(evaluation, "An unexpected error occurred while evaluating the source tree", error)
+    public static TreeRejectedException ForError(ITapeHead head, VisitorContext visitorContext, Exception error)
+        => new(visitorContext, "An unexpected error occurred while evaluating the source tree", error)
         {
             Head = head
         };
 
     public static TreeRejectedException Rethrow(
-        TreeRejectedException error, IDescriptionBuilder? descriptionBuilder = null)
+        VisitationException error, IDescriptionBuilder? descriptionBuilder = null)
     {
         descriptionBuilder ??= new DefaultDescriptionBuilder();
 
-        descriptionBuilder.EmitTreeRejection(error);
+        descriptionBuilder.EmitError(error);
 
         return new TreeRejectedException(
-            error.Evaluation,
+            error.VisitorContext,
             descriptionBuilder.ToString(),
             error
         )

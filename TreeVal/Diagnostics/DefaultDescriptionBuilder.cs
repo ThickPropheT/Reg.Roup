@@ -1,6 +1,9 @@
 using System.Text;
 using TreeVal.Media;
 using TreeVal.Stage.Eval;
+using TreeVal.Visit;
+using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Stage;
 
 namespace TreeVal.Diagnostics;
 
@@ -10,8 +13,9 @@ public enum EmitOptions
     Minimal = 0,
     Targets = 1,
     TargetValues = 2,
-    AcceptedConditions = 4,
-    Verbose = 7
+    AcceptedStages = 4,
+    AcceptedBehaviors = 8,
+    Verbose = 15
 }
 
 public enum NodeStyle
@@ -155,6 +159,20 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             });
     }
 
+    public void EmitError(VisitationException error)
+    {
+        EmitBlock(() =>
+        {
+            Emit("Message: ");
+            EmitLine(error.Message);
+
+            error.Head.Describe(this);
+
+            Emit("EvaluationTree: ");
+            EmitVisitorContext(error.VisitorContext);
+        });
+    }
+
     public void EmitError(Exception error)
     {
         Emit("Error: ");
@@ -189,32 +207,173 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         });
     }
 
-    public void EmitEvaluations(IConditionEvaluation[] evaluations)
+    public void EmitVisitorContext(IVisitorContext visitorContext)
     {
-        if (!Options.HasFlag(EmitOptions.AcceptedConditions)
-            && evaluations.All(e => e.Status == EvaluationStatus.Accepted))
+        if (TryDescribe(visitorContext))
+            return;
+
+        EmitBlock(() =>
+        {
+            var results = visitorContext.StageVisitations.ToArray();
+
+            if (results.Any())
+            {
+                EmitStageResults(results);
+            }
+        });
+    }
+
+    private void EmitStageResults(StageVisitationResult[] results)
+    {
+        if (!Options.HasFlag(EmitOptions.AcceptedStages)
+            && results.All(e => e.Status == EvaluationStatus.Accepted))
             return;
 
         EmitBlock(
-            "Conditions: ",
+            "Stages: ",
             bracketStyle: BracketStyle.Square,
             () =>
             {
-                for (var i = 0; i < evaluations.Length; i++)
+                for (var i = 0; i < results.Length; i++)
                 {
-                    EmitEvaluation(i, evaluations[i]);
+                    EmitStageResult(i, results[i]);
                 }
             });
     }
 
-    public void EmitEvaluation(int index, IConditionEvaluation evaluation)
+    private void EmitStageResult(int index, StageVisitationResult result)
     {
-        if (!Options.HasFlag(EmitOptions.AcceptedConditions)
-            && evaluation.Status == EvaluationStatus.Accepted)
+        if (!Options.HasFlag(EmitOptions.AcceptedStages)
+            && result.Status == EvaluationStatus.Accepted)
             return;
 
         Emit($"[{index}]: ");
-        evaluation.Describe(this);
+
+        if (result.Status == EvaluationStatus.Accepted)
+        {
+            EmitAcceptedStageResult(result);
+        }
+        else if (result.Status == EvaluationStatus.Rejected)
+        {
+            EmitRejectedStageResult(result, result.TapeHead.Read(), result.Error);
+        }
+    }
+
+    private void EmitAcceptedStageResult(StageVisitationResult expected)
+    {
+        if (!Options.HasFlag(EmitOptions.AcceptedStages))
+            return;
+
+        EmitPassIcon();
+        EmitStageResult(expected);
+    }
+
+    public void EmitRejectedStageResult(StageVisitationResult expected, Node actual, Exception? error)
+    {
+        EmitBlock(() =>
+        {
+            Emit("Status: ");
+            EmitFailIcon(suffix: "");
+            EmitLine(",");
+            Emit("Expected: ");
+            EmitStageResult(expected);
+
+            Emit("Actual: ");
+            EmitNode(actual);
+
+            if (error == null)
+                return;
+
+            EmitError(error);
+        });
+    }
+
+    private void EmitStageResult(StageVisitationResult result)
+    {
+        if (TryDescribe(result))
+            return;
+
+        if (result.Message != null)
+        {
+            EmitLine($"Message: {result.Message},");
+        }
+
+        EmitBehaviorResults(result.BehaviorVisitations.ToArray());
+    }
+
+    private void EmitBehaviorResults(BehaviorVisitationResult[] results)
+    {
+        if (!Options.HasFlag(EmitOptions.AcceptedBehaviors)
+            && results.All(r => r.Status == EvaluationStatus.Accepted))
+            return;
+
+        EmitBlock(
+            "Stages: ",
+            bracketStyle: BracketStyle.Square,
+            () =>
+            {
+                for (var i = 0; i < results.Length; i++)
+                {
+                    EmitBehaviorResult(i, results[i]);
+                }
+            });
+    }
+
+    private void EmitBehaviorResult(int index, BehaviorVisitationResult result)
+    {
+        Emit($"[{index}]: ");
+
+        if (result.Status == EvaluationStatus.Accepted)
+        {
+            EmitAcceptedBehaviorResult(result);
+        }
+        else if (result.Status == EvaluationStatus.Rejected)
+        {
+            EmitRejectedBehaviorResult(result, result.TapeHead.Read(), result.Error);
+        }
+    }
+
+    private void EmitAcceptedBehaviorResult(BehaviorVisitationResult expected)
+    {
+        if (!Options.HasFlag(EmitOptions.AcceptedStages))
+            return;
+
+        EmitPassIcon();
+        EmitBehaviorResult(expected);
+    }
+
+    public void EmitRejectedBehaviorResult(BehaviorVisitationResult expected, Node actual, Exception? error)
+    {
+        EmitBlock(() =>
+        {
+            Emit("Status: ");
+            EmitFailIcon(suffix: "");
+            EmitLine(",");
+            Emit("Expected: ");
+            EmitBehaviorResult(expected);
+
+            Emit("Actual: ");
+            EmitNode(actual);
+
+            if (error == null)
+                return;
+
+            EmitError(error);
+        });
+    }
+
+    private void EmitBehaviorResult(BehaviorVisitationResult result)
+    {
+        if (!Options.HasFlag(EmitOptions.AcceptedBehaviors))
+            return;
+
+        if (TryDescribe(result))
+            return;
+
+        if (!TryDescribe(result.VisitationResult))
+        {
+            EmitLine($"{result.VisitationResult},");
+        }
     }
 
     public void EmitPassIcon(string suffix = " ")
@@ -227,66 +386,13 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         Emit($"❌{suffix}");
     }
 
-    public void EmitAcceptance(ICondition expected)
+    private bool TryDescribe(object candidate)
     {
-        if (!Options.HasFlag(EmitOptions.AcceptedConditions))
-            return;
+        if (candidate is not IDescribable describable)
+            return false;
 
-        EmitPassIcon();
-
-        // ReSharper disable once SuspiciousTypeConversion.Global
-        if (expected is IDescribable d)
-        {
-            d.Describe(this);
-        }
-        else
-        {
-            throw new NotImplementedException();
-            // expected.Describe(this);
-        }
-    }
-
-    public void EmitRejection(ICondition expected, Node actual, Exception? error)
-    {
-        EmitBlock(() =>
-        {
-            Emit("Status: ");
-            EmitFailIcon(suffix: "");
-            EmitLine(",");
-            Emit("Expected: ");
-
-            // ReSharper disable once SuspiciousTypeConversion.Global
-            if (expected is IDescribable d)
-            {
-                d.Describe(this);
-            }
-            else
-            {
-                expected.Describe(this);
-            }
-
-            Emit("Actual: ");
-            EmitNode(actual);
-
-            if (error == null)
-                return;
-
-            EmitError(error);
-        });
-    }
-
-    public void EmitTreeRejection(TreeRejectedException error)
-    {
-        EmitBlock(() =>
-        {
-            Emit("Message: ");
-            EmitLine(error.Message);
-
-            error.Head?.Describe(this);
-
-            Emit("EvaluationTree: ");
-            error.Evaluation.Describe(this);
-        });
+        describable.Describe(this);
+        return true;
     }
 
     public override string ToString()

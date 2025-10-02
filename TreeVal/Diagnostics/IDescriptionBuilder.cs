@@ -1,5 +1,5 @@
 using TreeVal.Media;
-using TreeVal.Stage.Eval;
+using TreeVal.Visit;
 
 namespace TreeVal.Diagnostics;
 
@@ -35,19 +35,15 @@ public interface IDescriptionBuilder
 
     void EmitArray<T>(T[] array, Action<T, int> callback);
 
+    void EmitError(VisitationException error);
     void EmitError(Exception error);
     void EmitTarget(Node node);
     void EmitNode(Node node, NodeStyle style = NodeStyle.PropertyValue);
 
-    void EmitEvaluations(IConditionEvaluation[] evaluations);
-    void EmitEvaluation(int index, IConditionEvaluation evaluation);
+    void EmitVisitorContext(IVisitorContext visitorContext);
 
     void EmitPassIcon(string suffix = " ");
     void EmitFailIcon(string suffix = " ");
-    void EmitAcceptance(ICondition expected);
-    void EmitRejection(ICondition expected, Node actual, Exception? error);
-
-    void EmitTreeRejection(TreeRejectedException error);
 
     string ToString();
 }

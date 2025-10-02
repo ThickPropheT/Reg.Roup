@@ -1,13 +1,13 @@
 using System.Linq.Expressions;
 using TreeVal.Diagnostics;
+using TreeVal.Extensions;
 using TreeVal.Media;
 using TreeVal.Scaffolding;
 using TreeVal.Stage.Children;
 using TreeVal.Stage.Eval;
+using TreeVal.Stage.Eval.Rejection;
 using TreeVal.Stage.Read;
 using TreeVal.Visit;
-using TreeVal.Visit.Behavior;
-using TreeVal.Visit.Stage;
 
 namespace TreeVal.Expr;
 
@@ -54,77 +54,73 @@ public class ExpressionTreeEvaluator
             .RecordVisitationOf(expressionTree)
             .ToArray<Node>();
 
-        var head = new InitialTapeHead(new TapeHead(tape));
+        var head = new TapeHeadBootstrapper(new TapeHead(tape));
+
         var visitorContext = new VisitorContext(head);
 
-        var visitor = _schema.CreateVisitor(head.Read());
+        var rejections = Array.Empty<VisitationResult>();
 
-        visitor.Visit(visitorContext);
+        try
+        {
+            var visitor = _schema.CreateVisitor(head.Read());
 
-        if (IsRejected(visitorContext))
-            throw TreeRejectedException.ForRejection(head, null);
+            visitor.Visit(visitorContext);
+
+            rejections = visitorContext
+                .FindRejections()
+                .ToArray();
+        }
+        catch (VisitationException ex)
+            when (ex.Enumerate().Any(e => e is IndexOutOfRangeException))
+        {
+            throw TreeRejectedException.ForReadPastEnd(head, visitorContext);
+        }
+        catch (VisitationException ex)
+        {
+            throw TreeRejectedException.Rethrow(ex, _descriptionBuilder);
+        }
+
+        if (rejections.Any())
+            throw TreeRejectedException.ForRejection(head, visitorContext);
 
         if (head.CanMoveForward)
-            throw TreeRejectedException.ForIncompleteRead(head, null);
-
-        // try
-        // {
-        //     var v = new VisitationEngine();
-        //     // VisitationContext.EvaluateTree(head, _schema);
-        // }
-        // catch (TreeRejectedException ex)
-        // {
-        //     throw TreeRejectedException.Rethrow(ex, _descriptionBuilder);
-        // }
+            throw TreeRejectedException.ForIncompleteRead(head, visitorContext);
     }
 
     public override string? ToString()
         => Name ?? base.ToString();
 
-    private static bool IsRejected(VisitorContext visitorContext)
-        => visitorContext.StageVisitations.Any(stageResult => IsRejected(stageResult));
-
-    private static bool IsRejected(StageVisitationResult stageResult)
-        => stageResult
-               .Status == EvaluationStatus.Rejected
-           || stageResult.StageContext.BehaviorVisitations.Any(behaviorResult => IsRejected(behaviorResult));
-
-    private static bool IsRejected(BehaviorVisitationResult behaviorResult)
-        => behaviorResult.Error != null
-           || behaviorResult.BehaviorContext.VisitationResult.Error != null
-           || behaviorResult.BehaviorContext.VisitationResult is ConditionEvaluationResult
-           {
-               Status: EvaluationStatus.Rejected
-           };
-
-    private class InitialTapeHead : ITapeHead
+    private class TapeHeadBootstrapper : ITapeHead
     {
         private readonly TapeHead _inner;
 
-        public InitialTapeHead(TapeHead inner)
-        {
-            _inner = inner;
-        }
+        private Func<Node> _read;
 
         public bool CanMoveForward => _inner.CanMoveForward;
 
-        public Node Read()
+        public TapeHeadBootstrapper(TapeHead inner)
         {
-            if (_inner.CanRead)
-                return _inner.Read();
-            
-            if (_inner is { IsBeforeFront: true, CanMoveForward: true })
-                return _inner.PeekForward()!;
-
-            // TODO
-            throw new InvalidOperationException();
+            _inner = inner;
+            _read = BootstrapRead;
         }
+
+        public Node Read() => _read();
+
+        private Node BootstrapRead()
+            => _inner.PeekForward()
+               ?? throw new IndexOutOfRangeException();
+
+        private Node NormalRead()
+            => _inner.Read();
 
         public IEnumerable<Node> ReadToStart()
             => _inner.ReadToStart();
 
         public Node MoveForward()
-            => _inner.MoveForward();
+        {
+            _read = NormalRead;
+            return _inner.MoveForward();
+        }
 
         public Node? PeekForward()
             => _inner.PeekForward();

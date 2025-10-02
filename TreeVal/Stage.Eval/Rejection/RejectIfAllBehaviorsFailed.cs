@@ -1,20 +1,18 @@
 using TreeVal.Visit.Behavior;
 using TreeVal.Visit.Stage;
 
-namespace TreeVal.Stage.Eval;
+namespace TreeVal.Stage.Eval.Rejection;
 
 public class RejectIfAllBehaviorsFailed : IBeforeLeavingBehavior
 {
     public void Perform(IBehaviorContext behaviorContext)
     {
-        var stageContext = behaviorContext.StageContext;
-
-        var rejection = TryFindRejection(stageContext);
+        var rejection = TryFindRejection(behaviorContext.StageContext);
 
         if (rejection == null)
             return;
 
-        stageContext.VisitorContext.RecordVisitation(rejection);
+        behaviorContext.VisitorContext.RecordVisitation(rejection);
     }
 
     private static StageVisitationResult? TryFindRejection(IStageContext stageContext)
@@ -22,11 +20,11 @@ public class RejectIfAllBehaviorsFailed : IBeforeLeavingBehavior
         try
         {
             return stageContext.BehaviorVisitations
-                .All(v => v.BehaviorContext.VisitationResult is ConditionEvaluationResult
+                .All(v => v.VisitationResult is ConditionEvaluationResult
                 {
-                    Evaluation.Status: EvaluationStatus.Rejected
+                    Context.Status: EvaluationStatus.Rejected
                 })
-                ? StageVisitationResult.ForRejection(stageContext)
+                ? StageVisitationResult.ForRejection(stageContext, "At least one child behavior must be accepted")
                 : null;
         }
         catch (Exception ex)

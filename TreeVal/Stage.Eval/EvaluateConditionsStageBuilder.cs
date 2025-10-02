@@ -1,6 +1,8 @@
 using TreeVal.Eval;
 using TreeVal.Media;
 using TreeVal.Scaffolding.Stage;
+using TreeVal.Stage.Eval.Rejection;
+using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Eval;
@@ -29,17 +31,18 @@ public class EvaluateConditionsStageBuilder : VisitationStageBuilder, EvaluateCo
 
         public void Perform(IBehaviorContext behaviorContext)
         {
-            var evaluation = new DefaultConditionEvaluation(behaviorContext, _condition, _node);
+            var context = new ConditionContext(behaviorContext, _condition, _node);
 
             try
             {
-                _condition.Evaluate(_node, evaluation);
+                _condition.Evaluate(_node, context);
 
-                behaviorContext.RecordResult(new ConditionEvaluationResult(evaluation));
+                behaviorContext.RecordResult(new ConditionEvaluationResult(context));
             }
             catch (Exception ex)
             {
-                behaviorContext.RecordResult(ConditionEvaluationResult.ForError(evaluation, ex));
+                behaviorContext.RecordResult(ConditionEvaluationResult.ForError(context, ex));
+                throw VisitationException.BehaviorError(ex, behaviorContext);
             }
         }
     }

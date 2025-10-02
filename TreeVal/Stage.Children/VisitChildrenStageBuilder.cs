@@ -1,7 +1,7 @@
 using TreeVal.Media;
 using TreeVal.Scaffolding;
 using TreeVal.Scaffolding.Stage;
-using TreeVal.Stage.Eval;
+using TreeVal.Stage.Eval.Rejection;
 using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 
@@ -31,18 +31,19 @@ public class VisitChildrenStageBuilder : VisitationStageBuilder, VisitChildrenSt
 
         public void Perform(IBehaviorContext behaviorContext)
         {
-            var visitorContext = new VisitorContext(behaviorContext.StageContext.TapeHead);
+            var context = new VisitorContext(behaviorContext.TapeHead);
 
             try
             {
                 var visitor = _child.CreateVisitor(_node);
-                visitor.Visit(visitorContext);
+                visitor.Visit(context);
 
-                behaviorContext.RecordResult(new ChildVisitationResult(visitorContext));
+                behaviorContext.RecordResult(new ChildVisitationResult(context));
             }
             catch (Exception ex)
             {
-                behaviorContext.RecordResult(ChildVisitationResult.ForError(visitorContext, ex));
+                behaviorContext.RecordResult(ChildVisitationResult.ForError(context, ex));
+                throw VisitationException.BehaviorError(ex, behaviorContext);
             }
         }
     }

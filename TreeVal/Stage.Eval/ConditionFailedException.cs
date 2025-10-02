@@ -2,14 +2,14 @@ namespace TreeVal.Stage.Eval;
 
 public class ConditionFailedException : Exception
 {
-    public IConditionEvaluation Evaluation { get; }
+    public IConditionContext Context { get; }
 
-    public ConditionFailedException(IConditionEvaluation evaluation, string message, Exception? innerException = null)
+    public ConditionFailedException(IConditionContext context, string message, Exception? innerException = null)
         : base(message, innerException)
     {
-        Evaluation = evaluation;
+        Context = context;
     }
 
-    public static ConditionFailedException ExpectedNode<T>(IConditionEvaluation evaluation)
-        => new(evaluation, $"Node must have value of type {typeof(T)}");
+    public static ConditionFailedException ExpectedNode<T>(IConditionContext context)
+        => new(context, $"Node must have value of type {typeof(T)}");
 }

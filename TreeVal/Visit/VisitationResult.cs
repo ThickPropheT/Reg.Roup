@@ -1,4 +1,4 @@
-namespace TreeVal;
+namespace TreeVal.Visit;
 
 public class VisitationResult
 {

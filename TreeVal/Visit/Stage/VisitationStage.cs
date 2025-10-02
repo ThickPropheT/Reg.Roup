@@ -5,10 +5,12 @@ namespace TreeVal.Visit.Stage;
 
 public class VisitationStage : IVisitationStage
 {
+    private readonly IEnumerable<Func<Node, IEnumerable<IBehavior>>> _behaviors;
+
+    public string? CreatedBy { get; init; }
+
     public Func<Node, IAfterEnteringBehavior> AfterEntering { get; }
     public Func<Node, IBeforeLeavingBehavior>? BeforeLeaving { get; }
-
-    private readonly IEnumerable<Func<Node, IEnumerable<IBehavior>>> _behaviors;
 
     public VisitationStage(
         IEnumerable<Func<Node, IEnumerable<IBehavior>>> behaviors,
@@ -70,9 +72,8 @@ public class VisitationStage : IVisitationStage
         catch (Exception ex)
         {
             stageContext.RecordVisitation(BehaviorVisitationResult.ForError(behaviorContext, ex));
+            throw VisitationException.BehaviorError(ex, behaviorContext);
         }
-
-        return stageContext;
     }
 
     private static void PerformBehavior<TBehavior>(

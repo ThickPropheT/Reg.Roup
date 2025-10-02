@@ -1,6 +1,5 @@
 using TreeVal.Media;
 using TreeVal.Scaffolding;
-using TreeVal.Scaffolding.Stage;
 using TreeVal.Stage.Children.HavingChildren;
 using TreeVal.Stage.Read;
 
@@ -24,13 +23,4 @@ public static class ScaffoldingExtensions
 
     public static IVisitorBuilder<TNode> AcceptChildren<TNode>(this IVisitorBuilder<TNode> builder)
         => builder.HavingChild(parent => builder.Originator.AcceptChildren(parent));
-
-    private class MovePastChildrenStageBuilder : VisitationStageBuilder, ReadNodeStage.IBuilder
-    {
-        public MovePastChildrenStageBuilder(Node parent, IVisitationRecorder recorder)
-            : base(ReadNodeStage.Key)
-        {
-            AfterEntering((_, _) => new MediaBehavior.SkipChildren(parent, recorder));
-        }
-    }
 }

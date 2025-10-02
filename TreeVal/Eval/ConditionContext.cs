@@ -7,7 +7,7 @@ using TreeVal.Visit.Behavior;
 namespace TreeVal.Eval;
 
 [DebuggerDisplay("{Status} -> {Condition}")]
-public class DefaultConditionEvaluation : IConditionEvaluation
+public class ConditionContext : IConditionContext
 {
     private EvaluationStatus? _status;
 
@@ -20,7 +20,7 @@ public class DefaultConditionEvaluation : IConditionEvaluation
 
     public Exception? Error { get; private set; }
 
-    public DefaultConditionEvaluation(IBehaviorContext behaviorContext, ICondition condition, Node target)
+    public ConditionContext(IBehaviorContext behaviorContext, ICondition condition, Node target)
     {
         BehaviorContext = behaviorContext;
         Condition = condition;
@@ -45,14 +45,5 @@ public class DefaultConditionEvaluation : IConditionEvaluation
     }
 
     public void Describe(IDescriptionBuilder descriptionBuilder)
-    {
-        if (Status == EvaluationStatus.Accepted)
-        {
-            descriptionBuilder.EmitAcceptance(Condition);
-        }
-        else if (Status == EvaluationStatus.Rejected)
-        {
-            descriptionBuilder.EmitRejection(Condition, Target, Error);
-        }
-    }
+        => Condition.Describe(descriptionBuilder);
 }
