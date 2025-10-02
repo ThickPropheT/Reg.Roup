@@ -9,7 +9,7 @@ public interface IVisitorContext
 
     IEnumerable<StageVisitationResult> StageVisitations { get; }
 
-    IStageContext CreateStageContext();
+    IStageContext CreateStageContext(IVisitationStage stage);
 
     void RecordVisitation(StageVisitationResult result);
 }

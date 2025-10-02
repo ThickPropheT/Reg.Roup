@@ -16,8 +16,8 @@ public class VisitorContext : IVisitorContext
         TapeHead = tapeHead;
     }
 
-    public IStageContext CreateStageContext()
-        => new StageContext(this, TapeHead);
+    public IStageContext CreateStageContext(IVisitationStage stage)
+        => new StageContext(this, stage, TapeHead);
 
     public void RecordVisitation(StageVisitationResult result)
         => _visitations.Add(result);

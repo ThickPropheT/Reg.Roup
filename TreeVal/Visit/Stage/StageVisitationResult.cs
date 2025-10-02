@@ -8,6 +8,7 @@ public class StageVisitationResult : VisitationResult
 {
     public IStageContext StageContext { get; }
 
+    public IVisitationStage Stage => StageContext.Stage;
     public ITapeHead TapeHead => StageContext.TapeHead;
     public IEnumerable<BehaviorVisitationResult> BehaviorVisitations => StageContext.BehaviorVisitations;
 

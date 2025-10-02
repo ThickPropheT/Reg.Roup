@@ -13,10 +13,12 @@ public class Visitor : IVisitor
 
     public void Visit(IVisitorContext visitorContext)
     {
-        var stageContext = visitorContext.CreateStageContext();
+        IStageContext? stageContext = null;
 
         foreach (var stage in _stages)
         {
+            stageContext ??= visitorContext.CreateStageContext(stage);
+
             try
             {
                 stageContext = stage.Visit(stageContext);

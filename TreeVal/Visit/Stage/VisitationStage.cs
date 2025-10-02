@@ -7,7 +7,7 @@ public class VisitationStage : IVisitationStage
 {
     private readonly IEnumerable<Func<Node, IEnumerable<IBehavior>>> _behaviors;
 
-    public string? CreatedBy { get; init; }
+    public required string CreatedBy { get; init; }
 
     public Func<Node, IAfterEnteringBehavior> AfterEntering { get; }
     public Func<Node, IBeforeLeavingBehavior>? BeforeLeaving { get; }
@@ -25,11 +25,10 @@ public class VisitationStage : IVisitationStage
 
     public IStageContext Visit(IStageContext stageContext)
     {
-        var nextStageContext = PerformBehavior(
+        stageContext = PerformBehavior(
             stageContext,
             n => AfterEntering(n),
-            (behavior, behaviorContext) => behavior.Perform(behaviorContext)
-        );
+            (behavior, behaviorContext) => behavior.Perform(behaviorContext));
 
         foreach (var behavior in _behaviors.SelectMany(getBehavior => getBehavior(stageContext.TapeHead.Read())))
         {
@@ -49,7 +48,7 @@ public class VisitationStage : IVisitationStage
             );
         }
 
-        return nextStageContext;
+        return stageContext;
     }
 
     private static IStageContext PerformBehavior<TBehavior>(

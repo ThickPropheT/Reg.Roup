@@ -13,7 +13,7 @@ public abstract partial class MediaBehavior
             try
             {
                 behaviorContext.TapeHead.MoveForward();
-                return behaviorContext.StageContext;
+                return new StageContext(behaviorContext.StageContext);
             }
             catch (IndexOutOfRangeException ex)
             {

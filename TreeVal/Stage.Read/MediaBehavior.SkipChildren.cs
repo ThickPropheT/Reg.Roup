@@ -120,7 +120,7 @@ public abstract partial class MediaBehavior
                 throw VisitationException.BehaviorError(ex, behaviorContext);
             }
 
-            return stageContext;
+            return new StageContext(stageContext);
         }
     }
 }

@@ -293,12 +293,17 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         if (TryDescribe(result))
             return;
 
-        if (result.Message != null)
-        {
-            EmitLine($"Message: {result.Message},");
-        }
+        EmitBlock(
+            $"{result.Stage.CreatedBy} ",
+            () =>
+            {
+                if (result.Message != null)
+                {
+                    EmitLine($"Message: {result.Message},");
+                }
 
-        EmitBehaviorResults(result.BehaviorVisitations.ToArray());
+                EmitBehaviorResults(result.BehaviorVisitations.ToArray());
+            });
     }
 
     private void EmitBehaviorResults(BehaviorVisitationResult[] results)
@@ -308,7 +313,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             return;
 
         EmitBlock(
-            "Stages: ",
+            "BehaviorResults: ",
             bracketStyle: BracketStyle.Square,
             () =>
             {
