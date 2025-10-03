@@ -2,6 +2,7 @@ using TreeVal.Media;
 using TreeVal.Scaffolding;
 using TreeVal.Scaffolding.Stage;
 using TreeVal.Stage.Eval.Rejection;
+using TreeVal.Stage.Read;
 using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 
@@ -12,6 +13,9 @@ public class VisitChildrenStageBuilder : VisitationStageBuilder, VisitChildrenSt
     public VisitChildrenStageBuilder()
         : base(VisitChildrenStage.Key)
     {
+        // children will be acting on node n + 1, including resolution,
+        // so advance the tape head after entering the stage
+        AfterEntering((_, _) => new MediaBehavior.MoveForward());
         BeforeLeaving((_, _) => new RejectIfAnyBehaviorFailed());
     }
 

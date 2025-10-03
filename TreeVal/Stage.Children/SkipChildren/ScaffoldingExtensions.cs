@@ -1,5 +1,6 @@
 using TreeVal.Media;
 using TreeVal.Scaffolding;
+using TreeVal.Scaffolding.Stage.Create;
 using TreeVal.Stage.Children.HavingChildren;
 using TreeVal.Stage.Read;
 
@@ -12,8 +13,9 @@ public static class ScaffoldingExtensions
         var builder = new VisitorBuilder(factory);
 
         builder
-            .GetReadStage()
-            .OrCreateStage(_ => new MovePastChildrenStageBuilder(
+            .ReadStage()
+            .Create()
+            .OrUpdate(_ => new MovePastChildrenStageBuilder(
                 new Node<T>(parent),
                 new LinearExpressionTreeRecorder())
             );

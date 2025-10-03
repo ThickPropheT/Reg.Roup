@@ -1,5 +1,7 @@
 using TreeVal.Scaffolding;
+using TreeVal.Scaffolding.Stage.Create;
 using TreeVal.Stage.Children.SkipChildren;
+using TreeVal.Stage.Read;
 
 namespace TreeVal.Stage.Children.HavingChildren;
 
@@ -7,8 +9,13 @@ namespace TreeVal.Stage.Children.HavingChildren;
 public static class ScaffoldingExtensions
 {
     public static IVisitorBuilder HavingChild(
-        this IVisitorBuilder builder, IVisitorFactory child)
+        this IVisitorBuilder builder, IVisitorBuilder child)
     {
+        child
+            .ReadStage()
+            .Create()
+            .OrUpdate(_ => new ReadCurrentStageBuilder());
+
         builder.AddChildren(_ => [child]);
         return builder;
     }
@@ -21,8 +28,13 @@ public static class ScaffoldingExtensions
     }
 
     public static IVisitorBuilder<T> HavingChild<T>(
-        this IVisitorBuilder<T> builder, IVisitorFactory child)
+        this IVisitorBuilder<T> builder, IVisitorBuilder child)
     {
+        child
+            .ReadStage()
+            .Create()
+            .OrUpdate(_ => new ReadCurrentStageBuilder());
+
         builder.AddChildren(_ => [child]);
         return builder;
     }
@@ -35,7 +47,7 @@ public static class ScaffoldingExtensions
     }
 
     public static IVisitorBuilder<T> HavingChild<T>(
-        this IVisitorBuilder<T> builder, Func<T, IVisitorFactory> getChild)
+        this IVisitorBuilder<T> builder, Func<T, IVisitorBuilder> getChild)
     {
         builder.AddChildren(node => [getChild(node)]);
         return builder;

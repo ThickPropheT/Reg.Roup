@@ -18,7 +18,7 @@ public static class MethodCallDelegateEvaluatorExtensions
 {
     public static IVisitorBuilder MethodCallDelegate<TDelegate>(
         this IVisitorBuilderFactory factory,
-        Func<MethodCallExpression, IVisitorFactory>? getTarget = null,
+        Func<MethodCallExpression, IVisitorBuilder>? getTarget = null,
         Func<MethodInfo, bool>? where = null
     )
         where TDelegate : System.Delegate

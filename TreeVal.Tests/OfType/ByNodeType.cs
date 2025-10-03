@@ -23,7 +23,7 @@ public class ByNodeType
     private static readonly Expression ValidExpression = Expression.Convert(Expression.Constant(1), typeof(short));
 
     private static readonly ExpressionTreeEvaluator Evaluator =
-        ExpressionTreeEvaluator.Create(node => node.OfType(ExpressionType.Convert).HavingChildren(node.AnyOne()));
+        ExpressionTreeEvaluator.Create(node => node.OfType(ExpressionType.Convert).HavingChild(node.AnyOne()));
 
     [TestCaseSource(nameof(InvalidExpressions))]
     public void ThrowsOnInvalidSchemas(Expression invalidExpression)

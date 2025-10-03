@@ -15,20 +15,20 @@ public static class ConversionEvaluatorExtensions
             .HavingChild(parent => factory.AcceptChildren(parent));
 
     public static IVisitorBuilder<UnaryExpression> Cast(
-        this IVisitorBuilderFactory factory, IVisitorFactory operand)
+        this IVisitorBuilderFactory factory, IVisitorBuilder operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .HavingChild(operand);
 
     public static IVisitorBuilder<UnaryExpression> Cast<T>(
-        this IVisitorBuilderFactory factory, IVisitorFactory operand)
+        this IVisitorBuilderFactory factory, IVisitorBuilder operand)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Equals(typeof(T), cast => cast.Type)
             .HavingChild(operand);
 
     public static IVisitorBuilder<UnaryExpression> Cast(
-        this IVisitorBuilderFactory factory, IVisitorFactory operand, Type toType)
+        this IVisitorBuilderFactory factory, IVisitorBuilder operand, Type toType)
         => factory
             .OfType<UnaryExpression>(ExpressionType.Convert)
             .Where(cast => cast.Type == toType)

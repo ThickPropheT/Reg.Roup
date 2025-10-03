@@ -1,5 +1,5 @@
 using TreeVal.Scaffolding;
-using TreeVal.Scaffolding.Stage;
+using TreeVal.Scaffolding.Stage.Get;
 using TreeVal.Stage.Read;
 using TreeVal.Visit.Behavior;
 using TreeVal.Visit.Behavior.AfterEntering;
@@ -43,8 +43,9 @@ public static class DebugEvaluatorExtensions
             factory,
             builder =>
                 builder
-                    .GetReadStage()
-                    .OrCreateStage((_, readStage) => readStage.AfterEntering((n, prev) =>
+                    .ReadStage()
+                    .Get()
+                    .OrCreate((_, readStage) => readStage.AfterEntering((n, prev) =>
                         new Breakpoint(stageContext =>
                         {
                             observe(n, stageContext);
@@ -52,9 +53,9 @@ public static class DebugEvaluatorExtensions
                         }))));
 
     public static IVisitorBuilder Debug(
-        this IStageQuery<ReadNodeStage.IBuilder> readStageQuery, Action<object, IStageContext> observe)
-        => readStageQuery
-            .OrCreateStage((_, readStage) => readStage.AfterEntering((n, prev) =>
+        this IGetStage<ReadNodeStage.IBuilder> readGetStage, Action<object, IStageContext> observe)
+        => readGetStage
+            .OrCreate((_, readStage) => readStage.AfterEntering((n, prev) =>
                 new Breakpoint(stageContext =>
                 {
                     stageContext = prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext(observe)) ?? stageContext;

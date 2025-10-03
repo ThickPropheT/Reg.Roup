@@ -41,7 +41,7 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts only instance
     public static IVisitorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorBuilderFactory factory, Func<MethodCallExpression, IVisitorFactory> target)
+        this IVisitorBuilderFactory factory, Func<MethodCallExpression, IVisitorBuilder> target)
         => factory
             .OfType<MethodCallExpression>()
             .Where(call => !call.Method.IsStatic || call.Method.IsExtensionMethod())
@@ -96,14 +96,14 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts both instance only
     public static IVisitorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorBuilderFactory factory, Type ownerType, Func<MethodCallExpression, IVisitorFactory> target)
+        this IVisitorBuilderFactory factory, Type ownerType, Func<MethodCallExpression, IVisitorBuilder> target)
         => factory
             .InstanceMethodCallBase(ownerType, target)
             .HavingAnyChild();
 
     // this accepts both instance only
     public static IVisitorBuilder<MethodCallExpression> MethodCall<TOwner>(
-        this IVisitorBuilderFactory factory, Func<MethodCallExpression, IVisitorFactory> target)
+        this IVisitorBuilderFactory factory, Func<MethodCallExpression, IVisitorBuilder> target)
         => factory
             .InstanceMethodCallBase(typeof(TOwner), target)
             .HavingAnyChild();
@@ -121,7 +121,7 @@ public static class MethodCallEvaluatorExtensions
 
     // this accepts only instance
     public static IVisitorBuilder<MethodCallExpression> MethodCall(
-        this IVisitorBuilderFactory factory, string? name, Func<MethodCallExpression, IVisitorFactory> target)
+        this IVisitorBuilderFactory factory, string? name, Func<MethodCallExpression, IVisitorBuilder> target)
         => factory
             .MethodCallBase(name)
             .Where(call => !call.Method.IsStatic || call.Method.IsExtensionMethod())
@@ -239,7 +239,7 @@ public static class MethodCallEvaluatorExtensions
             .Equals(name, call => call.Method.Name);
 
     private static IVisitorBuilder<MethodCallExpression> InstanceMethodCallBase(
-        this IVisitorBuilderFactory factory, Type ownerType, Func<MethodCallExpression, IVisitorFactory> target)
+        this IVisitorBuilderFactory factory, Type ownerType, Func<MethodCallExpression, IVisitorBuilder> target)
         => factory
             .OfType<MethodCallExpression>()
             .Equals(ownerType, call => call.Method.DeclaringType)

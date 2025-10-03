@@ -6,6 +6,7 @@ namespace TreeVal.Scaffolding;
 public interface IVisitorBuilder : IVisitorFactory
 {
     IVisitorBuilderFactory Originator { get; }
+    IStageDirector StageDirector { get; }
 
     void OnDiscovery(Action<Node, IDiscovered> callback);
 

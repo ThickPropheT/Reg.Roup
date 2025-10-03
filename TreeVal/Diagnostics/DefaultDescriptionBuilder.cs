@@ -164,16 +164,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
     {
         EmitBlock(() =>
         {
-            var innerErrors = error.Enumerate().ToArray();
-
-            if (innerErrors.Any())
-            {
-                Emit("InnerExceptions: ");
-                EmitArray(
-                    innerErrors,
-                    (inner, _) => EmitError(inner));
-            }
-            else
+            if (!TryEnumerateError(error))
             {
                 Emit("Message: ");
                 EmitLine($"'{error.Message}',");
@@ -191,6 +182,25 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         Emit("Error: ");
         EmitLine($"'{error.Message}',");
         _doNextIndent = true;
+    }
+
+    private bool TryEnumerateError(Exception error)
+    {
+        var innerErrors = error.Enumerate().ToArray();
+
+        if (!innerErrors.Any()) 
+            return false;
+        
+        Emit("Errors: ");
+        EmitArray(
+            innerErrors,
+            (inner, _) =>
+            {
+                Emit($"{inner.GetType().Name}: ");
+                EmitLine($"'{inner.Message}',");
+            });
+
+        return true;
     }
 
     public void EmitTarget(Node target)
@@ -301,7 +311,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             if (error == null)
                 return;
 
-            EmitError(error);
+            TryEnumerateError(error);
         });
     }
 
@@ -325,7 +335,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
 
                 if (result.Message != null)
                 {
-                    EmitLine($"Message: {result.Message},");
+                    EmitLine($"Message: '{result.Message}',");
                 }
 
                 EmitBehaviorResults(result.BehaviorVisitations.ToArray());
@@ -389,7 +399,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             if (error == null)
                 return;
 
-            EmitError(error);
+            TryEnumerateError(error);
         });
     }
 

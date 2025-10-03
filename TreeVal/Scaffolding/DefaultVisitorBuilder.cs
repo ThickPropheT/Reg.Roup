@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using TreeVal.Scaffolding.Stage.Create;
 using TreeVal.Stage.Read;
 
 namespace TreeVal.Scaffolding;
@@ -11,8 +12,9 @@ public static class DefaultVisitorBuilder
         var builder = new VisitorBuilder(originator) { CreatedBy = callerMemberName };
 
         builder
-            .GetReadStage()
-            .OrCreateStage(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
+            .ReadStage()
+            .Create()
+            .OrUpdate(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
 
         return builder;
     }
@@ -26,8 +28,9 @@ public static class DefaultVisitorBuilder
         };
 
         builder
-            .GetReadStage()
-            .OrCreateStage(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
+            .ReadStage()
+            .Create()
+            .OrUpdate(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
 
         return builder;
     }

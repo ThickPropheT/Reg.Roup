@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using TreeVal.Media;
 using TreeVal.Scaffolding.Stage;
+using TreeVal.Scaffolding.Stage.Create;
 using TreeVal.Stage.Children;
 using TreeVal.Stage.Eval;
 using TreeVal.Stage.Eval.OfType;
@@ -40,8 +41,9 @@ public class VisitorBuilderFactory : IVisitorBuilderFactory
         options = new[] { option1, option2 }.Concat(options).ToArray();
 
         builder
-            .GetVisitChildrenStage()
-            .OrCreateStage(
+            .ChildrenStage()
+            .Create()
+            .OrUpdate(
                 (_, childrenStage) => childrenStage.AddChildren(() => options),
                 _ => new OneOfConditionsStageBuilder()
             );

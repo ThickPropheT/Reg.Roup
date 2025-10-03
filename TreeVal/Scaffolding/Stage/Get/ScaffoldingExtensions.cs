@@ -2,23 +2,24 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using TreeVal.Media;
 
-namespace TreeVal.Scaffolding.Stage;
+namespace TreeVal.Scaffolding.Stage.Get;
 
 public static class ScaffoldingExtensions
 {
-    public static IStageQuery<TStage> Get<TStage>(this IVisitorBuilder builder)
+    public static IGetStage<TStage> Get<TStage>(this Accessors<TStage> accessors)
         where TStage : IVisitationStageBuilder
-        => new StageQuery<TStage>(
-            builder,
-            builder.Originator.StageDirector.ValidateKey(new IVisitationStageBuilder.Identity<TStage>()));
+        => new GetStage<TStage>(
+            accessors.Builder,
+            accessors.StageDirector.ValidateKey(new IVisitationStageBuilder.Identity<TStage>())
+        );
 
-    private class StageQuery<TStage> : IStageQuery<TStage>
+    private class GetStage<TStage> : IGetStage<TStage>
         where TStage : IVisitationStageBuilder
     {
         private readonly IVisitorBuilder _builder;
         private readonly IVisitationStageBuilder.Identity<TStage> _key;
 
-        public StageQuery(IVisitorBuilder builder, IVisitationStageBuilder.Identity<TStage> key)
+        public GetStage(IVisitorBuilder builder, IVisitationStageBuilder.Identity<TStage> key)
         {
             _builder = builder;
             _key = key;
@@ -27,15 +28,15 @@ public static class ScaffoldingExtensions
         public void Stage(Action<TStage?> callback)
             => _builder.OnDiscovery((_, discovered) => callback((TStage?) discovered.Get(_key)));
 
-        public IVisitorBuilder OrCreateStage([CallerMemberName] string callerMemberName = "")
-            => OrCreateStage(_ =>
+        public IVisitorBuilder OrCreate([CallerMemberName] string callerMemberName = "")
+            => OrCreate(_ =>
             {
-                var s = _builder.Originator.StageDirector.Create(_key);
+                var s = _builder.StageDirector.Create(_key);
                 s.CreationSite = callerMemberName;
                 return s;
             });
 
-        public IVisitorBuilder OrCreateStage(Func<Node, TStage> createStage)
+        public IVisitorBuilder OrCreate(Func<Node, TStage> createStage)
         {
             _builder.OnDiscovery((n, discovered) =>
             {
@@ -49,18 +50,18 @@ public static class ScaffoldingExtensions
             return _builder;
         }
 
-        public IVisitorBuilder OrCreateStage(
+        public IVisitorBuilder OrCreate(
             Action<Node, TStage> callback, [CallerMemberName] string callerMemberName = "")
-            => OrCreateStage(
+            => OrCreate(
                 callback,
                 _ =>
                 {
-                    var s = _builder.Originator.StageDirector.Create(_key);
+                    var s = _builder.StageDirector.Create(_key);
                     s.CreationSite = callerMemberName;
                     return s;
                 });
 
-        public IVisitorBuilder OrCreateStage(Action<Node, TStage> callback, Func<Node, TStage> createStage)
+        public IVisitorBuilder OrCreate(Action<Node, TStage> callback, Func<Node, TStage> createStage)
         {
             _builder.OnDiscovery((n, discovered) =>
             {

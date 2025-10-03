@@ -11,6 +11,6 @@ public static class ReadNodeStage
 
     public static IVisitationStageBuilder.Identity<IBuilder> Key { get; } = new();
 
-    public static IStageQuery<IBuilder> GetReadStage(this IVisitorBuilder builder)
-        => builder.Get<IBuilder>();
+    public static Accessors<IBuilder> ReadStage(this IVisitorBuilder builder)
+        => new(builder);
 }

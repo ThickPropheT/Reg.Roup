@@ -8,13 +8,13 @@ namespace TreeVal.Expr.Delegate;
 public static class LambdaEvaluatorExtensions
 {
     public static IVisitorBuilder<LambdaExpression> Lambda(
-        this IVisitorBuilderFactory factory, IVisitorFactory body)
+        this IVisitorBuilderFactory factory, IVisitorBuilder body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChild(body);
 
     public static IVisitorBuilder<LambdaExpression> Lambda(
-        this IVisitorBuilderFactory factory, IVisitorFactory[] parameters, IVisitorFactory body)
+        this IVisitorBuilderFactory factory, IVisitorBuilder[] parameters, IVisitorBuilder body)
         => factory
             .OfType<LambdaExpression>()
             .HavingChildren(new[] { body }.Concat(parameters).ToArray());

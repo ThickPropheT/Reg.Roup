@@ -27,7 +27,7 @@ public class ByObjectType
     ];
 
     private static readonly ExpressionTreeEvaluator Evaluator =
-        ExpressionTreeEvaluator.Create(node => node.OfType<UnaryExpression>().HavingChildren(node.AnyOne()));
+        ExpressionTreeEvaluator.Create(node => node.OfType<UnaryExpression>().HavingChild(node.AnyOne()));
 
     [TestCaseSource(nameof(InvalidExpressions))]
     public void ThrowsOnInvalidSchemas(Expression invalidExpression)
