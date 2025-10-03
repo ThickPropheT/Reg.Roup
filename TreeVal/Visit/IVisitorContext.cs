@@ -7,9 +7,11 @@ public interface IVisitorContext
 {
     ITapeHead TapeHead { get; }
 
+    IVisitor Visitor { get; }
+
     IEnumerable<StageVisitationResult> StageVisitations { get; }
 
-    IStageContext CreateStageContext(IVisitationStage stage);
+    IStageContext CreateStageContext(IVisitationStage stage, IStageContext? stageContext);
 
     void RecordVisitation(StageVisitationResult result);
 }

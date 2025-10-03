@@ -1,27 +1,33 @@
+using System.Runtime.CompilerServices;
 using TreeVal.Stage.Read;
 
 namespace TreeVal.Scaffolding;
 
 public static class DefaultVisitorBuilder
 {
-    public static VisitorBuilder Create(IVisitorBuilderFactory originator)
+    public static VisitorBuilder Create(
+        IVisitorBuilderFactory originator, [CallerMemberName] string callerMemberName = "")
     {
-        var builder = new VisitorBuilder(originator);
+        var builder = new VisitorBuilder(originator) { CreatedBy = callerMemberName };
 
         builder
             .GetReadStage()
-            .OrCreateStage(_ => new MoveForwardStageBuilder());
+            .OrCreateStage(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
 
         return builder;
     }
 
-    public static VisitorBuilder<TNode> Create<TNode>(IVisitorBuilderFactory originator)
+    public static VisitorBuilder<TNode> Create<TNode>(
+        IVisitorBuilderFactory originator, [CallerMemberName] string callerMemberName = "")
     {
-        var builder = new VisitorBuilder<TNode>(originator);
+        var builder = new VisitorBuilder<TNode>(originator)
+        {
+            CreatedBy = $"{callerMemberName}`1[{typeof(TNode).Name}]"
+        };
 
         builder
             .GetReadStage()
-            .OrCreateStage(_ => new MoveForwardStageBuilder());
+            .OrCreateStage(_ => new MoveForwardStageBuilder { CreationSite = nameof(DefaultVisitorBuilder) });
 
         return builder;
     }

@@ -56,14 +56,26 @@ public class ExpressionTreeEvaluator
 
         var head = new TapeHeadBootstrapper(new TapeHead(tape));
 
-        var visitorContext = new VisitorContext(head);
-
         var rejections = Array.Empty<VisitationResult>();
+
+        IVisitor visitor;
 
         try
         {
-            var visitor = _schema.CreateVisitor(head.Read());
+            visitor = _schema.CreateVisitor(head.Read());
+        }
+        catch (Exception ex)
+        {
+            throw new NotImplementedException();
+            
+            // TODO figure out a permanent error solution here
+            throw TreeRejectedException.ForError(head, null, ex);
+        }
 
+        var visitorContext = new VisitorContext(head, visitor);
+
+        try
+        {
             visitor.Visit(visitorContext);
 
             rejections = visitorContext

@@ -10,6 +10,7 @@ public class VisitorBuilder : IVisitorBuilder
     private Action<Node, IVisitorBuilder.IDiscovered>? _discover;
 
     public IVisitorBuilderFactory Originator { get; }
+    public string CreatedBy { get; init; } = "";
 
     public VisitorBuilder(IVisitorBuilderFactory originator)
     {
@@ -32,7 +33,10 @@ public class VisitorBuilder : IVisitorBuilder
             _director
                 .Arrange(DiscoverStages(node))
                 .Select(builder => builder.CreateStage())
-        );
+        )
+        {
+            CreatedBy = CreatedBy
+        };
 
     protected IEnumerable<IVisitationStageBuilder> DiscoverStages(Node node)
     {

@@ -6,6 +6,8 @@ public class Visitor : IVisitor
 {
     private readonly IEnumerable<IVisitationStage> _stages;
 
+    public string CreatedBy { get; init; } = "";
+
     public Visitor(IEnumerable<IVisitationStage> stages)
     {
         _stages = stages;
@@ -17,7 +19,7 @@ public class Visitor : IVisitor
 
         foreach (var stage in _stages)
         {
-            stageContext ??= visitorContext.CreateStageContext(stage);
+            stageContext = visitorContext.CreateStageContext(stage, stageContext);
 
             try
             {
@@ -30,7 +32,7 @@ public class Visitor : IVisitor
                 var errorResult = StageVisitationResult.ForError(stageContext, ex);
 
                 visitorContext.RecordVisitation(errorResult);
-                throw VisitationException.StageError(ex, errorResult);
+                throw StageVisitationException.ForError(ex, errorResult);
             }
         }
     }

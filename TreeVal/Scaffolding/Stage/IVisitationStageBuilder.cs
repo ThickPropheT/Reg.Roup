@@ -1,11 +1,15 @@
 using TreeVal.Media;
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Behavior.AfterEntering;
 
 namespace TreeVal.Scaffolding.Stage;
 
 public interface IVisitationStageBuilder : IVisitationStageFactory
 {
     Identity Key { get; }
+    
+    string? CreatedBy { get; init; }
+    string? CreationSite { get; set; }
 
     void AfterEntering(Func<Node, Func<Node, IAfterEnteringBehavior>?, IAfterEnteringBehavior> afterEntering);
     void AddBehaviors(Func<Node, IEnumerable<IBehavior>> getBehaviors);

@@ -7,6 +7,7 @@ public interface IBehaviorContext
 {
     IVisitorContext VisitorContext { get; }
     IStageContext StageContext { get; }
+    object Behavior { get; }
 
     ITapeHead TapeHead { get; }
 

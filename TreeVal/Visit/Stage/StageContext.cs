@@ -25,10 +25,11 @@ public class StageContext : IStageContext
         VisitorContext = current.VisitorContext;
         Stage = current.Stage;
         TapeHead = current.TapeHead;
+        _visitations = current.BehaviorVisitations.ToList();
     }
 
-    public IBehaviorContext CreateBehaviorContext()
-        => new BehaviorContext(this);
+    public IBehaviorContext CreateBehaviorContext<TBehavior>(TBehavior behavior)
+        => new BehaviorContext(this, behavior!);
 
     public void RecordVisitation(BehaviorVisitationResult result)
         => _visitations.Add(result);

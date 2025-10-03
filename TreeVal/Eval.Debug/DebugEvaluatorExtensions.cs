@@ -1,9 +1,8 @@
-using TreeVal.Media;
 using TreeVal.Scaffolding;
 using TreeVal.Scaffolding.Stage;
 using TreeVal.Stage.Read;
-using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Behavior.AfterEntering;
 using TreeVal.Visit.Stage;
 
 namespace TreeVal.Eval.Debug;
@@ -49,7 +48,7 @@ public static class DebugEvaluatorExtensions
                         new Breakpoint(stageContext =>
                         {
                             observe(n, stageContext);
-                            return prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext()) ?? stageContext;
+                            return prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext(observe)) ?? stageContext;
                         }))));
 
     public static IVisitorBuilder Debug(
@@ -58,7 +57,7 @@ public static class DebugEvaluatorExtensions
             .OrCreateStage((_, readStage) => readStage.AfterEntering((n, prev) =>
                 new Breakpoint(stageContext =>
                 {
-                    stageContext = prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext()) ?? stageContext;
+                    stageContext = prev?.Invoke(n).Perform(stageContext.CreateBehaviorContext(observe)) ?? stageContext;
                     observe(n, stageContext);
                     return stageContext;
                 })));

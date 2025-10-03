@@ -1,5 +1,5 @@
-using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Behavior.AfterEntering;
 using TreeVal.Visit.Stage;
 
 namespace TreeVal.Stage.Read;
@@ -17,7 +17,7 @@ public abstract partial class MediaBehavior
             }
             catch (IndexOutOfRangeException ex)
             {
-                throw VisitationException.BehaviorError(ex, behaviorContext);
+                throw BehaviorVisitationException.ForError(ex, behaviorContext);
             }
         }
     }

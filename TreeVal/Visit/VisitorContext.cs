@@ -9,15 +9,20 @@ public class VisitorContext : IVisitorContext
 
     public ITapeHead TapeHead { get; }
 
+    public IVisitor Visitor { get; }
+
     public IEnumerable<StageVisitationResult> StageVisitations => _visitations.AsReadOnly();
 
-    public VisitorContext(ITapeHead tapeHead)
+    public VisitorContext(ITapeHead tapeHead, IVisitor visitor)
     {
         TapeHead = tapeHead;
+        Visitor = visitor;
     }
 
-    public IStageContext CreateStageContext(IVisitationStage stage)
-        => new StageContext(this, stage, TapeHead);
+    public IStageContext CreateStageContext(IVisitationStage stage, IStageContext? stageContext)
+        => stageContext != null
+            ? new StageContext(stageContext.VisitorContext, stage, stageContext.TapeHead)
+            : new StageContext(this, stage, TapeHead);
 
     public void RecordVisitation(StageVisitationResult result)
         => _visitations.Add(result);

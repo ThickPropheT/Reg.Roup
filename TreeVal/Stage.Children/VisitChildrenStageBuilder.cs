@@ -31,11 +31,22 @@ public class VisitChildrenStageBuilder : VisitationStageBuilder, VisitChildrenSt
 
         public void Perform(IBehaviorContext behaviorContext)
         {
-            var context = new VisitorContext(behaviorContext.TapeHead);
+            IVisitor visitor;
 
             try
             {
-                var visitor = _child.CreateVisitor(_node);
+                visitor = _child.CreateVisitor(_node);
+            }
+            catch (Exception ex)
+            {
+                behaviorContext.RecordResult(new VisitorResolutionErrorResult(ex));
+                throw BehaviorVisitationException.ForError(ex, behaviorContext);
+            }
+
+            var context = new VisitorContext(behaviorContext.TapeHead, visitor);
+
+            try
+            {
                 visitor.Visit(context);
 
                 behaviorContext.RecordResult(new ChildVisitationResult(context));
@@ -43,7 +54,7 @@ public class VisitChildrenStageBuilder : VisitationStageBuilder, VisitChildrenSt
             catch (Exception ex)
             {
                 behaviorContext.RecordResult(ChildVisitationResult.ForError(context, ex));
-                throw VisitationException.BehaviorError(ex, behaviorContext);
+                throw BehaviorVisitationException.ForError(ex, behaviorContext);
             }
         }
     }

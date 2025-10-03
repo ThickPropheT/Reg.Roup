@@ -1,4 +1,5 @@
 using System.Text;
+using TreeVal.Extensions;
 using TreeVal.Media;
 using TreeVal.Stage.Eval;
 using TreeVal.Visit;
@@ -163,12 +164,24 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
     {
         EmitBlock(() =>
         {
-            Emit("Message: ");
-            EmitLine($"'{error.Message}', ");
+            var innerErrors = error.Enumerate().ToArray();
+
+            if (innerErrors.Any())
+            {
+                Emit("InnerExceptions: ");
+                EmitArray(
+                    innerErrors,
+                    (inner, _) => EmitError(inner));
+            }
+            else
+            {
+                Emit("Message: ");
+                EmitLine($"'{error.Message}',");
+            }
 
             error.Head.Describe(this);
 
-            Emit("EvaluationTree: ");
+            Emit("Visitor: ");
             EmitVisitorContext(error.VisitorContext);
         });
     }
@@ -176,7 +189,7 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
     public void EmitError(Exception error)
     {
         Emit("Error: ");
-        EmitLine($"{error.Message},");
+        EmitLine($"'{error.Message}',");
         _doNextIndent = true;
     }
 
@@ -212,15 +225,19 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
         if (TryDescribe(visitorContext))
             return;
 
-        EmitBlock(() =>
-        {
-            var results = visitorContext.StageVisitations.ToArray();
-
-            if (results.Any())
+        EmitBlock(
+            () =>
             {
-                EmitStageResults(results);
-            }
-        });
+                Emit("CreatedBy: ");
+                EmitLine($"{visitorContext.Visitor.CreatedBy},");
+                
+                var results = visitorContext.StageVisitations.ToArray();
+
+                if (results.Any())
+                {
+                    EmitStageResults(results);
+                }
+            });
     }
 
     private void EmitStageResults(StageVisitationResult[] results)
@@ -294,9 +311,18 @@ public class DefaultDescriptionBuilder : IDescriptionBuilder
             return;
 
         EmitBlock(
-            $"{result.Stage.CreatedBy} ",
+            $"{result.Stage.CreatedBy.Replace("Builder", "")} ",
             () =>
             {
+                Emit("CreatedBy: ");
+                EmitLine($"{result.Stage.CreatedBy},");
+                
+                if (result.Stage.CreationSite != null)
+                {
+                    Emit("CreationSite: ");
+                    EmitLine($"{result.Stage.CreationSite},");
+                }
+
                 if (result.Message != null)
                 {
                     EmitLine($"Message: {result.Message},");

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using TreeVal.Media;
 
 namespace TreeVal.Scaffolding.Stage;
@@ -26,12 +27,18 @@ public static class ScaffoldingExtensions
         public void Stage(Action<TStage?> callback)
             => _builder.OnDiscovery((_, discovered) => callback((TStage?) discovered.Get(_key)));
 
-        public IVisitorBuilder OrCreateStage(Func<Node, TStage>? createStage = null)
+        public IVisitorBuilder OrCreateStage([CallerMemberName] string callerMemberName = "")
+            => OrCreateStage(_ =>
+            {
+                var s = _builder.Originator.StageDirector.Create(_key);
+                s.CreationSite = callerMemberName;
+                return s;
+            });
+
+        public IVisitorBuilder OrCreateStage(Func<Node, TStage> createStage)
         {
             _builder.OnDiscovery((n, discovered) =>
             {
-                createStage ??= _ => _builder.Originator.StageDirector.Create(_key);
-
                 if (!TryGetStage(discovered, out var stage))
                 {
                     stage = createStage(n);
@@ -42,12 +49,21 @@ public static class ScaffoldingExtensions
             return _builder;
         }
 
-        public IVisitorBuilder OrCreateStage(Action<Node, TStage> callback, Func<Node, TStage>? createStage = null)
+        public IVisitorBuilder OrCreateStage(
+            Action<Node, TStage> callback, [CallerMemberName] string callerMemberName = "")
+            => OrCreateStage(
+                callback,
+                _ =>
+                {
+                    var s = _builder.Originator.StageDirector.Create(_key);
+                    s.CreationSite = callerMemberName;
+                    return s;
+                });
+
+        public IVisitorBuilder OrCreateStage(Action<Node, TStage> callback, Func<Node, TStage> createStage)
         {
             _builder.OnDiscovery((n, discovered) =>
             {
-                createStage ??= _ => _builder.Originator.StageDirector.Create(_key);
-
                 if (!TryGetStage(discovered, out var stage))
                 {
                     stage = createStage(n);

@@ -122,7 +122,8 @@ public class TapeHead : ITapeHead, IDescribable
                     });
             });
 
-        descriptionBuilder.Emit("],");
+        // TODO why was this here before? it's now generating extra an ],
+        // descriptionBuilder.Emit("],");
     }
 
 

@@ -11,7 +11,7 @@ public interface IStageContext
 
     IEnumerable<BehaviorVisitationResult> BehaviorVisitations { get; }
 
-    IBehaviorContext CreateBehaviorContext();
+    IBehaviorContext CreateBehaviorContext<TBehavior>(TBehavior behavior);
 
     void RecordVisitation(BehaviorVisitationResult result);
 }

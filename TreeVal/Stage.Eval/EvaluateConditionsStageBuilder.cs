@@ -2,7 +2,6 @@ using TreeVal.Eval;
 using TreeVal.Media;
 using TreeVal.Scaffolding.Stage;
 using TreeVal.Stage.Eval.Rejection;
-using TreeVal.Visit;
 using TreeVal.Visit.Behavior;
 
 namespace TreeVal.Stage.Eval;
@@ -42,7 +41,7 @@ public class EvaluateConditionsStageBuilder : VisitationStageBuilder, EvaluateCo
             catch (Exception ex)
             {
                 behaviorContext.RecordResult(ConditionEvaluationResult.ForError(context, ex));
-                throw VisitationException.BehaviorError(ex, behaviorContext);
+                throw BehaviorVisitationException.ForError(ex, behaviorContext);
             }
         }
     }

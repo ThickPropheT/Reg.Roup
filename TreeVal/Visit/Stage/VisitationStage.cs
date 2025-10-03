@@ -1,5 +1,6 @@
 using TreeVal.Media;
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Behavior.AfterEntering;
 
 namespace TreeVal.Visit.Stage;
 
@@ -8,6 +9,7 @@ public class VisitationStage : IVisitationStage
     private readonly IEnumerable<Func<Node, IEnumerable<IBehavior>>> _behaviors;
 
     public required string CreatedBy { get; init; }
+    public string? CreationSite { get; init; }
 
     public Func<Node, IAfterEnteringBehavior> AfterEntering { get; }
     public Func<Node, IBeforeLeavingBehavior>? BeforeLeaving { get; }
@@ -28,7 +30,7 @@ public class VisitationStage : IVisitationStage
         stageContext = PerformBehavior(
             stageContext,
             n => AfterEntering(n),
-            (behavior, behaviorContext) => behavior.Perform(behaviorContext));
+            (behavior, behaviorContext) => behavior.PerformAndRecordResult(behaviorContext));
 
         foreach (var behavior in _behaviors.SelectMany(getBehavior => getBehavior(stageContext.TapeHead.Read())))
         {
@@ -57,21 +59,20 @@ public class VisitationStage : IVisitationStage
         Func<TBehavior, IBehaviorContext, IStageContext> performBehavior
     )
     {
-        var behaviorContext = stageContext.CreateBehaviorContext();
         var behavior = getBehavior(stageContext.TapeHead.Read());
+        var behaviorContext = stageContext.CreateBehaviorContext(behavior);
 
         try
         {
-            var result = performBehavior(behavior, behaviorContext);
-
+            stageContext = performBehavior(behavior, behaviorContext);
             stageContext.RecordVisitation(new BehaviorVisitationResult(behaviorContext));
 
-            return result;
+            return stageContext;
         }
         catch (Exception ex)
         {
             stageContext.RecordVisitation(BehaviorVisitationResult.ForError(behaviorContext, ex));
-            throw VisitationException.BehaviorError(ex, behaviorContext);
+            throw BehaviorVisitationException.ForError(ex, behaviorContext);
         }
     }
 

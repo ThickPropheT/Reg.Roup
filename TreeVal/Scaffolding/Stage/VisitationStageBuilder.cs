@@ -1,6 +1,7 @@
 using TreeVal.Media;
 using TreeVal.Stage.Read;
 using TreeVal.Visit.Behavior;
+using TreeVal.Visit.Behavior.AfterEntering;
 using TreeVal.Visit.Stage;
 
 namespace TreeVal.Scaffolding.Stage;
@@ -13,6 +14,9 @@ public class VisitationStageBuilder : IVisitationStageBuilder
     private readonly List<Func<Node, IEnumerable<IBehavior>>> _behaviorFactories = [];
 
     public IVisitationStageBuilder.Identity Key { get; }
+
+    public string? CreatedBy { get; init; }
+    public string? CreationSite { get; set; }
 
     public VisitationStageBuilder(IVisitationStageBuilder.Identity key)
     {
@@ -41,6 +45,7 @@ public class VisitationStageBuilder : IVisitationStageBuilder
                 : null
         )
         {
-            CreatedBy = GetType().Name
+            CreatedBy = CreatedBy ?? GetType().Name,
+            CreationSite = CreationSite,
         };
 }
